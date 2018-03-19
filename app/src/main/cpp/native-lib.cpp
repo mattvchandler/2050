@@ -1,13 +1,9 @@
 #include <jni.h>
-#include <string>
+#include <GLES3/gl3.h>
 
 extern "C"
-JNIEXPORT jstring
-
-JNICALL
-Java_org_mattvchandler_a2050_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_clear( JNIEnv *env, jobject)
+{
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
