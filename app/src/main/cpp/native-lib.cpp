@@ -7,12 +7,13 @@
 
 #include <jni.h>
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <GLES3/gl3.h>
 
 ANativeWindow * window = nullptr;
-EGLDisplay display = nullptr;
-EGLSurface surface = nullptr;
-EGLContext context = nullptr;
+EGLDisplay display = EGL_NO_DISPLAY;
+EGLSurface surface = EGL_NO_SURFACE;
+EGLContext context = EGL_NO_CONTEXT;
 
 std::thread render_thread;
 std::mutex render_mutex;
@@ -25,9 +26,9 @@ void destroy()
     eglDestroySurface(display, surface);
     eglTerminate(display);
 
-    display = nullptr;
-    surface = nullptr;
-    context = nullptr;
+    display = EGL_NO_DISPLAY;
+    surface = EGL_NO_SURFACE;
+    context = EGL_NO_CONTEXT;
 }
 #define CASE_STR( value ) case value: return #value;
 const char* eglGetErrorString( EGLint error )
@@ -55,8 +56,12 @@ const char* eglGetErrorString( EGLint error )
 #undef CASE_STR
 bool init()
 {
+    __android_log_write(ANDROID_LOG_DEBUG, "INIT", "init start");
     if(!window)
+    {
+        __android_log_write(ANDROID_LOG_WARN, "INIT", "init exited b/c no window");
         return false;
+    }
 
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(display == EGL_NO_DISPLAY)
@@ -74,6 +79,7 @@ bool init()
     EGLint attribs[] =
             {
                     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
                     EGL_RED_SIZE,   8,
                     EGL_GREEN_SIZE, 8,
                     EGL_BLUE_SIZE,  8,
@@ -100,7 +106,7 @@ bool init()
     ANativeWindow_setBuffersGeometry(window, 0, 0, native_visual_id);
 
     surface = eglCreateWindowSurface(display, config, window, NULL);
-    if (!surface)
+    if (surface == EGL_NO_SURFACE)
     {
         __android_log_print(ANDROID_LOG_ERROR, "INIT", "eglCreateWindowSurface error: %s", eglGetErrorString(eglGetError()));
         destroy();
@@ -109,7 +115,7 @@ bool init()
 
     EGLint context_version[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
     context = eglCreateContext(display, config, EGL_NO_CONTEXT, context_version);
-    if (!context)
+    if(context == EGL_NO_CONTEXT)
     {
         __android_log_print(ANDROID_LOG_ERROR, "INIT", "eglCreateContext error: %s", eglGetErrorString(eglGetError()));
         destroy();
@@ -133,6 +139,7 @@ bool init()
 
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 
+    __android_log_write(ANDROID_LOG_DEBUG, "DEBUG", "init success");
     return true;
 }
 void render_loop()
@@ -162,7 +169,7 @@ void render_loop()
             window_set = true;
         }
 
-        if(!display)
+        if(display == EGL_NO_DISPLAY)
         {
             //__android_log_write(ANDROID_LOG_DEBUG, "RENDER_LOOP", "no display");
             continue;
@@ -214,13 +221,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv, jo
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setsurface(JNIEnv * env, jobject, jobject surface)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setsurface");
-    if(surface != 0)
+    if(surface)
     {
         window = ANativeWindow_fromSurface(env, surface);
     }
     else
     {
         ANativeWindow_release(window);
+        window = nullptr;
     }
 }
 }
