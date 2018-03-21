@@ -1,12 +1,13 @@
 package org.mattvchandler.a2050;
 
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-// TODO: crashes on rotate
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback
 {
@@ -19,9 +20,28 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void resume();
     public native void pause();
     public native void stop();
-    public native void setsurface(Surface surface);
+    public native void setSurface(Surface surface);
+    public native void changeGravity(float x, float y);
+
+    private GestureDetectorCompat gestureDetector;
+
+    class GestureListener extends GestureDetector.SimpleOnGestureListener
+    {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
+        {
+            changeGravity(x, y);
+            return true;
+        }
+    }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -30,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
 
-        // TODO: touch events
+        gestureDetector = new GestureDetectorCompat(this, new GestureListener());
     }
 
     @Override
@@ -68,12 +88,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
         // TODO: do we need size; what is format?
-        setsurface(holder.getSurface());
+        setSurface(holder.getSurface());
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        setsurface(null);
+        setSurface(null);
     }
 }

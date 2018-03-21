@@ -436,9 +436,9 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv, jo
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "stop");
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setsurface(JNIEnv * env, jobject, jobject surface)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setSurface(JNIEnv * env, jobject, jobject surface)
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setsurface");
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setSurface");
     if(surface)
     {
         window = ANativeWindow_fromSurface(env, surface);
@@ -448,5 +448,10 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setsurface(JNIE
         ANativeWindow_release(window);
         window = nullptr;
     }
+}
+
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_changeGravity(JNIEnv, jobject, jfloat x, jfloat y)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "changeGravity [%f, %f]", (float)x, (float)y);
 }
 }
