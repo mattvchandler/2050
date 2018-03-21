@@ -1,23 +1,25 @@
 package org.mattvchandler.a2050;
 
-import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL;
-import javax.microedition.khronos.opengles.GL10;
+// TODO: crashes on rotate
 
-import static android.opengl.GLES30.*;
-
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback
 {
-    // Used to load the 'native-lib' library on application startup.
     static
     {
         System.loadLibrary("native-lib");
     }
+
+    public native void start();
+    public native void resume();
+    public native void pause();
+    public native void stop();
+    public native void setsurface(Surface surface);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,34 +27,53 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GLSurfaceView glSurfaceView = (GLSurfaceView)findViewById(R.id.gl_surface_view);
+        SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
+        surfaceView.getHolder().addCallback(this);
 
-        glSurfaceView.setEGLContextClientVersion(3);
-        glSurfaceView.setRenderer(new Renderer());
-
-        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        // TODO: touch events
     }
 
-    public native void clear();
-
-    class Renderer implements GLSurfaceView.Renderer
+    @Override
+    protected void onStart()
     {
-        @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config)
-        {
-            glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
-        }
+        super.onStart();
+        start();
+    }
 
-        @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height)
-        {
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        resume();
+    }
 
-        }
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        pause();
+    }
 
-        @Override
-        public void onDrawFrame(GL10 gl)
-        {
-            clear();
-        }
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        stop();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {}
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    {
+        // TODO: do we need size; what is format?
+        setsurface(holder.getSurface());
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        setsurface(null);
     }
 }
