@@ -9,7 +9,7 @@ add_library(native-lib SHARED
 target_link_libraries(native-lib
     android
     log
-    GLESv3
+    GLESv2
     EGL
     freetype
     )

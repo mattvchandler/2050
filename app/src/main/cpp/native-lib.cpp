@@ -11,8 +11,7 @@
 
 #include <jni.h>
 #include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 
 class Shader_prog
 {
@@ -21,7 +20,8 @@ private:
     GLuint id;
 public:
 
-    Shader_prog(const std::vector<std::pair<std::string, GLenum>> sources)
+    Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sources,
+                const std::vector<std::pair<std::string, GLuint>> & attribs)
     {
         std::vector<Shader_obj> shaders;
         for(auto &source: sources)
@@ -31,6 +31,10 @@ public:
 
         for(auto & s: shaders)
             glAttachShader(id, s.get_id());
+
+        // bind given attributes (must be done before link)
+        for(auto & attr: attribs)
+            glBindAttribLocation(id, attr.second, attr.first.c_str());
 
         glLinkProgram(id);
 
@@ -141,13 +145,11 @@ public:
     };
 };
 
-
 ANativeWindow * window = nullptr;
 EGLDisplay display = EGL_NO_DISPLAY;
 EGLSurface surface = EGL_NO_SURFACE;
 EGLContext context = EGL_NO_CONTEXT;
 
-GLuint vao = 0;
 GLuint vbo = 0;
 std::unique_ptr<Shader_prog> prog;
 
@@ -158,10 +160,8 @@ bool running = false;
 void destroy()
 {
     glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
     prog.reset();
 
-    vao = 0;
     vbo = 0;
     prog = 0;
 
@@ -248,7 +248,7 @@ bool init()
     EGLint attribs[] =
             {
                     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
+                    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
                     EGL_RED_SIZE,   8,
                     EGL_GREEN_SIZE, 8,
                     EGL_BLUE_SIZE,  8,
@@ -282,7 +282,7 @@ bool init()
         return false;
     }
 
-    EGLint context_version[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
+    EGLint context_version[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
     context = eglCreateContext(display, config, EGL_NO_CONTEXT, context_version);
     if(context == EGL_NO_CONTEXT)
     {
@@ -316,8 +316,6 @@ bool init()
          0.5f,  0.5f
     };
 
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
@@ -327,25 +325,23 @@ bool init()
     GL_check_error("vao/vbo");
 
     const char * vertshader =
- R"(#version 300 es
-    layout(location = 0) in vec2 vert_pos;
+ R"(attribute vec4 vert_pos;
     void main()
     {
-        gl_Position = vec4(vert_pos, 0.0, 1.0);
+        gl_Position = vert_pos;
     }
     )";
     const char * fragshader =
- R"(#version 300 es
-    precision mediump float;
+ R"(precision mediump float;
 
-    out vec4 frag_color;
     void main()
     {
-        frag_color = vec4(0.0, 1.0, 0.0, 1.0);
+        gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
     }
     )";
 
-    prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{std::make_pair(std::string(vertshader), GL_VERTEX_SHADER), std::make_pair(std::string(fragshader), GL_FRAGMENT_SHADER)});
+    prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{std::make_pair(std::string(vertshader), GL_VERTEX_SHADER), std::make_pair(std::string(fragshader), GL_FRAGMENT_SHADER)},
+                                         std::vector<std::pair<std::string, GLuint>>{std::make_pair(std::string("vert_pos"), GLuint(0))});
 
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
     glViewport(0, 0, width, height);
@@ -394,7 +390,7 @@ void render_loop()
         glClear(GL_COLOR_BUFFER_BIT);
 
         prog->use();
-        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         GL_check_error("draw");
