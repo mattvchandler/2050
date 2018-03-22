@@ -13,6 +13,8 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
+#include <glm/glm.hpp>
+
 class Shader_prog
 {
 private:
@@ -152,6 +154,8 @@ EGLContext context = EGL_NO_CONTEXT;
 
 GLuint vbo = 0;
 std::unique_ptr<Shader_prog> prog;
+
+glm::vec3 bg_color;
 
 std::thread render_thread;
 std::mutex render_mutex;
@@ -353,8 +357,7 @@ void render_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "RENDER_LOOP", "start render loop");
     bool window_set = false;
-    float r = 0.0f, g = 0.0f, b = 0.0f;
-    auto dr = 0.001f, dg = 0.005f, db = 0.010f;
+    glm::vec3 delta = {0.001f, 0.005f, 0.010f};
     while(true)
     {
         std::lock_guard<std::mutex> lock(render_mutex);
@@ -382,11 +385,12 @@ void render_loop()
             continue;
         }
 
-        r += dr; if(r > 1.0f || r < 0.0f) dr = -dr;
-        g += dg; if(g > 1.0f || g < 0.0f) dg = -dg;
-        b += db; if(b > 1.0f || b < 0.0f) db = -db;
+        bg_color += delta;
+        if(bg_color.r > 1.0f || bg_color.r < 0.0f) delta.r = -delta.r;
+        if(bg_color.g > 1.0f || bg_color.g < 0.0f) delta.g = -delta.g;
+        if(bg_color.b > 1.0f || bg_color.b < 0.0f) delta.b = -delta.b;
 
-        glClearColor(r, g, b, 0.0f);
+        glClearColor(bg_color.r, bg_color.g, bg_color.b, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         prog->use();

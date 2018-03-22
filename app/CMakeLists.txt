@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_ALL)
-include_directories(../freetype/include)
+add_subdirectory(../glm ${CMAKE_CURRENT_BINARY_DIR}/glm EXCLUDE_FROM_ALL)
+include_directories(../freetype/include ../glm/)
 
 add_library(native-lib SHARED
     src/main/cpp/native-lib.cpp)
