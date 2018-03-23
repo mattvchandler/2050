@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <android/log.h>
@@ -14,6 +16,8 @@
 #include <GLES2/gl2.h>
 
 #include <glm/glm.hpp>
+
+#include <textogl/font.hpp>
 
 class Shader_prog
 {
@@ -147,13 +151,17 @@ public:
     };
 };
 
+AAssetManager * asset_manager = nullptr;
 ANativeWindow * window = nullptr;
 EGLDisplay display = EGL_NO_DISPLAY;
 EGLSurface surface = EGL_NO_SURFACE;
 EGLContext context = EGL_NO_CONTEXT;
 
+int width, height;
+
 GLuint vbo = 0;
 std::unique_ptr<Shader_prog> prog;
+std::unique_ptr<textogl::Font_sys> font;
 
 glm::vec3 bg_color;
 
@@ -165,6 +173,7 @@ void destroy()
 {
     glDeleteBuffers(1, &vbo);
     prog.reset();
+    font.reset();
 
     vbo = 0;
     prog = 0;
@@ -302,7 +311,6 @@ bool init()
         return false;
     }
 
-    EGLint width, height;
     if(!eglQuerySurface(display, surface, EGL_WIDTH, &width) || !eglQuerySurface(display, surface, EGL_HEIGHT, &height))
     {
         __android_log_print(ANDROID_LOG_ERROR, "INIT", "eglQuerySurface error: %s", eglGetErrorString(eglGetError()));
@@ -324,8 +332,6 @@ bool init()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
     GL_check_error("vao/vbo");
 
     const char * vertshader =
@@ -346,6 +352,32 @@ bool init()
 
     prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{std::make_pair(std::string(vertshader), GL_VERTEX_SHADER), std::make_pair(std::string(fragshader), GL_FRAGMENT_SHADER)},
                                          std::vector<std::pair<std::string, GLuint>>{std::make_pair(std::string("vert_pos"), GLuint(0))});
+
+    AAsset * font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+    if(!font_asset)
+        throw std::runtime_error("Couldn't open font asset");
+
+    std::vector<unsigned char> font_data;
+    while(true)
+    {
+        std::vector<unsigned char> buffer(1024);
+        auto size_read = AAsset_read(font_asset, std::data(buffer), std::size(buffer));
+        if(size_read == 0)
+            break;
+
+        if(size_read == EOF)
+            throw std::runtime_error("Error reading fonr asset");
+
+        font_data.insert(std::end(font_data), std::begin(buffer), std::begin(buffer) + size_read);
+
+        if(size_read < std::size(buffer))
+            break;
+    }
+
+    __android_log_print(ANDROID_LOG_DEBUG, "DEBUG", "read %d bytes from font file", (int)std::size(font_data));
+    AAsset_close(font_asset);
+
+    font = std::make_unique<textogl::Font_sys>(font_data, 32);
 
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
     glViewport(0, 0, width, height);
@@ -395,7 +427,12 @@ void render_loop()
 
         prog->use();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(0);
+
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        font->render_text("ASDF", {0.0f, 0.0f, 0.0f, 1.0f}, {width, height}, glm::vec2{width, height} / 2.0f, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
 
         GL_check_error("draw");
 
@@ -448,6 +485,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setSurface(JNIE
         ANativeWindow_release(window);
         window = nullptr;
     }
+}
+
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setAsset(JNIEnv * env, jobject, jobject asset_mgr)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setAsset");
+    asset_manager = AAssetManager_fromJava(env, asset_mgr);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_changeGravity(JNIEnv, jobject, jfloat x, jfloat y)

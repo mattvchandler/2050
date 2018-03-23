@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+include_directories(
+    ../freetype/include
+    ../glm/
+    ../textogl/include
+    )
+
+set(GLM_FOUND ON)
+
 add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_ALL)
-add_subdirectory(../glm ${CMAKE_CURRENT_BINARY_DIR}/glm EXCLUDE_FROM_ALL)
-include_directories(../freetype/include ../glm/)
+add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
 
 add_library(native-lib SHARED
     src/main/cpp/native-lib.cpp)
@@ -12,5 +19,5 @@ target_link_libraries(native-lib
     log
     GLESv2
     EGL
-    freetype
+    textogl
     )

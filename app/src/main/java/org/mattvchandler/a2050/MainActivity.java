@@ -1,5 +1,6 @@
 package org.mattvchandler.a2050;
 
+import android.content.res.AssetManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,9 +22,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void pause();
     public native void stop();
     public native void setSurface(Surface surface);
+    public native void setAsset(AssetManager asset_manager);
     public native void changeGravity(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
+    private AssetManager assetManager;
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
+
+        assetManager = getResources().getAssets();
+        setAsset(assetManager);
     }
 
     @Override
