@@ -4,11 +4,14 @@ import android.content.res.AssetManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback
 {
@@ -23,7 +26,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void stop();
     public native void setSurface(Surface surface);
     public native void setAsset(AssetManager asset_manager);
-    public native void changeGravity(float x, float y);
+    public native void setPath(String path);
+    public native void fling(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
     private AssetManager assetManager;
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
         {
-            changeGravity(x, y);
+            fling(x, y);
             return true;
         }
     }
@@ -57,6 +61,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         assetManager = getResources().getAssets();
         setAsset(assetManager);
+        try
+        {
+            setPath(getFilesDir().getCanonicalPath());
+        }
+        catch(IOException e)
+        {
+            Log.e("MainActivity", "Could not get data directory", e);
+        }
     }
 
     @Override

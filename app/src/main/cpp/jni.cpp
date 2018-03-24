@@ -152,6 +152,7 @@ public:
 };
 
 AAssetManager * asset_manager = nullptr;
+std::string data_path;
 ANativeWindow * window = nullptr;
 EGLDisplay display = EGL_NO_DISPLAY;
 EGLSurface surface = EGL_NO_SURFACE;
@@ -493,8 +494,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setAsset(JNIEnv
     asset_manager = AAssetManager_fromJava(env, asset_mgr);
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_changeGravity(JNIEnv, jobject, jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setPath(JNIEnv * env, jobject, jstring path)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "changeGravity [%f, %f]", (float)x, (float)y);
+    data_path = env->GetStringUTFChars(path, NULL);
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "setPath: %s", data_path.c_str());
+}
+
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv, jobject, jfloat x, jfloat y)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "fling [%f, %f]", (float)x, (float)y);
 }
 }

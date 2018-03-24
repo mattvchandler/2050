@@ -12,7 +12,7 @@ add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_A
 add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
 
 add_library(native-lib SHARED
-    src/main/cpp/native-lib.cpp)
+    src/main/cpp/jni.cpp)
 
 target_link_libraries(native-lib
     android
