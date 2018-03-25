@@ -20,13 +20,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         System.loadLibrary("native-lib");
     }
 
-    public native void start();
+    public native void start(AssetManager asset_manager, String path);
     public native void resume();
     public native void pause();
     public native void stop();
     public native void setSurface(Surface surface);
-    public native void setAsset(AssetManager asset_manager);
-    public native void setPath(String path);
     public native void fling(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
@@ -58,24 +56,22 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
-
         assetManager = getResources().getAssets();
-        setAsset(assetManager);
-        try
-        {
-            setPath(getFilesDir().getCanonicalPath());
-        }
-        catch(IOException e)
-        {
-            Log.e("MainActivity", "Could not get data directory", e);
-        }
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-        start();
+
+        try
+        {
+            start(assetManager, getFilesDir().getCanonicalPath());
+        }
+        catch(IOException e)
+        {
+            Log.e("MainActivity", "Could not get data directory", e);
+        }
     }
 
     @Override
