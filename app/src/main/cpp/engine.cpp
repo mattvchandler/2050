@@ -35,11 +35,6 @@ void Engine::set_window(ANativeWindow * window) noexcept
     if(window)
     {
         win = window;
-        if(!init_display())
-        {
-            __android_log_write(ANDROID_LOG_ERROR, "Engine::start", "Could not create display");
-            return;
-        }
     }
     else
     {
@@ -158,19 +153,6 @@ void Engine::destroy_display() noexcept
 
 void Engine::start() noexcept
 {
-    if(running)
-        return;
-
-    try
-    {
-        world = std::make_unique<World>();
-    }
-    catch(...) // TODO: what exceptions can be thrown
-    {
-        __android_log_write(ANDROID_LOG_ERROR, "Engine::start", "Could not create world");
-    }
-
-
     running = true;
 
     render_thread  = std::thread([this](){ render_loop(); });
@@ -201,26 +183,40 @@ void Engine::stop() noexcept
         __android_log_print(ANDROID_LOG_ERROR, "Engine::stop", "Error joining physics_thread: %s", e.what());
     }
 
-    world.reset();
-
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "Engine stopped");
 }
 
 void Engine::render_loop() noexcept
 {
-    using namespace std::chrono_literals;
+    bool window_set = false;
 
-    auto last_iteration = std::chrono::system_clock::now();
+    using namespace std::chrono_literals;
     while(running)
     {
+        std::this_thread::sleep_for(1ms);
+        std::scoped_lock locked(lock);
         if(!win)
             continue;
 
-        std::this_thread::sleep_for(1ms);
-        auto dt = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::system_clock::now() - last_iteration).count();
+        if(win && !window_set)
+        {
+            if(!init_display())
+            {
+                __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't init display");
+                break;
+            }
+            window_set = true;
+        }
 
-        last_iteration = std::chrono::system_clock::now();
+        world.render();
+
+        if(!eglSwapBuffers(display, surface))
+        {
+            __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+        }
     }
+    destroy_display();
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "end render loop");
 }
 
 void Engine::physics_loop() noexcept
@@ -229,14 +225,17 @@ void Engine::physics_loop() noexcept
     auto last_iteration = std::chrono::system_clock::now();
     while(running)
     {
+        std::this_thread::sleep_for(1ms);
         if(!win)
             continue;
 
-        std::this_thread::sleep_for(1ms);
         auto dt = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::system_clock::now() - last_iteration).count();
+
+        world.physics_step(dt);
 
         last_iteration = std::chrono::system_clock::now();
     }
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
 
 void Engine::fling(float x, float y)

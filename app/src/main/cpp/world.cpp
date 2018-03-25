@@ -1,8 +1,12 @@
 #include "world.hpp"
 
-/*
+#include <string>
+
+#include <android/log.h>
+
+#include <GLES2/gl2.h>
+
 #define CASE_STR( value ) case value: return #value;
-/*
 const char* glGetErrorString(GLenum error )
 {
     switch( error )
@@ -24,10 +28,33 @@ void GL_check_error(const char * at) // TODO: macro w/ line & file
     {
         using namespace std::string_literals;
         __android_log_print(ANDROID_LOG_ERROR, "Error at %s: %s", at, glGetErrorString(e));
-        throw std::system_error(e, std::system_category(), "Error at "s + std::string(at) + ":\n"s + glGetErrorString(e));
     }
 }
 
+void World::init()
+{
+}
+
+void World::render()
+{
+    glClearColor(bg_color.r, bg_color.g, bg_color.b, 0.0f);
+
+    bg_color += delta;
+    if(bg_color.r > 1.0f || bg_color.r < 0.0f) delta.r = -delta.r;
+    if(bg_color.g > 1.0f || bg_color.g < 0.0f) delta.g = -delta.g;
+    if(bg_color.b > 1.0f || bg_color.b < 0.0f) delta.b = -delta.b;
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    GL_check_error("draw");
+}
+
+void World::physics_step(float dt)
+{
+
+}
+
+/*
 void destroy()
 {
     glDeleteBuffers(1, &vbo);

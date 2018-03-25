@@ -30,7 +30,7 @@ private:
     std::thread physics_thread;
     std::atomic<bool> running = false;
 
-    std::unique_ptr<World> world;
+    World world;
 
     bool init_display() noexcept;
     void destroy_display() noexcept;

@@ -191,7 +191,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setSurface(JNIE
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setSurface");
     if(!engine)
     {
-        __android_log_write(ANDROID_LOG_ERROR, "JNI", "setSurface called before engine init");
         return;
     }
 

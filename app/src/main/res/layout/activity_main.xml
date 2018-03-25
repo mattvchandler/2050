@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.mattvchandler.a2050.MainActivity">
+    tools:context="org.mattvchandler.a2050.MainActivity"
+    android:layout_margin="8dp"
+    >
 
     <TextView
         android:id="@+id/sample_text"
