@@ -8,8 +8,8 @@ include_directories(
 
 set(GLM_FOUND ON)
 
-# add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_ALL)
-# add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
+add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_ALL)
+add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
 
 add_library(native-lib SHARED
     src/main/cpp/engine.cpp
@@ -23,5 +23,5 @@ target_link_libraries(native-lib
     log
     GLESv2
     EGL
-    #textogl
+    textogl
     )

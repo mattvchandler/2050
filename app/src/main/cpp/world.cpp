@@ -4,12 +4,13 @@
 
 #include <android/log.h>
 
-void World::resize(GLsizei width, GLsizei height)
+void World::resize(GLsizei w, GLsizei h)
 {
+    width = w; height = h;
     __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "resize with %d x %d", width, height);
     glViewport(0, 0, width, height);
 }
-void World::init()
+void World::init(AAssetManager * asset_manager)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
     const char * vertshader =
@@ -31,6 +32,10 @@ void World::init()
                                          std::vector<std::pair<std::string, GLuint>>{{"vert_pos", 0}});
 
     quad = std::make_unique<Quad>();
+
+    AAsset * font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+    font = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), 32);
+    AAsset_close(font_asset);
 }
 
 void World::destroy()
@@ -38,6 +43,7 @@ void World::destroy()
     __android_log_write(ANDROID_LOG_DEBUG, "World::destroy", "destroying opengl objects");
     prog.reset();
     quad.reset();
+    font.reset();
 }
 
 void World::render()
@@ -48,6 +54,8 @@ void World::render()
     prog->use();
     quad->draw();
 
+    font->render_text("ASDF", {0.0f, 0.0f, 0.0f, 1.0f}, {width, height}, glm::vec2{width, height} / 2.0f, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+
     GL_CHECK_ERROR("draw");
 }
 
@@ -57,6 +65,7 @@ void World::physics_step(float dt)
     if(bg_color.r > 1.0f || bg_color.r < 0.0f) delta.r = -delta.r;
     if(bg_color.g > 1.0f || bg_color.g < 0.0f) delta.g = -delta.g;
     if(bg_color.b > 1.0f || bg_color.b < 0.0f) delta.b = -delta.b;
+    ++count;
 }
 
 /*

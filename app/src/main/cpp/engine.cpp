@@ -175,7 +175,7 @@ bool Engine::can_render()
             return false;
         }
 
-        world.init();
+        world.init(asset_manager);
         world.resize(width, height);
     }
     return true;
@@ -271,7 +271,6 @@ void Engine::physics_loop()
         std::this_thread::sleep_until(frame_start_time + target_frametime);
     }
 
-    destroy_egl();
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
 
@@ -288,6 +287,7 @@ void Engine::resume() noexcept
 }
 void Engine::pause() noexcept
 {
+    // TODO: save openGL context
     resumed = false;
     // TODO: pause screen, kick off single render event
     running = false;
