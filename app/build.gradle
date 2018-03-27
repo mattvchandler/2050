@@ -12,7 +12,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_STL=c++_static"
-                cppFlags "-std=c++1z -frtti -fexceptions"
+                cppFlags "-std=c++1z -frtti -fexceptions -Wall"
             }
         }
     }

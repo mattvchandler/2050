@@ -4,33 +4,6 @@
 
 #include <android/log.h>
 
-#include <GLES2/gl2.h>
-
-#define CASE_STR( value ) case value: return #value;
-const char* glGetErrorString(GLenum error )
-{
-    switch( error )
-    {
-    CASE_STR(GL_NO_ERROR)
-    CASE_STR(GL_INVALID_ENUM)
-    CASE_STR(GL_INVALID_VALUE)
-    CASE_STR(GL_INVALID_OPERATION)
-    CASE_STR(GL_INVALID_FRAMEBUFFER_OPERATION)
-    CASE_STR(GL_OUT_OF_MEMORY)
-    default: return "Unknown";
-    }
-}
-#undef CASE_STR
-void GL_check_error(const char * at) // TODO: macro w/ line & file
-{
-    GLenum e = glGetError();
-    if(e != GL_NO_ERROR)
-    {
-        using namespace std::string_literals;
-        __android_log_print(ANDROID_LOG_ERROR, "Error at %s: %s", at, glGetErrorString(e));
-    }
-}
-
 void World::init()
 {
 }
@@ -40,8 +13,9 @@ void World::render()
     glClearColor(bg_color.r, bg_color.g, bg_color.b, 0.0f);
 
     glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(1203249874);
 
-    GL_check_error("draw");
+    GL_CHECK_ERROR("draw");
 }
 
 void World::physics_step(float dt)

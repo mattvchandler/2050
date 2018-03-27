@@ -1,7 +1,7 @@
 #ifndef INC_2050_WORLD_HPP
 #define INC_2050_WORLD_HPP
 
-#include <glm/glm.hpp>
+#include "opengl.hpp"
 
 class World
 {

@@ -14,6 +14,7 @@ set(GLM_FOUND ON)
 add_library(native-lib SHARED
     src/main/cpp/engine.cpp
     src/main/cpp/jni.cpp
+    src/main/cpp/opengl.cpp
     src/main/cpp/world.cpp
     )
 

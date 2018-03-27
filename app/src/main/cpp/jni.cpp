@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(
         engine->surface_changed(ANativeWindow_fromSurface(env, surface));
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv, jobject, jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv *, jobject, jfloat x, jfloat y)
 {
     __android_log_print(ANDROID_LOG_DEBUG, "JNI", "fling [%f, %f]", (float)x, (float)y);
     if(!engine)
