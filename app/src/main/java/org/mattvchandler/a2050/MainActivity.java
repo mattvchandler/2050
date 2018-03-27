@@ -20,15 +20,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         System.loadLibrary("native-lib");
     }
 
-    public native void start(AssetManager asset_manager, String path);
+    public native void create(AssetManager assetManager, String path);
+    public native void start();
     public native void resume();
     public native void pause();
     public native void stop();
-    public native void setSurface(Surface surface);
+    public native void destroy();
+    public native void focus(boolean has_focus);
+    public native void surfaceCreated(Surface surface);
+    public native void surfaceDestroyed();
+    public native void surfaceChanged(Surface surface);
     public native void fling(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
-    private AssetManager assetManager;
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
@@ -50,34 +54,40 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.d("MainActivity", "onCreate");
+
         setContentView(R.layout.activity_main);
 
         SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
-        assetManager = getResources().getAssets();
+
+        String path = "";
+        try
+        {
+            path = getFilesDir().getCanonicalPath();
+        }
+        catch(IOException e)
+        {
+            Log.e("MainActivity", "Could not get data directory", e);
+        }
+        create(getResources().getAssets(), path);
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-
-        try
-        {
-            start(assetManager, getFilesDir().getCanonicalPath());
-        }
-        catch(IOException e)
-        {
-            Log.e("MainActivity", "Could not get data directory", e);
-        }
+        Log.d("MainActivity", "onStart");
+        start();
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
+        Log.d("MainActivity", "onResume");
         resume();
     }
 
@@ -85,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onPause()
     {
         super.onPause();
+        Log.d("MainActivity", "onPause");
         pause();
     }
 
@@ -92,22 +103,47 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onStop()
     {
         super.onStop();
+        Log.d("MainActivity", "onStop");
         stop();
+    }
+    @Override
+    protected void onDestroy()
+    {
+        Log.d("MainActivity", "onDestroy");
+        destroy();
+
+        SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
+        surfaceView.getHolder().removeCallback(this);
+
+        super.onDestroy();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {}
+    public void onWindowFocusChanged(boolean hasFocus)
+    {
+        super.onWindowFocusChanged(hasFocus);
+        Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
+        focus(hasFocus);
+    }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    public void surfaceCreated(SurfaceHolder holder)
     {
-        // TODO: do we need size; what is format?
-        setSurface(holder.getSurface());
+        Log.d("MainActivity", "surfaceCreated");
+        surfaceCreated(holder.getSurface());
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        setSurface(null);
+        Log.d("MainActivity", "surfaceDestroyed");
+        surfaceDestroyed();
     }
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    {
+        Log.d("MainActivity", "surfaceChanged");
+        surfaceChanged(holder.getSurface());
+    }
+
 }

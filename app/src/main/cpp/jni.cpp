@@ -144,69 +144,95 @@ public:
 
 std::unique_ptr<Engine> engine;
 
+
 extern "C"
 {
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_start(JNIEnv * env, jobject, jobject asset_mgr, jstring jpath)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject, jobject assetManager, jstring path)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "create");
+    if(engine)
+        __android_log_assert("create called after engine initialized", "JNI", NULL);
+
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), env->GetStringUTFChars(path, NULL));
+}
+
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_start(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "start");
-    try
-    {
-        engine = std::make_unique<Engine>();
-        engine->set_asset_manager(AAssetManager_fromJava(env, asset_mgr));
-        engine->set_data_path(env->GetStringUTFChars(jpath, NULL));
-    }
-    catch(std::exception &e)
-    {
-        __android_log_print(ANDROID_LOG_ERROR, "JNI", "Could not init engine: %s", e.what());
-    }
+    if(!engine)
+        __android_log_assert("start called before engine initialized", "JNI", NULL);
+    engine->start();
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv, jobject)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "resume");
-
-    if(engine)
-        engine->start();
-    else
-        __android_log_write(ANDROID_LOG_ERROR, "JNI", "resume called before engine init");
+    if(!engine)
+        __android_log_assert("resume called before engine initialized", "JNI", NULL);
+    engine->resume();
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv, jobject)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause");
-
-    if(engine)
-        engine->stop();
-    else
-        __android_log_write(ANDROID_LOG_ERROR, "JNI", "pause called before engine init");
+    if(!engine)
+        __android_log_assert("pause called before engine initialized", "JNI", NULL);
+    engine->pause();
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv, jobject)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "stop");
+    if(!engine)
+        __android_log_assert("stop called before engine initialized", "JNI", NULL);
+    engine->stop();
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv *, jobject)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "destroy");
+    if(!engine)
+        __android_log_assert("destroy called before engine initialized", "JNI", NULL);
     engine.reset();
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_setSurface(JNIEnv * env, jobject, jobject surface)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv * env, jobject, jboolean has_focus)
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "setSurface");
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "focus: %s", has_focus? "true" : "false");
     if(!engine)
-    {
-        return;
-    }
+        __android_log_assert("focus called before engine initialized", "JNI", NULL);
+    engine->set_focus(has_focus);
+}
 
+// TODO: probably only pass the window in surfaceChanged
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceCreated(JNIEnv * env, jobject, jobject surface)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceCreated");
+    if(!engine)
+        __android_log_assert("surfaceCreated called before engine initialized", "JNI", NULL);
     if(surface)
-        engine->set_window(ANativeWindow_fromSurface(env, surface));
-    else
-        engine->set_window(nullptr);
+        engine->surface_created(ANativeWindow_fromSurface(env, surface));
+
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceDestroyed(JNIEnv * env, jobject)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceDestroyed");
+    if(!engine)
+        __android_log_assert("surfaceDestroyed called before engine initialized", "JNI", NULL);
+    engine->surface_destroyed();
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(JNIEnv * env, jobject, jobject surface)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceChanged");
+    if(!engine)
+        __android_log_assert("surfaceChanged called before engine initialized", "JNI", NULL);
+    if(surface)
+        engine->surface_changed(ANativeWindow_fromSurface(env, surface));
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv, jobject, jfloat x, jfloat y)
 {
     __android_log_print(ANDROID_LOG_DEBUG, "JNI", "fling [%f, %f]", (float)x, (float)y);
-
-    if(engine)
-        engine->fling(x, y);
-    else
-        __android_log_write(ANDROID_LOG_ERROR, "JNI", "fling called before engine init");
+    if(!engine)
+        __android_log_assert("fling called before engine initialized", "JNI", NULL);
+    engine->fling(x, y);
 }
 }
