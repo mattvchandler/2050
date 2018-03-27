@@ -37,7 +37,7 @@ private:
 
     World world;
 
-    std::mutex lock;
+    std::mutex mutex;
 
     void destroy_egl();
     bool init_egl();

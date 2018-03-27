@@ -59,6 +59,7 @@ void Engine::destroy_egl()
 
 bool Engine::init_egl()
 {
+    std::scoped_lock lock(mutex);
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_egl", "begin egl initialization");
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(display == EGL_NO_DISPLAY)
@@ -171,6 +172,8 @@ bool Engine::can_render()
             __android_log_print(ANDROID_LOG_ERROR, "Engine::can_render", "eglMakeCurrent error: %s", eglGetErrorString(eglGetError()));
             return false;
         }
+
+        world.init();
     }
     return true;
 }
@@ -185,13 +188,16 @@ void Engine::render_loop()
     running = true;
     while(running)
     {
+        mutex.lock();
         auto frame_start_time = std::chrono::steady_clock::now();
 
         if(!resumed || !can_render())
         {
+            mutex.unlock();
             std::this_thread::sleep_until(frame_start_time + target_frametime);
             continue;
         }
+
 
         // TODO: resize
         int new_width, new_height;
@@ -202,6 +208,7 @@ void Engine::render_loop()
 
         if(new_width <= 0 || new_height <= 0)
         {
+            mutex.unlock();
             std::this_thread::sleep_for(target_frametime);
             continue;
         }
@@ -213,8 +220,7 @@ void Engine::render_loop()
 
         if(focused)
         {
-            glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            world.render();
         }
         else
         {
@@ -225,6 +231,7 @@ void Engine::render_loop()
         {
             __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
         }
+        mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);
     }
 
@@ -266,6 +273,7 @@ void Engine::surface_created(ANativeWindow *window) noexcept
 }
 void Engine::surface_destroyed() noexcept
 {
+    std::scoped_lock lock(mutex);
     has_surface = false;
     ANativeWindow_release(win);
     win = nullptr;
@@ -273,10 +281,11 @@ void Engine::surface_destroyed() noexcept
 
 void Engine::surface_changed(ANativeWindow *window) noexcept
 {
+    std::scoped_lock lock(mutex);
     win = window;
 }
 
 void Engine::fling(float x, float y) noexcept
 {
-
+    std::scoped_lock lock(mutex);
 }
