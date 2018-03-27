@@ -21,6 +21,9 @@ private:
 
     std::unique_ptr<Shader_prog> prog;
     std::unique_ptr<Quad> quad;
+    std::unique_ptr<Texture2D> circle_tex;
+    std::unique_ptr<Texture2D> rect_tex;
+
     std::unique_ptr<textogl::Font_sys> font;
 
 public:

@@ -172,7 +172,7 @@ Texture2D::Texture2D(const void * data, std::size_t w, std::size_t h)
 {
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h), GL_ALPHA, GL_FLOAT, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0, GL_ALPHA, GL_FLOAT, data);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
