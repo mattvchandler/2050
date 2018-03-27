@@ -185,7 +185,6 @@ void Engine::render_loop()
 
     const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
 
-    running = true;
     while(running)
     {
         mutex.lock();
@@ -239,6 +238,40 @@ void Engine::render_loop()
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "end render loop");
 }
 
+void Engine::physics_loop()
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "start physics loop");
+
+    const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
+    auto last_frame_time = std::chrono::steady_clock::now() - target_frametime;
+
+    while(running)
+    {
+        mutex.lock();
+        auto frame_start_time = std::chrono::steady_clock::now();
+        auto dt = std::chrono::duration_cast<std::chrono::duration<float>>(frame_start_time - last_frame_time).count();
+        last_frame_time = frame_start_time;
+
+        if(!resumed)
+        {
+            mutex.unlock();
+            std::this_thread::sleep_until(frame_start_time + target_frametime);
+            continue;
+        }
+
+        if(focused)
+        {
+            world.physics_step(dt);
+        }
+
+        mutex.unlock();
+        std::this_thread::sleep_until(frame_start_time + target_frametime);
+    }
+
+    destroy_egl();
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
+}
+
 void Engine::start() noexcept
 {
 
@@ -246,7 +279,9 @@ void Engine::start() noexcept
 void Engine::resume() noexcept
 {
     resumed = true;
+    running = true;
     render_thread = std::thread(&Engine::render_loop, this);
+    physics_thread = std::thread(&Engine::physics_loop, this);
 }
 void Engine::pause() noexcept
 {
@@ -254,6 +289,7 @@ void Engine::pause() noexcept
     // TODO: pause screen, kick off single render event
     running = false;
     render_thread.join();
+    physics_thread.join();
 }
 void Engine::stop() noexcept
 {

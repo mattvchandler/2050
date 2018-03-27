@@ -39,11 +39,6 @@ void World::render()
 {
     glClearColor(bg_color.r, bg_color.g, bg_color.b, 0.0f);
 
-    bg_color += delta;
-    if(bg_color.r > 1.0f || bg_color.r < 0.0f) delta.r = -delta.r;
-    if(bg_color.g > 1.0f || bg_color.g < 0.0f) delta.g = -delta.g;
-    if(bg_color.b > 1.0f || bg_color.b < 0.0f) delta.b = -delta.b;
-
     glClear(GL_COLOR_BUFFER_BIT);
 
     GL_check_error("draw");
@@ -51,7 +46,10 @@ void World::render()
 
 void World::physics_step(float dt)
 {
-
+    bg_color += delta * dt;
+    if(bg_color.r > 1.0f || bg_color.r < 0.0f) delta.r = -delta.r;
+    if(bg_color.g > 1.0f || bg_color.g < 0.0f) delta.g = -delta.g;
+    if(bg_color.b > 1.0f || bg_color.b < 0.0f) delta.b = -delta.b;
 }
 
 /*

@@ -7,7 +7,7 @@ class World
 {
 private:
     glm::vec3 bg_color;
-    glm::vec3 delta{0.001f, 0.005f, 0.010f};
+    glm::vec3 delta{0.2f, 0.3f, 0.5f};
 
 public:
     void init();

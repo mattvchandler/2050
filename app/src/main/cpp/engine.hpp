@@ -32,7 +32,7 @@ private:
     EGLConfig config;
 
     std::thread render_thread;
-    // std::thread physics_thread;
+    std::thread physics_thread;
     std::atomic<bool> running = false;
 
     World world;
@@ -46,7 +46,7 @@ private:
     bool can_render();
 
     void render_loop();
-    // void physics_loop();
+    void physics_loop();
 
 public:
     Engine(AAssetManager * asset_manager, const std::string & data_path): asset_manager(asset_manager), data_path(data_path) {}
