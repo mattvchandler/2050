@@ -4,16 +4,49 @@
 
 #include <android/log.h>
 
+void World::resize(GLsizei width, GLsizei height)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "resize with %d x %d", width, height);
+    glViewport(0, 0, width, height);
+}
 void World::init()
 {
+    __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
+    const char * vertshader =
+     R"(attribute vec4 vert_pos;
+        void main()
+        {
+            gl_Position = vert_pos;
+        }
+    )";
+    const char * fragshader =
+     R"(precision mediump float;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+        }
+    )";
+    prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{vertshader, GL_VERTEX_SHADER}, {fragshader, GL_FRAGMENT_SHADER}},
+                                         std::vector<std::pair<std::string, GLuint>>{{"vert_pos", 0}});
+
+    quad = std::make_unique<Quad>();
+}
+
+void World::destroy()
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "World::destroy", "destroying opengl objects");
+    prog.reset();
+    quad.reset();
 }
 
 void World::render()
 {
     glClearColor(bg_color.r, bg_color.g, bg_color.b, 0.0f);
-
     glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(1203249874);
+
+    prog->use();
+    quad->draw();
 
     GL_CHECK_ERROR("draw");
 }
@@ -142,7 +175,7 @@ while(true)
         break;
 
     if(size_read == EOF)
-        throw std::runtime_error("Error reading fonr asset");
+        throw std::runtime_error("Error reading font asset");
 
     font_data.insert(std::end(font_data), std::begin(buffer), std::begin(buffer) + size_read);
 

@@ -36,6 +36,8 @@ void Engine::destroy_egl()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "Destroying display");
 
+    world.destroy();
+
     if(display != EGL_NO_DISPLAY)
     {
         if(eglGetCurrentContext() != EGL_NO_CONTEXT)
@@ -174,6 +176,7 @@ bool Engine::can_render()
         }
 
         world.init();
+        world.resize(width, height);
     }
     return true;
 }
@@ -198,7 +201,6 @@ void Engine::render_loop()
         }
 
 
-        // TODO: resize
         int new_width, new_height;
         if(!eglQuerySurface(display, surface, EGL_WIDTH, &new_width) || !eglQuerySurface(display, surface, EGL_HEIGHT, &new_height))
         {
@@ -214,7 +216,8 @@ void Engine::render_loop()
 
         if(new_width != width || new_height != height)
         {
-            // TODO: resize
+            width = new_width; height = new_height;
+            world.resize(width, height);
         }
 
         if(focused)

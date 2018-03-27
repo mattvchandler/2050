@@ -235,29 +235,45 @@ Texture2D Texture2D::gen_1pix_tex()
 Quad::Quad()
 {
     const std::vector<glm::vec2> verts =
-            {
-                    {-0.5f, -0.5f},
-                    {-0.5f,  0.5f},
-                    { 0.5f, -0.5f},
-                    { 0.5f,  0.5f}
-            };
+    {
+        {-0.5f, -0.5f},
+        {-0.5f,  0.5f},
+        { 0.5f, -0.5f},
+        { 0.5f,  0.5f}
+    };
 
     const std::vector<glm::vec2> tex_coords =
-            {
-                    {0.0f, 0.0f},
-                    {0.0f, 1.0f},
-                    {1.0f, 0.0f},
-                    {1.0f, 1.0f}
-            };
+    {
+        {0.0f, 0.0f},
+        {0.0f, 1.0f},
+        {1.0f, 0.0f},
+        {1.0f, 1.0f}
+    };
 
-    assert(std::size(verts) == std::size(tex_coords) && std::size(verts) == num_indexes);
+    assert(std::size(verts) == std::size(tex_coords));
+
+    num_indexes = std::size(verts);
+    offsets.push_back(0);
 
     vbo.bind();
+    glBufferData(GL_ARRAY_BUFFER, (std::size(verts) + std::size(tex_coords)) * sizeof(glm::vec2), NULL, GL_STATIC_DRAW);
 
-    GL_bind_data(GL_ARRAY_BUFFER, Buffer_data<2, GL_FLOAT, float>(verts), Buffer_data<2, GL_FLOAT, float>(tex_coords));
+    glBufferSubData(GL_ARRAY_BUFFER, offsets.back(), std::size(verts) * sizeof(typename decltype(verts)::value_type), std::data(verts));
+    offsets.push_back(offsets.back() + std::size(verts) * sizeof(typename decltype(verts)::value_type));
+    glBufferSubData(GL_ARRAY_BUFFER, offsets.back(), std::size(tex_coords) * sizeof(typename decltype(tex_coords)::value_type), std::data(tex_coords));
+
+    GL_CHECK_ERROR("gen quad");
 }
 
 void Quad::draw() const
 {
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, num_indexes);
+    vbo.bind();
+    for(std::size_t i = 0; i < std::size(offsets); ++i)
+    {
+        glVertexAttribPointer(static_cast<GLuint>(i), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const GLvoid *>(offsets[i]));
+        glEnableVertexAttribArray(static_cast<GLuint>(i));
+    }
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(num_indexes));
+    GL_CHECK_ERROR("draw quad");
 }

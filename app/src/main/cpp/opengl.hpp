@@ -92,50 +92,13 @@ class Quad
 {
 private:
     GL_buffer vbo{GL_ARRAY_BUFFER};
-    const GLsizei num_indexes = 4;
+    std::size_t num_indexes;
+    std::vector<std::size_t> offsets;
+
 public:
     Quad();
     void draw() const;
 
 };
-
-template <std::size_t s, GLenum t, typename T>
-struct Buffer_data
-{
-    using value_type = T;
-
-    static const std::size_t attrib_size = s;
-    static const GLenum gl_type = t;
-
-    const void * p;
-    const void * data() const { return p; }
-
-    std::size_t bytes;
-    std::size_t size() const { return bytes; }
-
-    template<typename Vec>
-    Buffer_data(const Vec & vec): p(std::data(vec)), bytes(std::size(vec) * sizeof(typename Vec::value_type)) {}
-};
-
-template<typename Vec, typename ... Vecs>
-void GL_bind_sub_data(std::size_t offset, GLuint attrib, GLenum target, const Vec & vec, const Vecs & ... vecs)
-{
-    glBufferSubData(target, offset, std::size(vec), std::data(vec));
-    glVertexAttribPointer(attrib, Vec::attrib_size, Vec::gl_type, GL_FALSE, 0, reinterpret_cast<const GLvoid *>(offset));
-    glEnableVertexAttribArray(attrib);
-
-    if constexpr(sizeof ...(vecs) > 0)
-    {
-        GL_bind_sub_data(offset += std::size(vec), attrib + 1, target, vecs ...);
-    }
-}
-
-template<typename ... Vecs>
-void GL_bind_data(GLenum target, const Vecs & ... vecs)
-{
-    glBufferData(target, (0 + ... + (std::size(vecs) * sizeof(typename Vecs::value_type))), NULL, GL_STATIC_DRAW);
-    GL_bind_sub_data(0, 0, target, vecs ...);
-}
-
 
 #endif //INC_2050_OPENGL_HPP
