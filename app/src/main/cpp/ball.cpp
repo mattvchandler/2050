@@ -114,11 +114,13 @@ Ball::Collision collide_balls(Ball & ball, Ball & other, float e)
 
         float c = glm::dot(n, ball.vel - other.vel);
         // merge
+        // TODO: merge aninmation
         if(ball.size == other.size)
         {
             collision.merged = true;
 
             float ball_mag = ((other.mass * c) / (other.mass + ball.mass));
+            ball.pos = (ball.pos + other.pos) / 2.0f;
             ball.vel -= glm::vec2{ball_mag, ball_mag} * n;
             ++ball.size;
             ball.update_size();
