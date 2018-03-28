@@ -49,6 +49,7 @@ public:
     void resize(GLsizei width, GLsizei height);
     void render();
     void physics_step(float dt);
+    void fling(float x, float y);
 };
 
 #endif //INC_2050_WORLD_HPP

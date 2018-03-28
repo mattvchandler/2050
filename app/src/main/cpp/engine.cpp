@@ -247,7 +247,7 @@ void Engine::physics_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "start physics loop");
 
-    const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
+    const std::chrono::duration<float> target_frametime{1ms};
     auto last_frame_time = std::chrono::steady_clock::now() - target_frametime;
 
     while(running)
@@ -329,4 +329,5 @@ void Engine::surface_changed(ANativeWindow *window) noexcept
 void Engine::fling(float x, float y) noexcept
 {
     std::scoped_lock lock(mutex);
+    world.fling(x, y);
 }
