@@ -118,10 +118,13 @@ namespace textogl
                  const unsigned int h_dpi = 96  ///< Font horizontal DPI
                  );
         /// Load a font at a specified size from memory
-        Font_sys(const std::vector<unsigned char> & font_data, ///< Font file data (in memory)
-                 const unsigned int font_size,                 ///< Font size (in points)
-                 const unsigned int v_dpi = 96,                ///< Font vertical DPI
-                 const unsigned int h_dpi = 96                 ///< Font horizontal DPI
+
+        /// data is not copied, so the client is responsible for maintaining the data for the lifetime of this object
+        Font_sys(const unsigned char * font_data,  ///< Font file data (in memory)
+                 const std::size_t font_data_size, ///< Font file data's size in memory
+                 const unsigned int font_size,     ///< Font size (in points)
+                 const unsigned int v_dpi = 96,    ///< Font vertical DPI
+                 const unsigned int h_dpi = 96     ///< Font horizontal DPI
                  );
         ~Font_sys() = default;
 

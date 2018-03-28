@@ -53,10 +53,13 @@ namespace textogl
              const unsigned int h_dpi             ///< Font horizontal DPI
              );
         /// Load a font at a specified size from memory
-        Impl(const std::vector<unsigned char> & font_data, ///< Font file data (in memory)
-             const unsigned int font_size,                 ///< Font size (in points)
-             const unsigned int v_dpi,                     ///< Font vertical DPI
-             const unsigned int h_dpi                      ///< Font horizontal DPI
+
+        /// data is not copied, so the client is responsible for maintaining the data for the lifetime of this object
+        Impl(const unsigned char * font_data,  ///< Font file data (in memory)
+             const std::size_t font_data_size, ///< Font file data's size in memory
+             const unsigned int font_size,     ///< Font size (in points)
+             const unsigned int v_dpi,         ///< Font vertical DPI
+             const unsigned int h_dpi          ///< Font horizontal DPI
              );
         ~Impl();
 
@@ -73,7 +76,8 @@ namespace textogl
         /// @}
 
         /// Common initialization code
-        void init(const unsigned int font_size,  ///< Font size (in points)
+        void init(FT_Open_Args & args,           ///< Freetype face opening args (set by ctors)
+                  const unsigned int font_size,  ///< Font size (in points)
                   const unsigned int v_dpi = 96, ///< Font vertical DPI
                   const unsigned int h_dpi = 96  ///< Font horizontal DPI
                   );
@@ -216,11 +220,11 @@ namespace textogl
 
         /// @name Font data
         /// @{
-        std::vector<unsigned char> _font_data; ///< Font file data
-        FT_Face _face;                         ///< Font face. [See Freetype documentation](https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Face)
-        bool _has_kerning_info;                ///< \c true if the font has kerning information available
-        Bbox<int> _cell_bbox;                  ///< Bounding box representing maximum extents of a glyph
-        int _line_height;                      ///< Spacing between baselines for each line of text
+        unsigned char * _font_data = nullptr; ///< Font file data
+        FT_Face _face;                        ///< Font face. [See Freetype documentation](https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Face)
+        bool _has_kerning_info;               ///< \c true if the font has kerning information available
+        Bbox<int> _cell_bbox;                 ///< Bounding box representing maximum extents of a glyph
+        int _line_height;                     ///< Spacing between baselines for each line of text
         /// @}
 
         /// @name Texture size
