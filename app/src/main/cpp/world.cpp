@@ -44,13 +44,19 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
     return scale * coord + offset;
 }
 
-World::World()
+World::World(AAssetManager * asset_manager)
 {
     for(std::size_t i = 0; i < num_starting_balls; ++i)
         balls.emplace_back(win_size);
+
+    font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+}
+World::~World()
+{
+    AAsset_close(font_asset);
 }
 
-void World::init(AAssetManager * asset_manager)
+void World::init()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
     const char * vertshader =
@@ -86,14 +92,9 @@ void World::init(AAssetManager * asset_manager)
     circle_tex = std::make_unique<Texture2D>(Texture2D::gen_circle_tex(512));
     rect_tex = std::make_unique<Texture2D>(Texture2D::gen_1pix_tex());
 
-    AAsset * font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
-
-    // TODO: don't keep 3 copies of the font file open!
-    font         = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size);
-    msg_font     = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size * 72 / initial_text_size);
-    sub_msg_font = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size * 32 / initial_text_size);
-
-    AAsset_close(font_asset);
+    font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size);
+    msg_font     = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size * 72 / initial_text_size);
+    sub_msg_font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size * 32 / initial_text_size);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);

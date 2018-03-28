@@ -176,7 +176,7 @@ bool Engine::can_render()
             return false;
         }
 
-        world.init(asset_manager);
+        world.init();
         world.resize(width, height);
     }
     return true;

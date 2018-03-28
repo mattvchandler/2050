@@ -30,7 +30,7 @@ private:
     bool paused = false;
     unsigned long score = 0;
 
-    glm::vec2 grav_vec{0.0f, -g};
+    glm::vec2 grav_vec{0.0f};
 
     glm::ivec2 screen_size;
     glm::mat3 projection;
@@ -42,6 +42,7 @@ private:
     std::unique_ptr<Texture2D> circle_tex;
     std::unique_ptr<Texture2D> rect_tex;
 
+    AAsset * font_asset = nullptr;
     const int initial_text_size = 24;
     int text_size = initial_text_size;
     std::unique_ptr<textogl::Font_sys> font;
@@ -53,8 +54,15 @@ private:
     glm::vec2 text_coord_transform(const glm::vec2 & coord);
 
 public:
-    World();
-    void init(AAssetManager * asset_manager);
+    World(AAssetManager * asset_manager);
+    ~World();
+    World(const World &) = delete;
+    World(World &&) = default;
+
+    World & operator=(const World &) = delete;
+    World & operator=(World &&) = default;
+
+    void init();
     void destroy();
     void resize(GLsizei width, GLsizei height);
     void render();

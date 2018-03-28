@@ -17,7 +17,6 @@ class Engine
 {
 private:
     ANativeWindow * win = nullptr;
-    AAssetManager * asset_manager = nullptr;
     std::string data_path;
 
     int width = 0, height = 0;
@@ -49,7 +48,7 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path): asset_manager(asset_manager), data_path(data_path) {}
+    Engine(AAssetManager * asset_manager, const std::string & data_path): data_path(data_path), world(asset_manager) {}
     void start() noexcept;
     void resume() noexcept;
     void pause() noexcept;
