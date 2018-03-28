@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 {
     static
     {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("2050");
     }
 
     public native void create(AssetManager assetManager, String path);

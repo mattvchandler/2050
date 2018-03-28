@@ -11,7 +11,7 @@ set(GLM_FOUND ON)
 add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_ALL)
 add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
 
-add_library(native-lib SHARED
+add_library(2050 SHARED
     src/main/cpp/ball.cpp
     src/main/cpp/engine.cpp
     src/main/cpp/jni.cpp
@@ -19,7 +19,7 @@ add_library(native-lib SHARED
     src/main/cpp/world.cpp
     )
 
-target_link_libraries(native-lib
+target_link_libraries(2050
     android
     log
     GLESv2
