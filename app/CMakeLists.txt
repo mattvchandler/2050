@@ -12,6 +12,7 @@ add_subdirectory(../freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype EXCLUDE_FROM_A
 add_subdirectory(../textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUDE_FROM_ALL)
 
 add_library(native-lib SHARED
+    src/main/cpp/ball.cpp
     src/main/cpp/engine.cpp
     src/main/cpp/jni.cpp
     src/main/cpp/opengl.cpp

@@ -2,6 +2,7 @@
 #include "world.hpp"
 
 #include <chrono>
+
 using namespace std::chrono_literals;
 
 #include <android/log.h>
@@ -184,6 +185,7 @@ bool Engine::can_render()
 void Engine::render_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "start render loop");
+
     init_egl();
 
     const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
