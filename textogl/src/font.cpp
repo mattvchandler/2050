@@ -136,39 +136,48 @@ namespace textogl
     Font_sys::Impl::Impl(const std::string & font_path, const unsigned int font_size,
             const unsigned int v_dpi, const unsigned int h_dpi)
     {
-        std::ifstream font_file(font_path, std::ios_base::binary);
-        _font_data.insert(std::begin(_font_data), std::istreambuf_iterator<char>(font_file), std::istreambuf_iterator<char>());
-        init(font_size, v_dpi, h_dpi);
+        FT_Open_Args args
+        {
+            FT_OPEN_PATHNAME,
+            nullptr,
+            0,
+            const_cast<char *>(font_path.c_str()),
+            nullptr,
+            nullptr,
+            0,
+            nullptr
+        };
+        init(args, font_size, v_dpi, h_dpi);
     }
 
-    Font_sys::Font_sys(const std::vector<unsigned char> & font_data, const unsigned int font_size,
+    Font_sys::Font_sys(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size,
             const unsigned int v_dpi, const unsigned int h_dpi):
-        pimpl(new Impl(font_data, font_size, v_dpi, h_dpi), [](Impl * impl) { delete impl; })
+        pimpl(new Impl(font_data, font_data_size, font_size, v_dpi, h_dpi), [](Impl * impl) { delete impl; })
     {}
-    Font_sys::Impl::Impl(const std::vector<unsigned char> & font_data, const unsigned int font_size,
-            const unsigned int v_dpi, const unsigned int h_dpi): _font_data(font_data)
+    Font_sys::Impl::Impl(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size,
+            const unsigned int v_dpi, const unsigned int h_dpi)
     {
-        init(font_size, v_dpi, h_dpi);
-    }
-
-    void Font_sys::Impl::init(const unsigned int font_size, const unsigned int v_dpi, const unsigned int h_dpi)
-    {
-        // load freetype, and text shader - only once
-        if(_common_ref_cnt == 0)
-            _common_data.reset(new Font_common);
-
-        // open the font file
         FT_Open_Args args
         {
             FT_OPEN_MEMORY,
-            _font_data.data(),
-            static_cast<FT_Long>(_font_data.size()),
+            font_data,
+            static_cast<FT_Long>(font_data_size),
             nullptr,
             nullptr,
             nullptr,
             0,
             nullptr
         };
+        init(args, font_size, v_dpi, h_dpi);
+    }
+
+    void Font_sys::Impl::init(FT_Open_Args & args, const unsigned int font_size, const unsigned int v_dpi, const unsigned int h_dpi)
+    {
+        // load freetype, and text shader - only once
+        if(_common_ref_cnt == 0)
+            _common_data.reset(new Font_common);
+
+        // open the font file
         FT_Error err = FT_Open_Face(_common_data->ft_lib, &args, 0, &_face);
 
         if(err != FT_Err_Ok)
