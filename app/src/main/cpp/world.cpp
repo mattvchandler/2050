@@ -33,9 +33,20 @@ glm::mat3 translate(const glm::mat3 & m, const glm::vec2 v)
     };
 }
 
+glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
+{
+    float scale = std::min(screen_size.x, screen_size.y) / win_size;
+    glm::vec2 offset
+    {
+        (screen_size.x > screen_size.y) ? (screen_size.x - screen_size.y) / 2.0f : 0.0f,
+        (screen_size.x < screen_size.y) ? (screen_size.y - screen_size.x) / 2.0f : 0.0f
+    };
+    return scale * coord + offset;
+}
+
 World::World()
 {
-    for(std::size_t i = 0; i < 10; ++i)
+    for(std::size_t i = 0; i < num_starting_balls; ++i)
         balls.emplace_back(win_size);
 }
 
@@ -76,7 +87,12 @@ void World::init(AAssetManager * asset_manager)
     rect_tex = std::make_unique<Texture2D>(Texture2D::gen_1pix_tex());
 
     AAsset * font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
-    font = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), 32);
+
+    // TODO: don't keep 3 copies of the font file open!
+    font         = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size);
+    msg_font     = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size * 72 / initial_text_size);
+    sub_msg_font = std::make_unique<textogl::Font_sys>(std::vector<unsigned char>((unsigned char *)AAsset_getBuffer(font_asset), (unsigned char *)AAsset_getBuffer(font_asset) + AAsset_getLength(font_asset)), text_size * 32 / initial_text_size);
+
     AAsset_close(font_asset);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -91,7 +107,12 @@ void World::destroy()
     quad.reset();
     circle_tex.reset();
     rect_tex.reset();
+
+    ball_texts.clear();
     font.reset();
+
+    msg_font.reset();
+    sub_msg_font.reset();
 }
 
 void World::resize(GLsizei width, GLsizei height)
@@ -118,20 +139,18 @@ void World::resize(GLsizei width, GLsizei height)
 
     projection = ortho3x3(left, right, bottom, top);
 
-    /*
-    auto scale_factor = std::min(screen_size.x, screen_size.y) / win_size;
-    auto new_text_size = scale_factor * 16;
+    auto scale_factor = std::min(screen_size.x, screen_size.y) / static_cast<int>(win_size);
+    auto new_text_size = scale_factor * initial_text_size;
     if(new_text_size != text_size)
     {
         text_size = new_text_size;
-        font.resize(text_size);
+        font->resize(text_size);
         for(auto & t: ball_texts)
-            t.set_font_sys(font);
+            t.set_font_sys(*font);
 
-        msg_font.resize(new_text_size * 72 / 16);
-        sub_msg_font.resize(new_text_size * 32 / 16);
+        msg_font->resize(new_text_size * 72 / initial_text_size);
+        sub_msg_font->resize(new_text_size * 32 / initial_text_size);
     }
-    */
 }
 
 void World::render()
@@ -157,6 +176,11 @@ void World::render()
         glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
         glUniform3fv(prog->get_uniform("color"), 1, &ball.get_color()[0]);
         quad->draw();
+
+        while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
+            ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
+
+        ball_texts[ball.get_size()].render_text({black, 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     GL_CHECK_ERROR("draw");

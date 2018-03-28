@@ -10,6 +10,7 @@
 
 #include <glm/glm.hpp>
 #include <textogl/font.hpp>
+#include <textogl/static_text.hpp>
 
 #include "ball.hpp"
 
@@ -17,6 +18,7 @@ class World
 {
 private:
     const float win_size = 512;
+    const std::size_t num_starting_balls = 2;
     std::list<Ball> balls;
 
     // physics constants
@@ -40,7 +42,15 @@ private:
     std::unique_ptr<Texture2D> circle_tex;
     std::unique_ptr<Texture2D> rect_tex;
 
+    const int initial_text_size = 24;
+    int text_size = initial_text_size;
     std::unique_ptr<textogl::Font_sys> font;
+    std::vector<textogl::Static_text> ball_texts;
+
+    std::unique_ptr<textogl::Font_sys> msg_font;
+    std::unique_ptr<textogl::Font_sys> sub_msg_font;
+
+    glm::vec2 text_coord_transform(const glm::vec2 & coord);
 
 public:
     World();
