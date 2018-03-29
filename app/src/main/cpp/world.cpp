@@ -46,6 +46,7 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
 
 World::World(AAssetManager * asset_manager)
 {
+    __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
     for(std::size_t i = 0; i < num_starting_balls; ++i)
         balls.emplace_back(win_size);
 
@@ -53,6 +54,7 @@ World::World(AAssetManager * asset_manager)
 }
 World::~World()
 {
+    __android_log_write(ANDROID_LOG_DEBUG, "World::~World", "World object destroyed");
     AAsset_close(font_asset);
 }
 
@@ -92,9 +94,10 @@ void World::init()
     circle_tex = std::make_unique<Texture2D>(Texture2D::gen_circle_tex(512));
     rect_tex = std::make_unique<Texture2D>(Texture2D::gen_1pix_tex());
 
-    font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size);
-    msg_font     = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size * 72 / initial_text_size);
-    sub_msg_font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), text_size * 32 / initial_text_size);
+    // font sizes don't matter yet b/c resize should be called immediately after init
+    font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
+    msg_font     = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
+    sub_msg_font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
@@ -140,18 +143,16 @@ void World::resize(GLsizei width, GLsizei height)
 
     projection = ortho3x3(left, right, bottom, top);
 
-    auto scale_factor = std::min(screen_size.x, screen_size.y) / static_cast<int>(win_size);
-    auto new_text_size = scale_factor * initial_text_size;
-    if(new_text_size != text_size)
-    {
-        text_size = new_text_size;
-        font->resize(text_size);
-        for(auto & t: ball_texts)
-            t.set_font_sys(*font);
+    auto scale_factor = static_cast<float>(std::min(screen_size.x, screen_size.y)) / static_cast<float>(win_size);
+    auto new_text_size = static_cast<int>(scale_factor * initial_text_size);
+    __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "font resized from %d to %d", text_size, new_text_size);
+    text_size = new_text_size;
+    font->resize(text_size);
+    for(auto & t: ball_texts)
+        t.set_font_sys(*font);
 
-        msg_font->resize(new_text_size * 72 / initial_text_size);
-        sub_msg_font->resize(new_text_size * 32 / initial_text_size);
-    }
+    msg_font->resize(static_cast<int>(text_size * 72.0f / initial_text_size));
+    sub_msg_font->resize(static_cast<int>(text_size * 32.0f / initial_text_size));
 }
 
 void World::render()
@@ -183,6 +184,9 @@ void World::render()
 
         ball_texts[ball.get_size()].render_text({black, 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
+
+    // msg_font->render_text("LARGE!", {black, 1.0f}, screen_size, screen_size / 2, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_BOTTOM);
+    // sub_msg_font->render_text("not as large!", {black, 1.0f}, screen_size, screen_size / 2, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_TOP);
 
     GL_CHECK_ERROR("draw");
 }

@@ -113,18 +113,14 @@ namespace textogl
     public:
         /// Load a font file at a specified size
         Font_sys(const std::string & font_path, ///< Path to font file to use
-                 const unsigned int font_size,  ///< Font size (in points)
-                 const unsigned int v_dpi = 96, ///< Font vertical DPI
-                 const unsigned int h_dpi = 96  ///< Font horizontal DPI
+                 const unsigned int font_size   ///< Font size (in pixels)
                  );
         /// Load a font at a specified size from memory
 
         /// data is not copied, so the client is responsible for maintaining the data for the lifetime of this object
         Font_sys(const unsigned char * font_data,  ///< Font file data (in memory)
                  const std::size_t font_data_size, ///< Font file data's size in memory
-                 const unsigned int font_size,     ///< Font size (in points)
-                 const unsigned int v_dpi = 96,    ///< Font vertical DPI
-                 const unsigned int h_dpi = 96     ///< Font horizontal DPI
+                 const unsigned int font_size      ///< Font size (in pixels)
                  );
         ~Font_sys() = default;
 
@@ -145,9 +141,7 @@ namespace textogl
         /// Resizes the font without destroying it
         /// @note This will require rebuilding font textures
         /// @note Any Static_text objects tied to this Font_sys will need to have Static_text::set_font_sys called
-        void resize(const unsigned int font_size,  ///< Font size (in points)
-                    const unsigned int v_dpi = 96, ///< Font vertical DPI
-                    const unsigned int h_dpi = 96  ///< Font horizontal DPI
+        void resize(const unsigned int font_size ///< Font size (in pixels)
                     );
 
         /// Render given text

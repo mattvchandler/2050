@@ -129,12 +129,10 @@ std::u32string utf8_to_utf32(const std::string & utf8)
 
 namespace textogl
 {
-    Font_sys::Font_sys(const std::string & font_path, const unsigned int font_size,
-            const unsigned int v_dpi, const unsigned int h_dpi):
-        pimpl(new Impl(font_path, font_size, v_dpi, h_dpi), [](Impl * impl) { delete impl; })
+    Font_sys::Font_sys(const std::string & font_path, const unsigned int font_size):
+        pimpl(new Impl(font_path, font_size), [](Impl * impl) { delete impl; })
     {}
-    Font_sys::Impl::Impl(const std::string & font_path, const unsigned int font_size,
-            const unsigned int v_dpi, const unsigned int h_dpi)
+    Font_sys::Impl::Impl(const std::string & font_path, const unsigned int font_size)
     {
         FT_Open_Args args
         {
@@ -147,15 +145,13 @@ namespace textogl
             0,
             nullptr
         };
-        init(args, font_size, v_dpi, h_dpi);
+        init(args, font_size);
     }
 
-    Font_sys::Font_sys(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size,
-            const unsigned int v_dpi, const unsigned int h_dpi):
-        pimpl(new Impl(font_data, font_data_size, font_size, v_dpi, h_dpi), [](Impl * impl) { delete impl; })
+    Font_sys::Font_sys(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size):
+        pimpl(new Impl(font_data, font_data_size, font_size), [](Impl * impl) { delete impl; })
     {}
-    Font_sys::Impl::Impl(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size,
-            const unsigned int v_dpi, const unsigned int h_dpi)
+    Font_sys::Impl::Impl(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size)
     {
         FT_Open_Args args
         {
@@ -168,10 +164,10 @@ namespace textogl
             0,
             nullptr
         };
-        init(args, font_size, v_dpi, h_dpi);
+        init(args, font_size);
     }
 
-    void Font_sys::Impl::init(FT_Open_Args & args, const unsigned int font_size, const unsigned int v_dpi, const unsigned int h_dpi)
+    void Font_sys::Impl::init(FT_Open_Args & args, const unsigned int font_size)
     {
         // load freetype, and text shader - only once
         if(_common_ref_cnt == 0)
@@ -208,7 +204,7 @@ namespace textogl
 
         try
         {
-            resize(font_size, v_dpi, h_dpi);
+            resize(font_size);
         }
         catch(std::runtime_error &)
         {
@@ -312,14 +308,14 @@ namespace textogl
         return *this;
     }
 
-    void Font_sys::resize(const unsigned int font_size, const unsigned int v_dpi, const unsigned int h_dpi)
+    void Font_sys::resize(const unsigned int font_size)
     {
-        pimpl->resize(font_size, v_dpi, h_dpi);
+        pimpl->resize(font_size);
     }
-    void Font_sys::Impl::resize(const unsigned int font_size, const unsigned int v_dpi, const unsigned int h_dpi)
+    void Font_sys::Impl::resize(const unsigned int font_size)
     {
         // select font size
-        if(FT_Set_Char_Size(_face, font_size * 64, font_size * 64, h_dpi, v_dpi) != FT_Err_Ok)
+        if(FT_Set_Pixel_Sizes(_face, 0, font_size) != FT_Err_Ok)
             throw std::runtime_error("Can't set font size: " + std::to_string(font_size));
 
         // get bounding box that will fit any glyph, plus 2 px padding

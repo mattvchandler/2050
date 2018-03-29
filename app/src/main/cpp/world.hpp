@@ -43,7 +43,7 @@ private:
     std::unique_ptr<Texture2D> rect_tex;
 
     AAsset * font_asset = nullptr;
-    const int initial_text_size = 24;
+    const int initial_text_size = 14;
     int text_size = initial_text_size;
     std::unique_ptr<textogl::Font_sys> font;
     std::vector<textogl::Static_text> ball_texts;
