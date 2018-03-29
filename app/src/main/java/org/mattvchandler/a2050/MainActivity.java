@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -171,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         Log.d("MainActivity", "surfaceChanged");
         surfaceChanged(holder.getSurface());
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        return false;
     }
 
 }

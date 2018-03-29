@@ -82,6 +82,9 @@ bool Engine::init_egl()
 }
 bool Engine::init_surface()
 {
+    if(!has_surface)
+        return false;
+
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_surface", "begin surface creation");
     EGLint native_visual_id;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &native_visual_id))
@@ -310,7 +313,6 @@ void Engine::set_focus(bool focus) noexcept
 // TODO: can probably collapse these into 1 function
 void Engine::surface_created(ANativeWindow *window) noexcept
 {
-    has_surface = true;
 }
 void Engine::surface_destroyed() noexcept
 {
@@ -322,7 +324,9 @@ void Engine::surface_destroyed() noexcept
 
 void Engine::surface_changed(ANativeWindow *window) noexcept
 {
+    __android_log_print(ANDROID_LOG_DEBUG, "Engine::surface_changed", "surfaceChanged, with size: %d x %d", ANativeWindow_getWidth(window), ANativeWindow_getHeight(window));
     std::scoped_lock lock(mutex);
+    has_surface = true;
     win = window;
 }
 
