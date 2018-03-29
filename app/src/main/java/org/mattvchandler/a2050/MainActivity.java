@@ -177,7 +177,22 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        return false;
+        switch(keyCode)
+        {
+            case KeyEvent.KEYCODE_DPAD_UP:
+                fling(0.0f, -1.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                fling(0.0f, 1.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                fling(-1.0f, 0.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                fling(1.0f, 0.0f);
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
+        }
     }
-
 }
