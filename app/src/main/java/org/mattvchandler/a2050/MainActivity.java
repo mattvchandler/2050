@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.WindowManager;
 
 import java.io.IOException;
 
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void fling(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
+    private SurfaceView surfaceView;
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
@@ -56,12 +59,24 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onCreate(savedInstanceState);
         Log.d("MainActivity", "onCreate");
 
-        setContentView(R.layout.activity_main);
+        surfaceView = new SurfaceView(this);
+        setContentView(surfaceView);
+        //setContentView(R.layout.activity_main);
 
-        SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
+        // SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
+
+        /*
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        */
 
         String path = "";
         try
@@ -112,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "onDestroy");
         destroy();
 
-        SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
+        // SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         surfaceView.getHolder().removeCallback(this);
 
         super.onDestroy();
@@ -123,6 +138,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         super.onWindowFocusChanged(hasFocus);
         Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
+        /*
+        if(hasFocus)
+        {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+        */
         focus(hasFocus);
     }
 
