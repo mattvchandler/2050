@@ -1,2 +1,0 @@
-include("@CMAKE_INSTALL_PREFIX@/lib/cmake/textogl/textogl-targets.cmake")
-get_filename_component(TEXTOGL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/textogl" ABSOLUTE)
