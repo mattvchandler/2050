@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(
     ../libraries/freetype/include
     ../libraries/glm/
+    ../libraries/json/include/
     ../libraries/textogl/include
     )
 

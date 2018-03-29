@@ -46,12 +46,19 @@ glm::vec3 Ball::color_func()
     return colors[index];
 }
 
-Ball::Ball(float win_size):
-    size(std::uniform_int_distribution(1,2)(prng)),
-    pos(std::uniform_real_distribution<float>(0.0f, win_size)(prng),
-        std::uniform_real_distribution<float>(0.0f, win_size)(prng)),
-    vel(rand_circle(10.0f))
+Ball::Ball(float win_size, const nlohmann::json & data)
 {
+    if(data.empty())
+    {
+        size = std::uniform_int_distribution(1, 2)(prng);
+        pos = {std::uniform_real_distribution<float>(0.0f, win_size)(prng),
+               std::uniform_real_distribution<float>(0.0f, win_size)(prng)};
+        vel = rand_circle(10.0f);
+    }
+    else
+    {
+        deserialize(data);
+    }
     update_size();
 }
 
@@ -145,4 +152,22 @@ Ball::Collision collide_balls(Ball & ball, Ball & other, float e)
     }
 
     return {};
+}
+
+void Ball::deserialize(const nlohmann::json & data)
+{
+    size = data["size"];
+    pos = {data["pos"][0], data["pos"][1]};
+    vel = {data["vel"][0], data["vel"][1]};
+}
+nlohmann::json Ball::serialize() const
+{
+    using json = nlohmann::json;
+    json data;
+
+    data["size"] = size;
+    data["pos"] = {pos.x, pos.y};
+    data["vel"] = {vel.x, vel.y};
+
+    return data;
 }

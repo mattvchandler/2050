@@ -230,3 +230,56 @@ void World::fling(float x, float y)
     grav_vec = fling * g;
     balls.emplace_back(win_size);
 }
+
+void World::deserialize(const nlohmann::json & data)
+{
+    balls.clear();
+    for(auto &b: data["balls"])
+        balls.emplace_back(win_size, b);
+
+    auto state_str = data["state"];
+    if(state_str == "ONGOING")
+        state = State::ONGOING;
+    else if(state_str == "WIN")
+        state = State::WIN;
+    else if(state_str == "LOSE")
+        state = State::LOSE;
+    else if(state_str == "EXTENDED")
+        state = State::EXTENDED;
+
+    paused = data["paused"];
+    score = data["score"];
+    grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
+}
+
+nlohmann::json World::serialize() const
+{
+    using json = nlohmann::json;
+    json data;
+
+    data["balls"] = json::array();
+    for(auto &b: balls)
+        data["balls"].push_back(b.serialize());
+
+    switch(state)
+    {
+    case State::ONGOING:
+        data["state"] = "ONGOING";
+        break;
+    case State::WIN:
+        data["state"] = "WIN";
+        break;
+    case State::LOSE:
+        data["state"] = "LOSE";
+        break;
+    case State::EXTENDED:
+        data["state"] = "EXTENDED";
+        break;
+    }
+
+    data["paused"] = paused;
+    data["score"] = score;
+    data["grav_vec"] = {grav_vec.x, grav_vec.y};
+
+    return data;
+}

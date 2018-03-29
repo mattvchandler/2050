@@ -8,6 +8,7 @@
 
 #include <android/asset_manager.h>
 
+#include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 #include <textogl/font.hpp>
 #include <textogl/static_text.hpp>
@@ -17,7 +18,7 @@
 class World
 {
 private:
-    const float win_size = 512;
+    const float win_size = 512.0f;
     const std::size_t num_starting_balls = 2;
     std::list<Ball> balls;
 
@@ -68,6 +69,9 @@ public:
     void render();
     void physics_step(float dt);
     void fling(float x, float y);
+
+    void deserialize(const nlohmann::json & data);
+    nlohmann::json serialize() const;
 };
 
 #endif //INC_2050_WORLD_HPP

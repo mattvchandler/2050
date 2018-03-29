@@ -2,11 +2,13 @@
 #include "world.hpp"
 
 #include <chrono>
+#include <fstream>
 
-using namespace std::chrono_literals;
 
 #include <android/log.h>
 #include <GLES2/gl2.h>
+
+using namespace std::chrono_literals;
 
 #define CASE_STR( value ) case value: return #value;
 const char* eglGetErrorString( EGLint error )
@@ -279,6 +281,17 @@ void Engine::physics_loop()
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
 
+Engine::Engine(AAssetManager * asset_manager, const std::string & data_path): data_path(data_path), world(asset_manager)
+{
+    std::ifstream savefile(data_path + "/save.json");
+    if(savefile)
+    {
+        nlohmann::json data;
+        savefile>>data;
+        world.deserialize(data);
+    }
+}
+
 void Engine::start() noexcept
 {
 
@@ -303,6 +316,11 @@ void Engine::stop() noexcept
 {
     // TODO: destroy EGL and openGL stuff
     // TODO: stop render thread
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "stop");
+
+    std::ofstream savefile(data_path + "/save.json");
+    savefile<<world.serialize();
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "saved data");
 }
 void Engine::set_focus(bool focus) noexcept
 {
