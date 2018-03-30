@@ -185,10 +185,72 @@ void World::render()
         ball_texts[ball.get_size()].render_text({black, 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    // msg_font->render_text("LARGE!", {black, 1.0f}, screen_size, screen_size / 2, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_BOTTOM);
-    // sub_msg_font->render_text("not as large!", {black, 1.0f}, screen_size, screen_size / 2, textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_TOP);
+    using namespace std::string_literals;
 
+    // TODO: get text from strings (HOW?)
+    font->render_text("Score: "s + std::to_string(score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
+
+    if(state == State::WIN)
+    {
+        msg_font->render_text("You Win!", {black, 1.0f}, screen_size,
+                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+
+        sub_msg_font->render_text("Press some nonexistent button to restart,\nor tap to continue playing", {black, 1.0f}, screen_size,
+                                 text_coord_transform({win_size / 2.0f, win_size * 0.8}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+    }
+    else if(state == State::LOSE)
+    {
+        msg_font->render_text("You Lose!", {black, 1.0f}, screen_size,
+                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+
+        sub_msg_font->render_text("Press something to restart", {black, 1.0f}, screen_size,
+                                 text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+    }
+    else if(paused)
+    {
+        msg_font->render_text("Paused", {black, 1.0f}, screen_size,
+                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+
+        sub_msg_font->render_text("Tap anywhere to continue", {black, 1.0f}, screen_size,
+                                 text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+    }
+
+    // draw screen borders
+    if(screen_size.x != screen_size.y)
+    {
+        glm::vec2 border_size = {screen_size.x - screen_size.y, screen_size.y};
+        prog->use();
+        rect_tex->bind();
+        glUniform3fv(prog->get_uniform("color"), 1, &black[0]);
+        if(screen_size.x > screen_size.y)
+        {
+            auto border = scale(translate(screen_projection, glm::vec2{0.0f, border_size.y / 2.0f}), border_size);
+            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
+            quad->draw();
+
+            border = scale(translate(screen_projection, glm::vec2{screen_size.x, border_size.y / 2.0f}), border_size);
+            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
+            quad->draw();
+        }
+        else if(screen_size.x < screen_size.y)
+        {
+            border_size = {screen_size.x, screen_size.y - screen_size.x};
+
+            auto border = scale(translate(screen_projection, glm::vec2{border_size.x / 2.0f, 0.0f}), border_size);
+            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
+            quad->draw();
+
+            border = scale(translate(screen_projection, glm::vec2{border_size.x / 2.0f, screen_size.y}), border_size);
+            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
+            quad->draw();
+        }
+    }
     GL_CHECK_ERROR("draw");
+}
+
+void World::pause()
+{
+    paused = true;
 }
 
 void World::physics_step(float dt)
@@ -229,6 +291,17 @@ void World::fling(float x, float y)
     auto fling = -glm::normalize(glm::vec2(x, y));
     grav_vec = fling * g;
     balls.emplace_back(win_size);
+}
+void World::tap(float x, float y)
+{
+    if(paused)
+    {
+        paused = false;
+    }
+    if(state == State::WIN)
+    {
+        state = State::EXTENDED;
+    }
 }
 
 void World::deserialize(const nlohmann::json & data)

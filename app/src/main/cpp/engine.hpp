@@ -61,6 +61,7 @@ public:
     void surface_destroyed() noexcept;
 
     void fling(float x, float y) noexcept;
+    void tap(float x, float y) noexcept;
 };
 
 

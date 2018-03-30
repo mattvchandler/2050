@@ -100,4 +100,11 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv *,
         __android_log_assert("fling called before engine initialized", "JNI", NULL);
     engine->fling(x, y);
 }
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_tap(JNIEnv *, jobject, jfloat x, jfloat y)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "tap [%f, %f]", (float)x, (float)y);
+    if(!engine)
+        __android_log_assert("fling called before engine initialized", "JNI", NULL);
+    engine->tap(x, y);
+}
 }

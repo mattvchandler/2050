@@ -244,6 +244,17 @@ void Engine::render_loop()
         std::this_thread::sleep_until(frame_start_time + target_frametime);
     }
 
+    mutex.lock();
+
+    world.pause();
+    world.render();
+
+    if(!eglSwapBuffers(display, surface))
+    {
+        __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+    }
+    mutex.unlock();
+
     destroy_egl();
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "end render loop");
 }
@@ -352,4 +363,10 @@ void Engine::fling(float x, float y) noexcept
 {
     std::scoped_lock lock(mutex);
     world.fling(x, y);
+}
+
+void Engine::tap(float x, float y) noexcept
+{
+    std::scoped_lock lock(mutex);
+    world.tap(x, y);
 }

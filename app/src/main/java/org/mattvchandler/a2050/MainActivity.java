@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void surfaceDestroyed();
     public native void surfaceChanged(Surface surface);
     public native void fling(float x, float y);
+    public native void tap(float x, float y);
 
     private GestureDetectorCompat gestureDetector;
     private SurfaceView surfaceView;
@@ -44,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
         {
             fling(x, y);
+            return true;
+        }
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e)
+        {
+            tap(e.getX(), e.getY());
             return true;
         }
     }
