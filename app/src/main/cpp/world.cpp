@@ -306,23 +306,32 @@ void World::tap(float x, float y)
 
 void World::deserialize(const nlohmann::json & data)
 {
-    balls.clear();
-    for(auto &b: data["balls"])
-        balls.emplace_back(win_size, b);
+    if(data.find("balls") != std::end(data))
+    {
+        balls.clear();
+        for(auto &b: data["balls"])
+            balls.emplace_back(win_size, b);
+    }
 
-    auto state_str = data["state"];
-    if(state_str == "ONGOING")
-        state = State::ONGOING;
-    else if(state_str == "WIN")
-        state = State::WIN;
-    else if(state_str == "LOSE")
-        state = State::LOSE;
-    else if(state_str == "EXTENDED")
-        state = State::EXTENDED;
+    if(data.find("state") != std::end(data))
+    {
+        auto state_str = data["state"];
+        if(state_str == "ONGOING")
+            state = State::ONGOING;
+        else if(state_str == "WIN")
+            state = State::WIN;
+        else if(state_str == "LOSE")
+            state = State::LOSE;
+        else if(state_str == "EXTENDED")
+            state = State::EXTENDED;
+    }
 
-    paused = data["paused"];
-    score = data["score"];
-    grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
+    if(data.find("paused") != std::end(data))
+        paused = data["paused"];
+    if(data.find("score") != std::end(data))
+        score = data["score"];
+    if(data.find("grav_vec") != std::end(data))
+        grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 }
 
 nlohmann::json World::serialize() const

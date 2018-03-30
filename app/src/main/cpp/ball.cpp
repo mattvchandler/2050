@@ -156,9 +156,12 @@ Ball::Collision collide_balls(Ball & ball, Ball & other, float e)
 
 void Ball::deserialize(const nlohmann::json & data)
 {
-    size = data["size"];
-    pos = {data["pos"][0], data["pos"][1]};
-    vel = {data["vel"][0], data["vel"][1]};
+    if(data.find("size") != std::end(data))
+        size = data["size"];
+    if(data.find("pos") != std::end(data))
+        pos = {data["pos"][0], data["pos"][1]};
+    if(data.find("vel") != std::end(data))
+        vel = {data["vel"][0], data["vel"][1]};
 }
 nlohmann::json Ball::serialize() const
 {
