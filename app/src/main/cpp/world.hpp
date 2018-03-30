@@ -15,6 +15,15 @@
 
 #include "ball.hpp"
 
+/* TODO:
+ * compression
+ * High score
+ * pause / resume (will need to pass down single touch events)
+ * restart / new game button
+ * win / lose
+ * UI design
+ */
+
 class World
 {
 private:

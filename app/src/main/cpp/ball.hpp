@@ -35,5 +35,4 @@ public:
     friend Collision collide_balls(Ball & ball, Ball & other, float e);
 };
 
-
 #endif //INC_2050_BALL_HPP
