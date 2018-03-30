@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             return true;
         }
         @Override
-        public boolean onSingleTapConfirmed(MotionEvent e)
+        public boolean onDown(MotionEvent e)
         {
             tap(e.getX(), e.getY());
             return true;

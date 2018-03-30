@@ -335,8 +335,14 @@ void Engine::stop() noexcept
 }
 void Engine::set_focus(bool focus) noexcept
 {
+    std::scoped_lock lock(mutex);
     focused = focus;
-    // TODO: if not focused, pause screen, kick off single render event
+    if(!focused)
+    {
+        world.pause();
+        if(can_render())
+            world.render();
+    }
 }
 
 // TODO: can probably collapse these into 1 function
