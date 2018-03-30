@@ -62,6 +62,8 @@ public:
 
     void fling(float x, float y) noexcept;
     void tap(float x, float y) noexcept;
+
+    void new_game() noexcept;
 };
 
 

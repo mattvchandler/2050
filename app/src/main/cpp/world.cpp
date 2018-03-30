@@ -4,6 +4,9 @@
 #include <string>
 
 #include <android/log.h>
+
+#include "jni.hpp"
+
 glm::mat3 ortho3x3(float left, float right, float bottom, float top)
 {
     return
@@ -333,7 +336,11 @@ void World::physics_step(float dt)
     med_compression = sorted_compressions[std::size(sorted_compressions) / 2];
 
     if(med_compression > 10.0f)
+    {
         state = State::LOSE;
+
+        game_over(score);
+    }
 }
 
 void World::fling(float x, float y)
@@ -355,6 +362,20 @@ void World::tap(float x, float y)
     {
         state = State::EXTENDED;
     }
+}
+
+void World::new_game()
+{
+    balls.clear();
+    for(std::size_t i = 0; i < num_starting_balls; ++i)
+        balls.emplace_back(win_size);
+
+    last_compressions = std::deque<float>(100, 0.0f);
+    med_compression = 0.0f;
+    state = State::ONGOING;
+    paused = false;
+    score = 0;
+    grav_vec = {0.0f, 0.0f};
 }
 
 void World::deserialize(const nlohmann::json & data)

@@ -80,8 +80,11 @@ public:
     void render();
     void pause();
     void physics_step(float dt);
+
     void fling(float x, float y);
     void tap(float x, float y);
+
+    void new_game();
 
     void deserialize(const nlohmann::json & data);
     nlohmann::json serialize() const;

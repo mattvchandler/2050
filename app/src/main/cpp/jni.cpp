@@ -4,19 +4,43 @@
 #include <android/native_window_jni.h>
 #include <android/log.h>
 
-#include <jni.h>
-
 #include "engine.hpp"
 
 std::unique_ptr<Engine> engine;
 
+JavaVM * vm = nullptr;
+jobject main_activity;
+jmethodID game_over_method;
+
+void game_over(unsigned long score)
+{
+    JNIEnv * my_env;
+    if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
+        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+
+    my_env->CallVoidMethod(main_activity, game_over_method, static_cast<int>(score));
+
+    vm->DetachCurrentThread();
+}
+
 extern "C"
 {
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject, jobject assetManager, jstring path)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "create");
     if(engine)
         __android_log_assert("create called after engine initialized", "JNI", NULL);
+
+    if(env->GetJavaVM(&vm) != 0)
+        __android_log_assert("Couldn't get java VM", "JNI", NULL);
+
+    main_activity = env->NewGlobalRef(activity);
+    if(!main_activity)
+        __android_log_assert("Couldn't get activity", "JNI", NULL);
+
+    game_over_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_over", "(I)V");
+    if(!game_over_method)
+        __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
 
     engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), env->GetStringUTFChars(path, NULL));
 }
@@ -51,12 +75,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, 
         __android_log_assert("stop called before engine initialized", "JNI", NULL);
     engine->stop();
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv *, jobject)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv * env, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "destroy");
     if(!engine)
         __android_log_assert("destroy called before engine initialized", "JNI", NULL);
     engine.reset();
+
+    env->DeleteGlobalRef(main_activity);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv * env, jobject, jboolean has_focus)
@@ -106,5 +132,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_tap(JNIEnv *, j
     if(!engine)
         __android_log_assert("fling called before engine initialized", "JNI", NULL);
     engine->tap(x, y);
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_newGame(JNIEnv *, jobject)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "newGame");
+    if(!engine)
+        __android_log_assert("newGame called before engine initialized", "JNI", NULL);
+    engine->new_game();
 }
 }

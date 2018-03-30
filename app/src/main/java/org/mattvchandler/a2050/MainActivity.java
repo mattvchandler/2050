@@ -1,7 +1,10 @@
 package org.mattvchandler.a2050;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +14,6 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.WindowManager;
 
 import java.io.IOException;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void surfaceChanged(Surface surface);
     public native void fling(float x, float y);
     public native void tap(float x, float y);
+    public native void newGame();
 
     private GestureDetectorCompat gestureDetector;
     private SurfaceView surfaceView;
@@ -201,5 +203,27 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             default:
                 return super.onKeyUp(keyCode, event);
         }
+    }
+
+    void game_over(final int score)
+    {
+        Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                new AlertDialog.Builder(MainActivity.this).setTitle("Game over!").setMessage("Your score was: " + String.valueOf(score))
+                        .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                newGame();
+                            }
+                        })
+                .create().show();
+            }
+        });
     }
 }

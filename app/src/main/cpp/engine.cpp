@@ -370,3 +370,9 @@ void Engine::tap(float x, float y) noexcept
     std::scoped_lock lock(mutex);
     world.tap(x, y);
 }
+
+void Engine::new_game() noexcept
+{
+    std::scoped_lock lock(mutex);
+    world.new_game();
+}
