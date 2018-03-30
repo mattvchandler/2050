@@ -1,5 +1,6 @@
 #include "world.hpp"
 
+#include <algorithm>
 #include <string>
 
 #include <android/log.h>
@@ -188,6 +189,42 @@ void World::render()
     using namespace std::string_literals;
 
     // TODO: get text from strings (HOW?)
+
+    // draw compression bar
+    if(med_compression > 1.0f)
+    {
+        const glm::vec2 bar_pos {10.0f, 10.0f};
+        const glm::vec2 bar_size {200.0f, 30.0f};
+        const glm::vec2 frame_thickness {2.0f};
+
+        prog->use();
+        rect_tex->bind();
+
+        // frame
+        auto modelview_projection = scale(translate(projection, bar_pos + 0.5f * bar_size), bar_size);
+        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
+        glUniform3fv(prog->get_uniform("color"), 1, &black[0]);
+        quad->draw();
+
+        // // white interior
+        modelview_projection = scale(translate(projection, bar_pos + frame_thickness + 0.5f * (bar_size - 2.0f * frame_thickness)), bar_size - 2.0f * frame_thickness);
+        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
+        glUniform3fv(prog->get_uniform("color"), 1, &white[0]);
+        quad->draw();
+
+        // color fill
+        glm::vec2 fill_size {std::min((bar_size.x  - 2.0f * frame_thickness.x) * med_compression * 0.1f, bar_size.x - 2.0f * frame_thickness.x), bar_size.y - 2.0f * frame_thickness.y};
+        glm::vec3 bar_color {glm::clamp(0.2f * med_compression, 0.0f, 1.0f), glm::clamp(0.2f * (10.0f - med_compression), 0.0f, 1.0f), 0.0f};
+
+        modelview_projection = scale(translate(projection, bar_pos + frame_thickness + 0.5f * fill_size), fill_size);
+        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
+        glUniform3fv(prog->get_uniform("color"), 1, &bar_color[0]);
+        quad->draw();
+
+        font->render_text("Pressure", {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+    }
+
+    // TODO: have pause / win / lose be displayed as a pop-up box?
     font->render_text("Score: "s + std::to_string(score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
 
     if(state == State::WIN)
@@ -255,6 +292,9 @@ void World::pause()
 
 void World::physics_step(float dt)
 {
+    if(paused || state == State::LOSE || state == State::WIN)
+        return;
+
     float compression = 0.0f;
     for(auto ball = std::begin(balls); ball != std::end(balls); ++ball)
     {
@@ -284,13 +324,26 @@ void World::physics_step(float dt)
             }
         }
     }
+
+    last_compressions.push_back(compression / std::size(balls));
+    last_compressions.pop_front();
+
+    std::vector<float> sorted_compressions(std::begin(last_compressions), std::end(last_compressions));
+    std::sort(std::begin(sorted_compressions), std::end(sorted_compressions));
+    med_compression = sorted_compressions[std::size(sorted_compressions) / 2];
+
+    if(med_compression > 10.0f)
+        state = State::LOSE;
 }
 
 void World::fling(float x, float y)
 {
-    auto fling = -glm::normalize(glm::vec2(x, y));
-    grav_vec = fling * g;
-    balls.emplace_back(win_size);
+    if(!paused)
+    {
+        auto fling = -glm::normalize(glm::vec2(x, y));
+        grav_vec = fling * g;
+        balls.emplace_back(win_size);
+    }
 }
 void World::tap(float x, float y)
 {
@@ -312,6 +365,11 @@ void World::deserialize(const nlohmann::json & data)
         for(auto &b: data["balls"])
             balls.emplace_back(win_size, b);
     }
+
+    if(data.find("last_compressions") != std::end(data))
+        last_compressions = std::deque<float>(std::begin(data["last_compressions"]), std::end(data["last_compressions"]));
+    if(data.find("med_compression") != std::end(data))
+        med_compression = data["med_compression"];
 
     if(data.find("state") != std::end(data))
     {
@@ -342,6 +400,9 @@ nlohmann::json World::serialize() const
     data["balls"] = json::array();
     for(auto &b: balls)
         data["balls"].push_back(b.serialize());
+
+    data["last_compressions"] = last_compressions;
+    data["med_compression"] = med_compression;
 
     switch(state)
     {

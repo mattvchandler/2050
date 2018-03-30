@@ -3,6 +3,7 @@
 
 #include "opengl.hpp"
 
+#include <deque>
 #include <list>
 #include <memory>
 
@@ -16,11 +17,10 @@
 #include "ball.hpp"
 
 /* TODO:
- * compression
+ * lighter text on dark colored balls
  * High score
- * pause / resume (will need to pass down single touch events)
+ * Achievement pop-ups?
  * restart / new game button
- * win / lose
  * UI design
  */
 
@@ -30,6 +30,8 @@ private:
     const float win_size = 512.0f;
     const std::size_t num_starting_balls = 2;
     std::list<Ball> balls;
+    std::deque<float> last_compressions = std::deque<float>(100, 0.0f);
+    float med_compression;
 
     // physics constants
     const float g = -200.0f; // free-fall gravitational acceleration
