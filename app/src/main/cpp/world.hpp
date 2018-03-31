@@ -17,6 +17,7 @@
 #include "ball.hpp"
 
 /* TODO:
+ * no physics occasionally
  * lighter text on dark colored balls
  * High score
  * Achievement pop-ups?

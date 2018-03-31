@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import java.io.IOException;
 
@@ -69,11 +70,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onCreate(savedInstanceState);
         Log.d("MainActivity", "onCreate");
 
-        surfaceView = new SurfaceView(this);
-        setContentView(surfaceView);
-        //setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
-        // SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
+        surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
     }
 
-    void game_over(final int score)
+    public void game_over(final int score)
     {
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
         runOnUiThread(new Runnable()
@@ -225,5 +224,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 .create().show();
             }
         });
+    }
+
+    public void pause_button(View view)
+    {
+
+    }
+    public void new_game_button(View view)
+    {
+        newGame();
     }
 }

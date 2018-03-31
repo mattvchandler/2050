@@ -255,36 +255,6 @@ void World::render()
                                  text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    // draw screen borders
-    if(screen_size.x != screen_size.y)
-    {
-        glm::vec2 border_size = {screen_size.x - screen_size.y, screen_size.y};
-        prog->use();
-        rect_tex->bind();
-        glUniform3fv(prog->get_uniform("color"), 1, &black[0]);
-        if(screen_size.x > screen_size.y)
-        {
-            auto border = scale(translate(screen_projection, glm::vec2{0.0f, border_size.y / 2.0f}), border_size);
-            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
-            quad->draw();
-
-            border = scale(translate(screen_projection, glm::vec2{screen_size.x, border_size.y / 2.0f}), border_size);
-            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
-            quad->draw();
-        }
-        else if(screen_size.x < screen_size.y)
-        {
-            border_size = {screen_size.x, screen_size.y - screen_size.x};
-
-            auto border = scale(translate(screen_projection, glm::vec2{border_size.x / 2.0f, 0.0f}), border_size);
-            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
-            quad->draw();
-
-            border = scale(translate(screen_projection, glm::vec2{border_size.x / 2.0f, screen_size.y}), border_size);
-            glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &border[0][0]);
-            quad->draw();
-        }
-    }
     GL_CHECK_ERROR("draw");
 }
 
