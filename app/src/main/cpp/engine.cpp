@@ -39,8 +39,6 @@ void Engine::destroy_egl()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "Destroying display");
 
-    world.destroy();
-
     if(display != EGL_NO_DISPLAY)
     {
         if(eglGetCurrentContext() != EGL_NO_CONTEXT)
@@ -64,7 +62,6 @@ void Engine::destroy_egl()
 
 bool Engine::init_egl()
 {
-    std::scoped_lock lock(mutex);
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_egl", "begin egl initialization");
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(display == EGL_NO_DISPLAY)
@@ -84,10 +81,11 @@ bool Engine::init_egl()
 }
 bool Engine::init_surface()
 {
+    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_surface", "begin surface creation");
+
     if(!has_surface)
         return false;
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_surface", "begin surface creation");
     EGLint native_visual_id;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &native_visual_id))
     {
@@ -156,6 +154,12 @@ bool Engine::init_context()
 
 bool Engine::can_render()
 {
+    if(display == EGL_NO_DISPLAY)
+    {
+        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no display");
+        return false;
+    }
+
     if(eglGetCurrentContext() == EGL_NO_CONTEXT)
     {
         if(surface == EGL_NO_SURFACE)
@@ -164,15 +168,22 @@ bool Engine::can_render()
             {
                 if(!init_context())
                 {
+                    __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: couldn't init context");
                     return false;
                 }
             }
 
             if(!has_surface)
+            {
+                __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no surface");
                 return false;
+            }
 
             if(!init_surface())
+            {
+                __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: couldn't init surface");
                 return false;
+            }
         }
 
         if(!eglMakeCurrent(display, surface, surface, context))
@@ -181,9 +192,11 @@ bool Engine::can_render()
             return false;
         }
 
+        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "set up to render");
         world.init();
         world.resize(width, height);
     }
+
     return true;
 }
 
@@ -191,7 +204,9 @@ void Engine::render_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "start render loop");
 
+    mutex.lock();
     init_egl();
+    mutex.unlock();
 
     const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
 
@@ -206,7 +221,6 @@ void Engine::render_loop()
             std::this_thread::sleep_until(frame_start_time + target_frametime);
             continue;
         }
-
 
         int new_width, new_height;
         if(!eglQuerySurface(display, surface, EGL_WIDTH, &new_width) || !eglQuerySurface(display, surface, EGL_HEIGHT, &new_height))
@@ -227,14 +241,7 @@ void Engine::render_loop()
             world.resize(width, height);
         }
 
-        if(focused)
-        {
-            world.render();
-        }
-        else
-        {
-            // TODO: pause screen
-        }
+        world.render();
 
         if(!eglSwapBuffers(display, surface))
         {
@@ -247,15 +254,20 @@ void Engine::render_loop()
     mutex.lock();
 
     world.pause();
-    world.render();
-
-    if(!eglSwapBuffers(display, surface))
+    if(can_render())
     {
-        __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+        world.render();
+
+        if(!eglSwapBuffers(display, surface))
+        {
+            __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+        }
     }
     mutex.unlock();
 
+    world.destroy();
     destroy_egl();
+
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "end render loop");
 }
 
@@ -335,13 +347,12 @@ void Engine::stop() noexcept
 }
 void Engine::set_focus(bool focus) noexcept
 {
+    __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
     std::scoped_lock lock(mutex);
     focused = focus;
     if(!focused)
     {
         world.pause();
-        if(can_render())
-            world.render();
     }
 }
 
