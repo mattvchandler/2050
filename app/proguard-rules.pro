@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class org.mattvchandler.a2050.MainActivity {
+    void game_win(int);
+    void game_over(int);
+}
