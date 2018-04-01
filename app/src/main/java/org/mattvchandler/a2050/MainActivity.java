@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void fling(float x, float y);
     public native void tap(float x, float y);
     public native void newGame();
+    public native void pauseGame();
 
     private GestureDetectorCompat gestureDetector;
     private SurfaceView surfaceView;
@@ -204,6 +205,36 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
     }
 
+    public void game_win(final int score)
+    {
+        Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                new AlertDialog.Builder(MainActivity.this).setTitle("You win!").setMessage("Your score was: " + String.valueOf(score))
+                        .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                newGame();
+                            }
+                        })
+                        .setNegativeButton("Continue playing", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                tap(0.0f, 0.0f);
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
+        });
+    }
     public void game_over(final int score)
     {
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
@@ -221,14 +252,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                                 newGame();
                             }
                         })
-                .create().show();
+                        .setCancelable(false)
+                        .show();
             }
         });
     }
 
     public void pause_button(View view)
     {
-
+        pauseGame();
     }
     public void new_game_button(View view)
     {

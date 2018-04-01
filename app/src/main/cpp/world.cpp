@@ -230,23 +230,7 @@ void World::render()
     // TODO: have pause / win / lose be displayed as a pop-up box?
     font->render_text("Score: "s + std::to_string(score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
 
-    if(state == State::WIN)
-    {
-        msg_font->render_text("You Win!", {black, 1.0f}, screen_size,
-                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-
-        sub_msg_font->render_text("Press some nonexistent button to restart,\nor tap to continue playing", {black, 1.0f}, screen_size,
-                                 text_coord_transform({win_size / 2.0f, win_size * 0.8}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-    }
-    else if(state == State::LOSE)
-    {
-        msg_font->render_text("You Lose!", {black, 1.0f}, screen_size,
-                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-
-        sub_msg_font->render_text("Press something to restart", {black, 1.0f}, screen_size,
-                                 text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-    }
-    else if(paused)
+    if(paused)
     {
         msg_font->render_text("Paused", {black, 1.0f}, screen_size,
                              text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
@@ -274,7 +258,10 @@ void World::physics_step(float dt)
         if(!paused && (state == State::ONGOING || state == State::EXTENDED))
         {
             if(state != State::EXTENDED && ball->get_size() >= 11) // 2048
+            {
                 state = State::WIN;
+                game_win(score);
+            }
 
             ball->physics_step(dt, win_size, grav_vec, wall_damp);
 
@@ -381,6 +368,11 @@ void World::deserialize(const nlohmann::json & data)
         score = data["score"];
     if(data.find("grav_vec") != std::end(data))
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
+
+    if(state == State::WIN)
+        game_win(score);
+    else if(state == State::LOSE)
+        new_game();
 }
 
 nlohmann::json World::serialize() const

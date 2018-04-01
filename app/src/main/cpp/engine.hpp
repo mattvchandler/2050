@@ -64,6 +64,7 @@ public:
     void tap(float x, float y) noexcept;
 
     void new_game() noexcept;
+    void pause_game() noexcept;
 };
 
 

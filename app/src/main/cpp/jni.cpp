@@ -10,17 +10,36 @@ std::unique_ptr<Engine> engine;
 
 JavaVM * vm = nullptr;
 jobject main_activity;
+jmethodID game_win_method;
 jmethodID game_over_method;
 
+void game_win(unsigned long score)
+{
+    bool attached = false;
+    JNIEnv * my_env;
+    if(vm->GetEnv((void **)&my_env, JNI_VERSION_1_6) == JNI_OK)
+        attached = true;
+    else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
+        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+
+    my_env->CallVoidMethod(main_activity, game_win_method, static_cast<int>(score));
+
+    if(!attached)
+    vm->DetachCurrentThread();
+}
 void game_over(unsigned long score)
 {
+    bool attached = false;
     JNIEnv * my_env;
-    if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
+    if(vm->GetEnv((void **)&my_env, JNI_VERSION_1_6) == JNI_OK)
+        attached = true;
+    else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
         __android_log_assert("could not attach thread!", "JNI::test", NULL);
 
     my_env->CallVoidMethod(main_activity, game_over_method, static_cast<int>(score));
 
-    vm->DetachCurrentThread();
+    if(!attached)
+        vm->DetachCurrentThread();
 }
 
 extern "C"
@@ -37,6 +56,10 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
     main_activity = env->NewGlobalRef(activity);
     if(!main_activity)
         __android_log_assert("Couldn't get activity", "JNI", NULL);
+
+    game_win_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_win", "(I)V");
+    if(!game_win_method)
+        __android_log_assert("Couldn't get 'game_win' method", "JNI", NULL);
 
     game_over_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_over", "(I)V");
     if(!game_over_method)
@@ -139,5 +162,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_newGame(JNIEnv 
     if(!engine)
         __android_log_assert("newGame called before engine initialized", "JNI", NULL);
     engine->new_game();
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEnv *, jobject)
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pauseGame");
+    if(!engine)
+        __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
+    engine->pause_game();
 }
 }

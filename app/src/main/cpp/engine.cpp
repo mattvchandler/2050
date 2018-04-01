@@ -385,3 +385,9 @@ void Engine::new_game() noexcept
     std::scoped_lock lock(mutex);
     world.new_game();
 }
+
+void Engine::pause_game() noexcept
+{
+    std::scoped_lock lock(mutex);
+    world.pause();
+}

@@ -17,11 +17,10 @@
 #include "ball.hpp"
 
 /* TODO:
- * no physics occasionally
+ * loading screen
  * lighter text on dark colored balls
  * High score
  * Achievement pop-ups?
- * restart / new game button
  * UI design
  */
 
