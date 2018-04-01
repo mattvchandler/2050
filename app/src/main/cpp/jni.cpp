@@ -65,7 +65,11 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
     if(!game_over_method)
         __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), env->GetStringUTFChars(path, NULL));
+    const char * data_path = env->GetStringUTFChars(path, NULL);
+
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path);
+
+    env->ReleaseStringUTFChars(path, data_path);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_start(JNIEnv *, jobject)
