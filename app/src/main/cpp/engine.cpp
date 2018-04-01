@@ -275,7 +275,7 @@ void Engine::physics_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "start physics loop");
 
-    const std::chrono::duration<float> target_frametime{1ms};
+    const std::chrono::duration<float> target_frametime{10ms};
     auto last_frame_time = std::chrono::steady_clock::now() - target_frametime;
 
     while(running)
@@ -283,19 +283,11 @@ void Engine::physics_loop()
         mutex.lock();
         auto frame_start_time = std::chrono::steady_clock::now();
         auto dt = std::chrono::duration_cast<std::chrono::duration<float>>(frame_start_time - last_frame_time).count();
+        dt = std::min(dt, target_frametime.count() * 1.5f);
         last_frame_time = frame_start_time;
 
-        if(!resumed)
-        {
-            mutex.unlock();
-            std::this_thread::sleep_until(frame_start_time + target_frametime);
-            continue;
-        }
-
-        if(focused)
-        {
+        if(resumed && focused)
             world.physics_step(dt);
-        }
 
         mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);
@@ -348,10 +340,10 @@ void Engine::stop() noexcept
 void Engine::set_focus(bool focus) noexcept
 {
     __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
-    std::scoped_lock lock(mutex);
     focused = focus;
     if(!focused)
     {
+        std::scoped_lock lock(mutex);
         world.pause();
     }
 }
