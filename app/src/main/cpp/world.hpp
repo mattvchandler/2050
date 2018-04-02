@@ -19,7 +19,6 @@
 /* TODO:
  * loading screen
  * lighter text on dark colored balls
- * High score
  * Achievement pop-ups?
  * UI design
  */

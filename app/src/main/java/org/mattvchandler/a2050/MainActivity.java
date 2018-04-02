@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        if(event.getRepeatCount() > 0)
+            return super.onKeyDown(keyCode, event);
+
         switch(keyCode)
         {
             case KeyEvent.KEYCODE_DPAD_UP:
@@ -200,8 +203,20 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 fling(1.0f, 0.0f);
                 return true;
+            case KeyEvent.KEYCODE_DPAD_UP_LEFT:
+                fling(-1.0f, -1.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_UP_RIGHT:
+                fling(1.0f, -1.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_DOWN_LEFT:
+                fling(-1.0f, 1.0f);
+                return true;
+            case KeyEvent.KEYCODE_DPAD_DOWN_RIGHT:
+                fling(1.0f, 1.0f);
+                return true;
             default:
-                return super.onKeyUp(keyCode, event);
+                return super.onKeyDown(keyCode, event);
         }
     }
 
