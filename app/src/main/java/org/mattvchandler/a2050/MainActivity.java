@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
     }
 
-    public void game_win(final int score)
+    public void game_win(final int score, final boolean new_high_score)
     {
         Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
         runOnUiThread(new Runnable()
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void run()
             {
-                new AlertDialog.Builder(MainActivity.this).setTitle("You win!").setMessage("Your score was: " + String.valueOf(score))
+                new AlertDialog.Builder(MainActivity.this).setTitle("You win!").setMessage("Your score was: " + String.valueOf(score) + (new_high_score ? "\nNew high score!" : ""))
                         .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
                         {
                             @Override
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
     }
-    public void game_over(final int score)
+    public void game_over(final int score, final boolean new_high_score)
     {
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
         runOnUiThread(new Runnable()
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void run()
             {
-                new AlertDialog.Builder(MainActivity.this).setTitle("Game over!").setMessage("Your score was: " + String.valueOf(score))
+                new AlertDialog.Builder(MainActivity.this).setTitle("Game over!").setMessage("Your score was: " + String.valueOf(score) + (new_high_score ? "\nNew high score!" : ""))
                         .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
                         {
                             @Override

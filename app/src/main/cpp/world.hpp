@@ -40,7 +40,9 @@ private:
 
     enum class State {ONGOING, WIN, LOSE, EXTENDED} state = State::ONGOING;
     bool paused = false;
-    unsigned long score = 0;
+
+    int high_score = 0;
+    int score = 0;
 
     glm::vec2 grav_vec{0.0f};
 

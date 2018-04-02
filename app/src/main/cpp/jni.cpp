@@ -13,7 +13,7 @@ jobject main_activity;
 jmethodID game_win_method;
 jmethodID game_over_method;
 
-void game_win(unsigned long score)
+void game_win(int score, bool new_high_score)
 {
     bool attached = false;
     JNIEnv * my_env;
@@ -22,12 +22,12 @@ void game_win(unsigned long score)
     else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
         __android_log_assert("could not attach thread!", "JNI::test", NULL);
 
-    my_env->CallVoidMethod(main_activity, game_win_method, static_cast<int>(score));
+    my_env->CallVoidMethod(main_activity, game_win_method, score, new_high_score);
 
     if(!attached)
     vm->DetachCurrentThread();
 }
-void game_over(unsigned long score)
+void game_over(int score, bool new_high_score)
 {
     bool attached = false;
     JNIEnv * my_env;
@@ -36,7 +36,7 @@ void game_over(unsigned long score)
     else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
         __android_log_assert("could not attach thread!", "JNI::test", NULL);
 
-    my_env->CallVoidMethod(main_activity, game_over_method, static_cast<int>(score));
+    my_env->CallVoidMethod(main_activity, game_over_method, score, new_high_score);
 
     if(!attached)
         vm->DetachCurrentThread();
@@ -57,11 +57,11 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
     if(!main_activity)
         __android_log_assert("Couldn't get activity", "JNI", NULL);
 
-    game_win_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_win", "(I)V");
+    game_win_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_win", "(IZ)V");
     if(!game_win_method)
         __android_log_assert("Couldn't get 'game_win' method", "JNI", NULL);
 
-    game_over_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_over", "(I)V");
+    game_over_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_over", "(IZ)V");
     if(!game_over_method)
         __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
 

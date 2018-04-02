@@ -227,8 +227,7 @@ void World::render()
         font->render_text("Pressure", {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    // TODO: have pause / win / lose be displayed as a pop-up box?
-    font->render_text("Score: "s + std::to_string(score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
+    font->render_text("Score: "s + std::to_string(score) + " High Score: "s + std::to_string(high_score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
 
     if(paused)
     {
@@ -260,7 +259,7 @@ void World::physics_step(float dt)
             if(state != State::EXTENDED && ball->get_size() >= 11) // 2048
             {
                 state = State::WIN;
-                game_win(score);
+                game_win(score, score == high_score);
             }
 
             ball->physics_step(dt, win_size, grav_vec, wall_damp);
@@ -276,6 +275,7 @@ void World::physics_step(float dt)
                     {
                         other = std::prev(balls.erase(other));
                         score += 1 << (ball->get_size());
+                        high_score = std::max(high_score, score);
                     } else
                     {
                         compression += collision.compression;
@@ -296,7 +296,7 @@ void World::physics_step(float dt)
     {
         state = State::LOSE;
 
-        game_over(score);
+        game_over(score, score == high_score);
     }
 }
 
@@ -366,11 +366,13 @@ void World::deserialize(const nlohmann::json & data)
         paused = data["paused"];
     if(data.find("score") != std::end(data))
         score = data["score"];
+    if(data.find("high_score") != std::end(data))
+        high_score = data["high_score"];
     if(data.find("grav_vec") != std::end(data))
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 
     if(state == State::WIN)
-        game_win(score);
+        game_win(score, score == high_score);
     else if(state == State::LOSE)
         new_game();
 }
@@ -405,6 +407,7 @@ nlohmann::json World::serialize() const
 
     data["paused"] = paused;
     data["score"] = score;
+    data["high_score"] = high_score;
     data["grav_vec"] = {grav_vec.x, grav_vec.y};
 
     return data;

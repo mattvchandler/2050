@@ -3,7 +3,7 @@
 
 #include <jni.h>
 
-void game_over(unsigned long score);
-void game_win(unsigned long score);
+void game_over(int score, bool new_high_score);
+void game_win(int score, bool new_high_score);
 
 #endif //INC_2050_JNI_HPP
