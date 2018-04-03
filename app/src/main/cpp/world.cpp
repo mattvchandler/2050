@@ -1,6 +1,7 @@
 #include "world.hpp"
 
 #include <algorithm>
+#include <numeric>
 #include <string>
 
 #include <android/log.h>
@@ -233,6 +234,8 @@ void World::resize(GLsizei width, GLsizei height)
 
 void World::render()
 {
+    static std::vector<float> frame_times;
+    auto start = std::chrono::high_resolution_clock::now();
     const glm::vec3 black(0.0f);
     const glm::vec3 white(1.0f);
 
@@ -322,6 +325,17 @@ void World::render()
         sub_msg_font->render_text("Tap anywhere to continue", {black, 1.0f}, screen_size,
                                  text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    frame_times.push_back(std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(end - start).count());
+
+    static float avg_frame_time;
+    if(std::size(frame_times) >= 100)
+    {
+        avg_frame_time = std::accumulate(std::begin(frame_times), std::end(frame_times), 0.0f) / static_cast<float>(std::size(frame_times));
+        frame_times.clear();
+    }
+    font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)", {black, 1.0f}, screen_size, text_coord_transform({0.0f, win_size}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_BOTTOM);
 
     GL_CHECK_ERROR("draw");
 }
