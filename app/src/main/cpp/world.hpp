@@ -52,6 +52,7 @@ private:
     // TODO: wrap into one 'OGL stuff' struct?
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
+    std::size_t ball_vbo_alloc = 64;
 
     std::unique_ptr<Shader_prog> bar_prog;
     std::unique_ptr<Quad> quad;
@@ -78,9 +79,9 @@ public:
 
     void init();
     void destroy();
+    void pause();
     void resize(GLsizei width, GLsizei height);
     void render();
-    void pause();
     void physics_step(float dt);
 
     void fling(float x, float y);

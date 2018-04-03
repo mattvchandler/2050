@@ -113,6 +113,8 @@ void World::init()
     ball_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{ball_vertshader, GL_VERTEX_SHADER}, {ball_fragshader, GL_FRAGMENT_SHADER}},
                                               std::vector<std::string>{"vert_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
+    ball_vbo->bind();
+    glBufferData(GL_ARRAY_BUFFER, ball_vbo_alloc * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
     const char * bar_vertshader =
      R"(precision mediump float;
@@ -168,6 +170,11 @@ void World::init()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void World::pause()
+{
+    paused = true;
 }
 
 void World::destroy()
@@ -261,7 +268,15 @@ void World::render()
     ball_prog->use();
 
     ball_vbo->bind();
-    glBufferData(GL_ARRAY_BUFFER, std::size(data) * sizeof(decltype(data)::value_type), std::data(data), GL_DYNAMIC_DRAW);
+    if(std::size(data) > ball_vbo_alloc)
+    {
+        ball_vbo_alloc = std::size(data);
+        glBufferData(GL_ARRAY_BUFFER, std::size(data) * sizeof(decltype(data)::value_type), std::data(data), GL_DYNAMIC_DRAW);
+    }
+    else
+    {
+        glBufferSubData(GL_ARRAY_BUFFER, 0, std::size(data) * sizeof(decltype(data)::value_type), std::data(data));
+    }
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -272,6 +287,10 @@ void World::render()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(3 * sizeof(decltype(data)::value_type)));
 
     glDrawArrays(GL_POINTS, 0, static_cast<GLint>(std::size(balls)));
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
     for(auto & ball: balls)
     {
@@ -319,11 +338,9 @@ void World::render()
 
     if(paused)
     {
-        msg_font->render_text("Paused", {black, 1.0f}, screen_size,
-                             text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        msg_font->render_text("Paused", {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
 
-        sub_msg_font->render_text("Tap anywhere to continue", {black, 1.0f}, screen_size,
-                                 text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        sub_msg_font->render_text("Tap anywhere to continue", {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -337,12 +354,7 @@ void World::render()
     }
     font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)", {black, 1.0f}, screen_size, text_coord_transform({0.0f, win_size}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_BOTTOM);
 
-    GL_CHECK_ERROR("draw");
-}
-
-void World::pause()
-{
-    paused = true;
+    GL_CHECK_ERROR("World::render");
 }
 
 void World::physics_step(float dt)
