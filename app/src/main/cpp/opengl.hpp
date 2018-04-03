@@ -24,7 +24,7 @@ private:
 public:
 
     Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sources,
-                const std::vector<std::pair<std::string, GLuint>> & attribs);
+                const std::vector<std::string> & attribs);
     ~Shader_prog();
 
     Shader_prog(const Shader_prog &) = delete;
@@ -65,27 +65,6 @@ public:
 
     GLuint get_id() const;
     void bind() const;
-};
-
-// NOTE: only supports monochrome textures
-class Texture2D
-{
-private:
-    GLuint id;
-public:
-    Texture2D(const void * data, std::size_t w, std::size_t h);
-    ~Texture2D();
-
-    Texture2D(const Texture2D &) = delete;
-    Texture2D & operator=(const Texture2D &) = delete;
-    Texture2D(Texture2D && other);
-    Texture2D & operator=(Texture2D && other);
-
-    GLuint get_id() const;
-    void bind() const;
-
-    static Texture2D gen_circle_tex(const std::size_t size);
-    static Texture2D gen_1pix_tex();
 };
 
 class Quad

@@ -65,38 +65,99 @@ World::~World()
 void World::init()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
-    const char * vertshader =
+    const char * ball_vertshader =
      R"(attribute vec2 vert_pos;
+        attribute float radius;
+        attribute vec3 vert_color;
+
+        uniform mat3 projection;
+        uniform float screen_size;
+        uniform float win_size;
+
+        varying vec3 color;
+        varying float border_size;
+        varying float pixel_size;
+
+        const float border_thickness = 2.0;
+
+        void main()
+        {
+            color = vert_color;
+            gl_Position = vec4((projection * vec3(vert_pos, 1.0)).xy, 0.0, 1.0);
+            gl_PointSize = 2.0 * radius * screen_size / win_size;
+            border_size = border_thickness / radius;
+            pixel_size = 1.0 / gl_PointSize;
+        }
+    )";
+    const char * ball_fragshader =
+     R"(precision mediump float;
+
+        varying vec3 color;
+        varying float border_size;
+        varying float pixel_size;
+
+        void main()
+        {
+            vec2 coord = 2.0 * gl_PointCoord - 1.0;
+            float r = dot(coord, coord);
+
+            if(r > 1.0)
+                discard;
+
+            r = sqrt(r);
+            float alpha = 1.0 - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
+            gl_FragColor = vec4(mix(color, vec3(0.0), smoothstep(1.0 - border_size - 2.0 * pixel_size, 1.0 - border_size + 2.0 * pixel_size, r)), alpha);
+        }
+    )";
+    ball_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{ball_vertshader, GL_VERTEX_SHADER}, {ball_fragshader, GL_FRAGMENT_SHADER}},
+                                              std::vector<std::string>{"vert_pos", "radius", "vert_color"});
+    ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
+
+    const char * bar_vertshader =
+     R"(precision mediump float;
+        attribute vec2 vert_pos;
         attribute vec2 vert_tex;
 
-        uniform mat3 modelview_projection;
+        uniform mat3 projection;
+        uniform vec2 bar_pos;
+        uniform vec2 bar_size;
 
         varying vec2 tex_coords;
 
         void main()
         {
             tex_coords = vert_tex;
-            gl_Position = vec4(modelview_projection * vec3(vert_pos, 1.0), 1.0);
+            gl_Position = vec4((projection * vec3(vert_pos * bar_size + bar_pos + bar_size / 2.0, 1.0)).xy, 0.0, 1.0);
         }
     )";
-    const char * fragshader =
+    const char * bar_fragshader =
      R"(precision mediump float;
         varying vec2 tex_coords;
-        uniform sampler2D tex;
 
         uniform vec3 color;
+        uniform float screen_size;
+        uniform float win_size;
+        uniform vec2 bar_size;
+        uniform float border_thickness;
 
         void main()
         {
-            gl_FragColor = vec4(color, texture2D(tex, tex_coords).a);
+            float border_size = border_thickness / 2.0 * screen_size / win_size;
+            float xmin = border_size / bar_size.x;
+            float xmax = 1.0 - border_size / bar_size.x;
+            float ymin = border_size / bar_size.y;
+            float ymax = 1.0 - border_size / bar_size.y;
+
+            if(tex_coords.x < xmin || tex_coords.x > xmax ||
+               tex_coords.y < ymin || tex_coords.y > ymax)
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            else
+                gl_FragColor = vec4(color, 1.0);
         }
     )";
-    prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{vertshader, GL_VERTEX_SHADER}, {fragshader, GL_FRAGMENT_SHADER}},
-                                         std::vector<std::pair<std::string, GLuint>>{{"vert_pos", 0}});
-
+    bar_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{bar_vertshader, GL_VERTEX_SHADER}, {bar_fragshader, GL_FRAGMENT_SHADER}},
+                                             std::vector<std::string>{"vert_pos", "tex_coord"});
     quad = std::make_unique<Quad>();
-    circle_tex = std::make_unique<Texture2D>(Texture2D::gen_circle_tex(512));
-    rect_tex = std::make_unique<Texture2D>(Texture2D::gen_1pix_tex());
 
     // font sizes don't matter yet b/c resize should be called immediately after init
     font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
@@ -111,10 +172,11 @@ void World::init()
 void World::destroy()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::destroy", "destroying opengl objects");
-    prog.reset();
+    ball_prog.reset();
+    ball_vbo.reset();
+
+    ball_prog.reset();
     quad.reset();
-    circle_tex.reset();
-    rect_tex.reset();
 
     ball_texts.clear();
     font.reset();
@@ -130,9 +192,9 @@ void World::resize(GLsizei width, GLsizei height)
     glViewport(0, 0, width, height);
     screen_size = {width, height};
 
-    screen_projection = ortho3x3(0.0f, static_cast<float>(screen_size.x), static_cast<float>(screen_size.y), 0.0f);
+    screen_projection = ortho3x3(0.0f, screen_size.x, screen_size.y, 0.0f);
 
-    auto aspect = static_cast<float>(screen_size.x) / static_cast<float>(screen_size.y);
+    auto aspect = screen_size.x / screen_size.y;
     float left = 0.0f, right = win_size, bottom = win_size, top = 0.0f;
     if(screen_size.x > screen_size.y)
     {
@@ -147,7 +209,7 @@ void World::resize(GLsizei width, GLsizei height)
 
     projection = ortho3x3(left, right, bottom, top);
 
-    auto scale_factor = static_cast<float>(std::min(screen_size.x, screen_size.y)) / static_cast<float>(win_size);
+    auto scale_factor = std::min(screen_size.x, screen_size.y) / win_size;
     auto new_text_size = static_cast<int>(scale_factor * initial_text_size);
     __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "font resized from %d to %d", text_size, new_text_size);
     text_size = new_text_size;
@@ -157,6 +219,16 @@ void World::resize(GLsizei width, GLsizei height)
 
     msg_font->resize(static_cast<int>(text_size * 72.0f / initial_text_size));
     sub_msg_font->resize(static_cast<int>(text_size * 32.0f / initial_text_size));
+
+    ball_prog->use();
+    glUniformMatrix3fv(ball_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
+    glUniform1f(ball_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
+    glUniform1f(ball_prog->get_uniform("win_size"), win_size);
+
+    bar_prog->use();
+    glUniformMatrix3fv(bar_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
+    glUniform1f(bar_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
+    glUniform1f(bar_prog->get_uniform("win_size"), win_size);
 }
 
 void World::render()
@@ -166,23 +238,40 @@ void World::render()
 
     glClear(GL_COLOR_BUFFER_BIT);
 
+    std::vector<float> data(std::size(balls) * 6);
+    auto ball_it = std::begin(balls);
+    for(std::size_t i = 0; i < std::size(data); i += 6)
+    {
+        const auto & pos = ball_it->get_pos();
+        data[i + 0] = pos.x;
+        data[i + 1] = pos.y;
+
+        data[i + 2] = ball_it->get_radius();
+
+        const auto & color = ball_it->get_color();
+        data[i + 3] = color.r;
+        data[i + 4] = color.g;
+        data[i + 5] = color.b;
+
+        ++ball_it;
+    }
+    ball_prog->use();
+
+    ball_vbo->bind();
+    glBufferData(GL_ARRAY_BUFFER, std::size(data) * sizeof(decltype(data)::value_type), std::data(data), GL_DYNAMIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(3 * sizeof(decltype(data)::value_type)));
+
+    glDrawArrays(GL_POINTS, 0, static_cast<GLint>(std::size(balls)));
+
     for(auto & ball: balls)
     {
-        prog->use();
-        circle_tex->bind();
-
-        // draw border
-        auto modelview_projection = scale(translate(projection, ball.get_pos()), glm::vec2(2.0f * ball.get_radius(), 2.0f * ball.get_radius()));
-        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
-        glUniform3fv(prog->get_uniform("color"), 1, &black[0]);
-        quad->draw();
-
-        // fill center
-        modelview_projection = scale(translate(projection, ball.get_pos()), glm::vec2(2.0f * ball.get_radius() - 4.0f, 2.0f * ball.get_radius() - 4.0f));
-        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
-        glUniform3fv(prog->get_uniform("color"), 1, &ball.get_color()[0]);
-        quad->draw();
-
         while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
             ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
 
@@ -198,30 +287,26 @@ void World::render()
     {
         const glm::vec2 bar_pos {10.0f, 10.0f};
         const glm::vec2 bar_size {200.0f, 30.0f};
-        const glm::vec2 frame_thickness {2.0f};
+        const float border_thickness = 2.0f;
 
-        prog->use();
-        rect_tex->bind();
+        bar_prog->use();
 
         // frame
-        auto modelview_projection = scale(translate(projection, bar_pos + 0.5f * bar_size), bar_size);
-        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
-        glUniform3fv(prog->get_uniform("color"), 1, &black[0]);
-        quad->draw();
-
-        // // white interior
-        modelview_projection = scale(translate(projection, bar_pos + frame_thickness + 0.5f * (bar_size - 2.0f * frame_thickness)), bar_size - 2.0f * frame_thickness);
-        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
-        glUniform3fv(prog->get_uniform("color"), 1, &white[0]);
+        glUniform3fv(bar_prog->get_uniform("color"), 1, &white[0]);
+        glUniform2fv(bar_prog->get_uniform("bar_pos"), 1, &bar_pos[0]);
+        glUniform2fv(bar_prog->get_uniform("bar_size"), 1, &bar_size[0]);
+        glUniform1f(bar_prog->get_uniform("border_thickness"), border_thickness);
         quad->draw();
 
         // color fill
-        glm::vec2 fill_size {std::min((bar_size.x  - 2.0f * frame_thickness.x) * med_compression * 0.1f, bar_size.x - 2.0f * frame_thickness.x), bar_size.y - 2.0f * frame_thickness.y};
-        glm::vec3 bar_color {glm::clamp(0.2f * med_compression, 0.0f, 1.0f), glm::clamp(0.2f * (10.0f - med_compression), 0.0f, 1.0f), 0.0f};
+        glm::vec3 fill_color {glm::clamp(0.2f * med_compression, 0.0f, 1.0f), glm::clamp(0.2f * (10.0f - med_compression), 0.0f, 1.0f), 0.0f};
+        const glm::vec2 fill_size {std::min((bar_size.x  - 2.0 * border_thickness) * med_compression * 0.1f, bar_size.x - 2.0 * border_thickness), bar_size.y - 2.0 * border_thickness};
+        const glm::vec2 fill_pos = bar_pos + glm::vec2(border_thickness);
 
-        modelview_projection = scale(translate(projection, bar_pos + frame_thickness + 0.5f * fill_size), fill_size);
-        glUniformMatrix3fv(prog->get_uniform("modelview_projection"), 1, GL_FALSE, &modelview_projection[0][0]);
-        glUniform3fv(prog->get_uniform("color"), 1, &bar_color[0]);
+        glUniform3fv(bar_prog->get_uniform("color"), 1, &fill_color[0]);
+        glUniform2fv(bar_prog->get_uniform("bar_pos"), 1, &fill_pos[0]);
+        glUniform2fv(bar_prog->get_uniform("bar_size"), 1, &fill_size[0]);
+        glUniform1f(bar_prog->get_uniform("border_thickness"), 0.0f);
         quad->draw();
 
         font->render_text("Pressure", {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);

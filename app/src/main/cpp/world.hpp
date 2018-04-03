@@ -45,15 +45,16 @@ private:
 
     glm::vec2 grav_vec{0.0f};
 
-    glm::ivec2 screen_size;
+    glm::vec2 screen_size;
     glm::mat3 projection;
     glm::mat3 screen_projection;
 
     // TODO: wrap into one 'OGL stuff' struct?
-    std::unique_ptr<Shader_prog> prog;
+    std::unique_ptr<Shader_prog> ball_prog;
+    std::unique_ptr<GL_buffer> ball_vbo;
+
+    std::unique_ptr<Shader_prog> bar_prog;
     std::unique_ptr<Quad> quad;
-    std::unique_ptr<Texture2D> circle_tex;
-    std::unique_ptr<Texture2D> rect_tex;
 
     AAsset * font_asset = nullptr;
     const int initial_text_size = 14;

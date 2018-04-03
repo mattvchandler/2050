@@ -35,7 +35,7 @@ namespace detail
 }
 
 Shader_prog::Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sources,
-            const std::vector<std::pair<std::string, GLuint>> & attribs)
+            const std::vector<std::string> & attribs)
 {
     std::vector<Shader_obj> shaders;
     for(auto &source: sources)
@@ -47,8 +47,8 @@ Shader_prog::Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sou
         glAttachShader(id, s.get_id());
 
     // bind given attributes (must be done before link)
-    for(auto & attr: attribs)
-        glBindAttribLocation(id, attr.second, attr.first.c_str());
+    for(GLuint i = 0; i < std::size(attribs); ++i)
+        glBindAttribLocation(id, i, attribs[i].c_str());
 
     glLinkProgram(id);
 
@@ -167,70 +167,6 @@ GL_buffer & GL_buffer::operator=(GL_buffer && other)
 
 GLuint GL_buffer::get_id() const { return id; }
 void GL_buffer::bind() const { glBindBuffer(type, id); }
-
-Texture2D::Texture2D(const void * data, std::size_t w, std::size_t h)
-{
-    glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0, GL_ALPHA, GL_FLOAT, data);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    GL_CHECK_ERROR("texture generation");
-}
-Texture2D::~Texture2D()
-{
-    if(id)
-        glDeleteTextures(1, &id);
-}
-Texture2D::Texture2D(Texture2D && other): id(other.id) { other.id = 0; };
-Texture2D & Texture2D::operator=(Texture2D && other)
-{
-    if(this != &other)
-    {
-        id = other.id;
-        other.id = 0;
-    }
-    return *this;
-}
-GLuint Texture2D::get_id() const { return id; }
-void Texture2D::bind() const
-{
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, id);
-}
-
-Texture2D Texture2D::gen_circle_tex(const std::size_t size)
-{
-    std::vector<float> circle_tex(size * size);
-    for(std::size_t i = 0; i < size; ++i)
-    {
-        for(std::size_t j = 0; j < size; ++j)
-        {
-            auto coord = glm::vec2{static_cast<float>(i), static_cast<float>(j)} * 2.0f / (static_cast<float>(size) - 1.0f) - glm::vec2{1.0f, 1.0f};
-            if(glm::length(coord) < 1.0f)
-                circle_tex[i * size + j] = 1.0f;
-            else
-                circle_tex[i * size + j] = 0.0f;
-        }
-    }
-
-    return Texture2D(std::data(circle_tex), size, size);
-}
-Texture2D Texture2D::gen_1pix_tex()
-{
-    float pixel = 1.0f;
-
-    auto tex = Texture2D(&pixel, 1, 1);
-    tex.bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    return tex;
-}
 
 Quad::Quad()
 {
