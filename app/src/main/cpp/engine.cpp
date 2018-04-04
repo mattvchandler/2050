@@ -303,7 +303,7 @@ void Engine::physics_loop()
         dt = std::min(dt, target_frametime.count() * 1.5f);
         last_frame_time = frame_start_time;
 
-        if(resumed && focused)
+        if(resumed)
             world.physics_step(dt);
 
         mutex.unlock();
@@ -357,8 +357,7 @@ void Engine::stop() noexcept
 void Engine::set_focus(bool focus) noexcept
 {
     __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
-    focused = focus;
-    if(!focused)
+    if(!focus)
     {
         std::scoped_lock lock(mutex);
         world.pause();

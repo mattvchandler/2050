@@ -347,32 +347,29 @@ void World::physics_step(float dt)
     float compression = 0.0f;
     for(auto ball = std::begin(balls); ball != std::end(balls); ++ball)
     {
-        if(!paused && (state == State::ONGOING || state == State::EXTENDED))
+        if(state != State::EXTENDED && ball->get_size() >= 11) // 2048
         {
-            if(state != State::EXTENDED && ball->get_size() >= 11) // 2048
+            state = State::WIN;
+            game_win(score, score == high_score);
+        }
+
+        ball->physics_step(dt, win_size, grav_vec, wall_damp);
+
+        // check for collision
+        for(auto other = std::next(ball); other != std::end(balls); ++other)
+        {
+            auto collision = collide_balls(*ball, *other, e);
+
+            if(collision.collided)
             {
-                state = State::WIN;
-                game_win(score, score == high_score);
-            }
-
-            ball->physics_step(dt, win_size, grav_vec, wall_damp);
-
-            // check for collision
-            for(auto other = std::next(ball); other != std::end(balls); ++other)
-            {
-                auto collision = collide_balls(*ball, *other, e);
-
-                if(collision.collided)
+                if(collision.merged)
                 {
-                    if(collision.merged)
-                    {
-                        other = std::prev(balls.erase(other));
-                        score += 1 << (ball->get_size());
-                        high_score = std::max(high_score, score);
-                    } else
-                    {
-                        compression += collision.compression;
-                    }
+                    other = std::prev(balls.erase(other));
+                    score += 1 << (ball->get_size());
+                    high_score = std::max(high_score, score);
+                } else
+                {
+                    compression += collision.compression;
                 }
             }
         }

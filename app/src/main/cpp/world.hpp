@@ -17,7 +17,6 @@
 #include "ball.hpp"
 
 /* TODO:
- * sometimes physics stops (has to do with resizing & rotation && resumed / focused flags being set strangely)
  * loading screen?
  * lighter text on dark colored balls
  * Achievement pop-ups?
