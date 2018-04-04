@@ -21,7 +21,6 @@ private:
 
     int width = 0, height = 0;
 
-    std::atomic<bool> resumed = false;
     std::atomic<bool> has_surface = false;
 
     EGLDisplay display = EGL_NO_DISPLAY;

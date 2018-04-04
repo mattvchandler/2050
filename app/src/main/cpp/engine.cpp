@@ -216,7 +216,7 @@ void Engine::render_loop()
         mutex.lock();
         auto frame_start_time = std::chrono::steady_clock::now();
 
-        if(!resumed || !can_render())
+        if(!can_render())
         {
             mutex.unlock();
             std::this_thread::sleep_until(frame_start_time + target_frametime);
@@ -303,8 +303,7 @@ void Engine::physics_loop()
         dt = std::min(dt, target_frametime.count() * 1.5f);
         last_frame_time = frame_start_time;
 
-        if(resumed)
-            world.physics_step(dt);
+        world.physics_step(dt);
 
         mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);
@@ -330,7 +329,6 @@ void Engine::start() noexcept
 }
 void Engine::resume() noexcept
 {
-    resumed = true;
     running = true;
     render_thread = std::thread(&Engine::render_loop, this);
     physics_thread = std::thread(&Engine::physics_loop, this);
@@ -338,7 +336,6 @@ void Engine::resume() noexcept
 void Engine::pause() noexcept
 {
     // TODO: save openGL context
-    resumed = false;
     running = false;
     render_thread.join();
     physics_thread.join();
