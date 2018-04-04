@@ -210,6 +210,7 @@ void Engine::render_loop()
 
     const std::chrono::duration<float> target_frametime{ 1.0f / 30.0f};
 
+    bool must_render = true;
     while(running)
     {
         mutex.lock();
@@ -231,7 +232,7 @@ void Engine::render_loop()
         if(new_width <= 0 || new_height <= 0)
         {
             mutex.unlock();
-            std::this_thread::sleep_for(target_frametime);
+            std::this_thread::sleep_until(frame_start_time + target_frametime);
             continue;
         }
 
@@ -239,13 +240,29 @@ void Engine::render_loop()
         {
             width = new_width; height = new_height;
             world.resize(width, height);
+            must_render = true;
+        }
+        else
+        {
+            // for some reason EGL surface doesn't update its size until we've drawn to it a couple of times. force that drawing even if paused
+            int win_width = ANativeWindow_getWidth(win);
+            int win_height = ANativeWindow_getHeight(win);
+
+            if(win_width != width || win_height != height)
+                must_render = true;
         }
 
-        world.render();
+        if(!world.is_paused())
+            must_render = true;
 
-        if(!eglSwapBuffers(display, surface))
+        if(must_render)
         {
-            __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+            must_render = world.render();
+
+            if(!eglSwapBuffers(display, surface))
+            {
+                __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+            }
         }
         mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);

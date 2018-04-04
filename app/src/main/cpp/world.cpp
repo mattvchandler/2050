@@ -172,10 +172,8 @@ void World::init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void World::pause()
-{
-    paused = true;
-}
+void World::pause() { paused = true; }
+bool World::is_paused() const { return paused; }
 
 void World::destroy()
 {
@@ -235,11 +233,16 @@ void World::resize(GLsizei width, GLsizei height)
 
     bar_prog->use();
     glUniformMatrix3fv(bar_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
+    GL_CHECK_ERROR("bar uniforms 1");
     glUniform1f(bar_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
+    GL_CHECK_ERROR("bar uniforms 2");
     glUniform1f(bar_prog->get_uniform("win_size"), win_size);
+    GL_CHECK_ERROR("bar uniforms 3");
+
+    GL_CHECK_ERROR("World::resize");
 }
 
-void World::render()
+bool World::render()
 {
     static std::vector<float> frame_times;
     auto start = std::chrono::high_resolution_clock::now();
@@ -355,6 +358,8 @@ void World::render()
     font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)", {black, 1.0f}, screen_size, text_coord_transform({0.0f, win_size}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_BOTTOM);
 
     GL_CHECK_ERROR("World::render");
+
+    return !paused;
 }
 
 void World::physics_step(float dt)

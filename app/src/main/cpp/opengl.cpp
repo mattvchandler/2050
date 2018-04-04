@@ -211,5 +211,9 @@ void Quad::draw() const
     }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(num_indexes));
+
+    for(std::size_t i = 0; i < std::size(offsets); ++i)
+        glDisableVertexAttribArray(static_cast<GLuint>(i));
+
     GL_CHECK_ERROR("draw quad");
 }

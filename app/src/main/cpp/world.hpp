@@ -21,6 +21,7 @@
  * lighter text on dark colored balls
  * Achievement pop-ups?
  * UI design
+ * sometimes physics stops (has to do with resizing & rotation && resumed / focused flags being set strangely)
  */
 
 class World
@@ -80,8 +81,9 @@ public:
     void init();
     void destroy();
     void pause();
+    bool is_paused() const;
     void resize(GLsizei width, GLsizei height);
-    void render();
+    bool render();
     void physics_step(float dt);
 
     void fling(float x, float y);
