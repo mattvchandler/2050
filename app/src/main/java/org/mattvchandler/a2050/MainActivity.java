@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void stop();
     public native void destroy();
     public native void focus(boolean has_focus);
-    public native void surfaceCreated(Surface surface);
-    public native void surfaceDestroyed();
     public native void surfaceChanged(Surface surface);
     public native void fling(float x, float y);
     public native void tap(float x, float y);
@@ -164,17 +162,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder)
-    {
-        Log.d("MainActivity", "surfaceCreated");
-        surfaceCreated(holder.getSurface());
-    }
+    public void surfaceCreated(SurfaceHolder holder) {}
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
         Log.d("MainActivity", "surfaceDestroyed");
-        surfaceDestroyed();
+        surfaceChanged(null);
     }
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)

@@ -120,23 +120,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv * 
     engine->set_focus(has_focus);
 }
 
-// TODO: probably only pass the window in surfaceChanged
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceCreated(JNIEnv * env, jobject, jobject surface)
-{
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceCreated");
-    if(!engine)
-        __android_log_assert("surfaceCreated called before engine initialized", "JNI", NULL);
-    if(surface)
-        engine->surface_created(ANativeWindow_fromSurface(env, surface));
-
-}
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceDestroyed(JNIEnv * env, jobject)
-{
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceDestroyed");
-    if(!engine)
-        __android_log_assert("surfaceDestroyed called before engine initialized", "JNI", NULL);
-    engine->surface_destroyed();
-}
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(JNIEnv * env, jobject, jobject surface)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "surfaceChanged");
@@ -144,6 +127,8 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(
         __android_log_assert("surfaceChanged called before engine initialized", "JNI", NULL);
     if(surface)
         engine->surface_changed(ANativeWindow_fromSurface(env, surface));
+    else
+        engine->surface_changed(nullptr);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv *, jobject, jfloat x, jfloat y)

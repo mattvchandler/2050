@@ -339,7 +339,6 @@ void Engine::pause() noexcept
 {
     // TODO: save openGL context
     resumed = false;
-    // TODO: pause screen, kick off single render event
     running = false;
     render_thread.join();
     physics_thread.join();
@@ -347,7 +346,6 @@ void Engine::pause() noexcept
 void Engine::stop() noexcept
 {
     // TODO: destroy EGL and openGL stuff
-    // TODO: stop render thread
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "stop");
 
     std::ofstream savefile(data_path + "/save.json");
@@ -365,23 +363,21 @@ void Engine::set_focus(bool focus) noexcept
 }
 
 // TODO: can probably collapse these into 1 function
-void Engine::surface_created(ANativeWindow *window) noexcept
-{
-}
-void Engine::surface_destroyed() noexcept
-{
-    std::scoped_lock lock(mutex);
-    has_surface = false;
-    ANativeWindow_release(win);
-    win = nullptr;
-}
-
 void Engine::surface_changed(ANativeWindow *window) noexcept
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "Engine::surface_changed", "surfaceChanged, with size: %d x %d", ANativeWindow_getWidth(window), ANativeWindow_getHeight(window));
     std::scoped_lock lock(mutex);
-    has_surface = true;
-    win = window;
+    if(window)
+    {
+        __android_log_print(ANDROID_LOG_DEBUG, "Engine::surface_changed", "surfaceChanged, with size: %d x %d", ANativeWindow_getWidth(window), ANativeWindow_getHeight(window));
+        has_surface = true;
+        win = window;
+    }
+    else
+    {
+        has_surface = false;
+        ANativeWindow_release(win);
+        win = nullptr;
+    }
 }
 
 void Engine::fling(float x, float y) noexcept

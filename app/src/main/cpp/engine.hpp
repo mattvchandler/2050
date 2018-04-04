@@ -55,9 +55,7 @@ public:
     void stop() noexcept;
 
     void set_focus(bool focus) noexcept;
-    void surface_created(ANativeWindow * window) noexcept;
     void surface_changed(ANativeWindow * window) noexcept;
-    void surface_destroyed() noexcept;
 
     void fling(float x, float y) noexcept;
     void tap(float x, float y) noexcept;
