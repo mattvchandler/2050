@@ -277,17 +277,7 @@ bool World::render()
         while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
             ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
 
-        glm::vec3 color = ball.get_color();
-        // calculate luminance / contrast (formulae from https://www.w3.org/TR/WCAG20/)
-        for(unsigned int i = 0; i < 3; ++i)
-        {
-            auto & c = color[i];
-            c = (c <= 0.03928f) ? c / 12.92f : std::pow((c + 0.055f) / 1.055f, 2.4f);
-        }
-        auto luminance = 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
-        auto text_color = (luminance > std::sqrt(0.0525f) - 0.05f) ? black : white;
-
-        ball_texts[ball.get_size()].render_text({text_color, 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        ball_texts[ball.get_size()].render_text({ball.get_text_color(), 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     using namespace std::string_literals;

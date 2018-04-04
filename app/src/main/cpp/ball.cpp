@@ -20,6 +20,16 @@ void Ball::update_size()
     radius = size * 10.0f;
     mass = 4.0f / 3.0f * pi * std::pow(radius, 3.0f);
     color = color_func();
+
+    // pre-calculate text color (luminance / contrast  formulas from https://www.w3.org/TR/WCAG20/)
+    auto luminance_color = color;
+    for(unsigned int i = 0; i < 3; ++i)
+    {
+        auto & c = luminance_color[i];
+        c = (c <= 0.03928f) ? c / 12.92f : std::pow((c + 0.055f) / 1.055f, 2.4f);
+    }
+    auto luminance = 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
+    text_color = (luminance > std::sqrt(0.0525f) - 0.05f) ? glm::vec3(0.0f) : glm::vec3(1.0f);
 }
 
 glm::vec3 Ball::color_func()

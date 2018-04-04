@@ -13,6 +13,7 @@ private:
     glm::vec2 pos;
     glm::vec2 vel;
     glm::vec3 color;
+    glm::vec3 text_color;
 
     void update_size();
     glm::vec3 color_func();
@@ -24,6 +25,7 @@ public:
     float get_radius() const { return radius; }
     glm::vec2 get_pos() const { return pos; }
     glm::vec3 get_color() const { return color; }
+    glm::vec3 get_text_color() const { return text_color; }
 
     void grow();
     void physics_step(float dt, float win_size, const glm::vec2 & grav_vec, float wall_damp);
