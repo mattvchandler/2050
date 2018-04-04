@@ -17,11 +17,11 @@
 #include "ball.hpp"
 
 /* TODO:
- * loading screen
+ * sometimes physics stops (has to do with resizing & rotation && resumed / focused flags being set strangely)
+ * loading screen?
  * lighter text on dark colored balls
  * Achievement pop-ups?
  * UI design
- * sometimes physics stops (has to do with resizing & rotation && resumed / focused flags being set strangely)
  */
 
 class World

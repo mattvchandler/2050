@@ -18,26 +18,6 @@ glm::mat3 ortho3x3(float left, float right, float bottom, float top)
     };
 }
 
-glm::mat3 scale(const glm::mat3 & m, const glm::vec2 v)
-{
-    return m * glm::mat3
-    {
-        v.x,  0.0f, 0.0f,
-        0.0f, v.y,  0.0f,
-        0.0f, 0.0f, 1.0f
-    };
-}
-
-glm::mat3 translate(const glm::mat3 & m, const glm::vec2 v)
-{
-    return m * glm::mat3
-    {
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        v.x,  v.y,  1.0f
-    };
-}
-
 glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
 {
     float scale = std::min(screen_size.x, screen_size.y) / win_size;
@@ -181,7 +161,7 @@ void World::destroy()
     ball_prog.reset();
     ball_vbo.reset();
 
-    ball_prog.reset();
+    bar_prog.reset();
     quad.reset();
 
     ball_texts.clear();
@@ -233,11 +213,8 @@ void World::resize(GLsizei width, GLsizei height)
 
     bar_prog->use();
     glUniformMatrix3fv(bar_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
-    GL_CHECK_ERROR("bar uniforms 1");
     glUniform1f(bar_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
-    GL_CHECK_ERROR("bar uniforms 2");
     glUniform1f(bar_prog->get_uniform("win_size"), win_size);
-    GL_CHECK_ERROR("bar uniforms 3");
 
     GL_CHECK_ERROR("World::resize");
 }

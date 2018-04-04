@@ -103,7 +103,18 @@ Shader_prog & Shader_prog::operator=(Shader_prog && other)
 }
 
 void Shader_prog::use() const { glUseProgram(id); }
-GLint Shader_prog::get_uniform(const std::string & uniform) const { return uniforms.at(uniform); }
+GLint Shader_prog::get_uniform(const std::string & uniform) const
+{
+    try
+    {
+        return uniforms.at(uniform);
+    }
+    catch(std::out_of_range & e)
+    {
+        __android_log_print(ANDROID_LOG_ERROR, "Shader_prog::get_uniform", "Could not find uniform %s: %s", uniform.c_str(), e.what());
+        return 0;
+    }
+}
 
 Shader_prog::Shader_obj::Shader_obj(const std::string & src, GLenum type)
 {
