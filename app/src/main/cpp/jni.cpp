@@ -16,13 +16,13 @@ jmethodID game_over_method;
 void game_win(int score, bool new_high_score)
 {
     bool attached = false;
-    JNIEnv * my_env;
-    if(vm->GetEnv((void **)&my_env, JNI_VERSION_1_6) == JNI_OK)
+    JNIEnv * env;
+    if(vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
         attached = true;
-    else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
+    else if(vm->AttachCurrentThread(&env, NULL) != JNI_OK)
         __android_log_assert("could not attach thread!", "JNI::test", NULL);
 
-    my_env->CallVoidMethod(main_activity, game_win_method, score, new_high_score);
+    env->CallVoidMethod(main_activity, game_win_method, score, new_high_score);
 
     if(!attached)
     vm->DetachCurrentThread();
@@ -30,21 +30,55 @@ void game_win(int score, bool new_high_score)
 void game_over(int score, bool new_high_score)
 {
     bool attached = false;
-    JNIEnv * my_env;
-    if(vm->GetEnv((void **)&my_env, JNI_VERSION_1_6) == JNI_OK)
+    JNIEnv * env;
+    if(vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
         attached = true;
-    else if(vm->AttachCurrentThread(&my_env, NULL) != JNI_OK)
+    else if(vm->AttachCurrentThread(&env, NULL) != JNI_OK)
         __android_log_assert("could not attach thread!", "JNI::test", NULL);
 
-    my_env->CallVoidMethod(main_activity, game_over_method, score, new_high_score);
+    env->CallVoidMethod(main_activity, game_over_method, score, new_high_score);
 
     if(!attached)
         vm->DetachCurrentThread();
 }
 
+jobject resources;
+jclass R_string;
+jmethodID get_string_method;
+
+std::string get_res_string(const std::string & id)
+{
+    bool attached = false;
+    JNIEnv * env;
+    if(vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
+        attached = true;
+    else if(vm->AttachCurrentThread(&env, NULL) != JNI_OK)
+        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+
+    jfieldID id_field = env->GetStaticFieldID(R_string, id.c_str(), "I");
+    if(!id_field)
+    {
+        __android_log_print(ANDROID_LOG_ERROR, "get_res_string", "Could not find resource string: %s", id.c_str());
+        return "";
+    }
+
+    int string_id = env->GetStaticIntField(R_string, id_field);
+
+    jstring j_str = static_cast<jstring>(env->CallObjectMethod(resources, get_string_method, string_id));
+    const char * c_str = env->GetStringUTFChars(j_str, NULL);
+    std::string cpp_str = c_str;
+
+    env->ReleaseStringUTFChars(j_str, c_str);
+
+    if(!attached)
+        vm->DetachCurrentThread();
+
+    return cpp_str;
+}
+
 extern "C"
 {
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "create");
     if(engine)
@@ -55,15 +89,35 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     main_activity = env->NewGlobalRef(activity);
     if(!main_activity)
-        __android_log_assert("Couldn't get activity", "JNI", NULL);
+        __android_log_assert("Couldn't get activity global ref", "JNI", NULL);
 
-    game_win_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_win", "(IZ)V");
+    jclass main_activity_class = env->GetObjectClass(main_activity);
+    if(!main_activity_class)
+        __android_log_assert("Couldn't get 'MainActivity' class", "JNI", NULL);
+
+    game_win_method = env->GetMethodID(main_activity_class, "game_win", "(IZ)V");
     if(!game_win_method)
         __android_log_assert("Couldn't get 'game_win' method", "JNI", NULL);
 
-    game_over_method = env->GetMethodID(env->GetObjectClass(main_activity), "game_over", "(IZ)V");
+    game_over_method = env->GetMethodID(main_activity_class, "game_over", "(IZ)V");
     if(!game_over_method)
         __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
+
+    resources = env->NewGlobalRef(resources_local);
+    if(!resources)
+        __android_log_assert("Couldn't get resources global ref", "JNI", NULL);
+
+    get_string_method = env->GetMethodID(env->GetObjectClass(resources), "getString", "(I)Ljava/lang/String;");
+    if(!get_string_method)
+        __android_log_assert("Couldn't get 'get_string' method", "JNI", NULL);
+
+    jclass R_string_local = env->FindClass("org/mattvchandler/a2050/R$string");
+    if(!R_string_local)
+        __android_log_assert("Couldn't get 'R.string' class", "JNI", NULL);
+
+    R_string = static_cast<jclass>(env->NewGlobalRef(R_string_local));
+    if(!R_string)
+        __android_log_assert("Couldn't get 'R.string' global ref", "JNI", NULL);
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
@@ -110,6 +164,8 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv 
     engine.reset();
 
     env->DeleteGlobalRef(main_activity);
+    env->DeleteGlobalRef(resources);
+    env->DeleteGlobalRef(R_string);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv * env, jobject, jboolean has_focus)

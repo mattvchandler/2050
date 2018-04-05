@@ -48,7 +48,6 @@ private:
     glm::mat3 projection;
     glm::mat3 screen_projection;
 
-    // TODO: wrap into one 'OGL stuff' struct?
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
     std::size_t ball_vbo_alloc = 64;
@@ -66,6 +65,9 @@ private:
     std::unique_ptr<textogl::Font_sys> sub_msg_font;
 
     glm::vec2 text_coord_transform(const glm::vec2 & coord);
+
+    std::unordered_map<std::string, std::string> resource_strings;
+    std::string get_str(const std::string & id);
 
 public:
     World(AAssetManager * asset_manager);

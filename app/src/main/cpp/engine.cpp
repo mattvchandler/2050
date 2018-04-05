@@ -335,14 +335,12 @@ void Engine::resume() noexcept
 }
 void Engine::pause() noexcept
 {
-    // TODO: save openGL context
     running = false;
     render_thread.join();
     physics_thread.join();
 }
 void Engine::stop() noexcept
 {
-    // TODO: destroy EGL and openGL stuff
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "stop");
 
     std::ofstream savefile(data_path + "/save.json");
@@ -359,7 +357,6 @@ void Engine::set_focus(bool focus) noexcept
     }
 }
 
-// TODO: can probably collapse these into 1 function
 void Engine::surface_changed(ANativeWindow *window) noexcept
 {
     std::scoped_lock lock(mutex);

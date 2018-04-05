@@ -3,6 +3,7 @@ package org.mattvchandler.a2050;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         System.loadLibrary("2050");
     }
 
-    public native void create(AssetManager assetManager, String path);
+    public native void create(AssetManager assetManager, String path, Resources resources);
     public native void start();
     public native void resume();
     public native void pause();
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         {
             Log.e("MainActivity", "Could not get data directory", e);
         }
-        create(getResources().getAssets(), path);
+        create(getResources().getAssets(), path, getResources());
     }
 
     @Override
@@ -222,8 +223,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void run()
             {
-                new AlertDialog.Builder(MainActivity.this).setTitle("You win!").setMessage("Your score was: " + String.valueOf(score) + (new_high_score ? "\nNew high score!" : ""))
-                        .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
+                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
+                        .setMessage(getResources().getString(R.string.final_score, score)
+                                + (new_high_score ? getResources().getString(R.string.new_high_score) : ""))
+                        .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
@@ -231,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                                 newGame();
                             }
                         })
-                        .setNegativeButton("Continue playing", new DialogInterface.OnClickListener()
+                        .setNegativeButton(R.string.continue_playing, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
@@ -252,8 +255,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void run()
             {
-                new AlertDialog.Builder(MainActivity.this).setTitle("Game over!").setMessage("Your score was: " + String.valueOf(score) + (new_high_score ? "\nNew high score!" : ""))
-                        .setPositiveButton("Start a new game", new DialogInterface.OnClickListener()
+                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
+                        .setMessage(getResources().getString(R.string.final_score, score)
+                                + (new_high_score ? getResources().getString(R.string.new_high_score) : ""))
+                        .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)

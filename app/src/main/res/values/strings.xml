@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">2050</string>
+
+    <string name="pressure">Pressure</string>
+
+    <string name="score">Score</string>
+    <string name="high_score">High score</string>
+
+    <string name="paused">Paused</string>
+    <string name="cont">Tap anywhere to continue</string>
+
+    <string name="win">You Win!</string>
+    <string name="game_over">Game Over!</string>
+    <string name="final_score">Your score was: %d</string>
+    <string name="new_high_score">New high score!</string>
+    <string name="new_game">New game</string>
+    <string name="continue_playing">Continue playing</string>
+
+    <string name="pause">Pause</string>
 </resources>

@@ -29,6 +29,17 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
     return scale * coord + offset;
 }
 
+std::string World::get_str(const std::string & id)
+{
+    auto str = resource_strings.find(id);
+    if(str == std::end(resource_strings))
+    {
+        str = resource_strings.insert({id, get_res_string(id)}).first;
+    }
+
+    return str->second;
+}
+
 World::World(AAssetManager * asset_manager)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
@@ -36,6 +47,11 @@ World::World(AAssetManager * asset_manager)
         balls.emplace_back(win_size);
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+
+    for(auto & i: {"pressure"})
+    {
+        resource_strings[i] = get_res_string(i);
+    }
 }
 World::~World()
 {
@@ -282,8 +298,6 @@ bool World::render()
 
     using namespace std::string_literals;
 
-    // TODO: get text from strings (HOW?)
-
     // draw compression bar
     if(med_compression > 1.0f)
     {
@@ -311,16 +325,17 @@ bool World::render()
         glUniform1f(bar_prog->get_uniform("border_thickness"), 0.0f);
         quad->draw();
 
-        font->render_text("Pressure", {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        font->render_text(get_str("pressure"), {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    font->render_text("Score: "s + std::to_string(score) + " High Score: "s + std::to_string(high_score), {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
+    font->render_text(get_str("score") + ": "s + std::to_string(score) + " "s + get_str("high_score") + ": "s + std::to_string(high_score),
+          {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
 
     if(paused)
     {
-        msg_font->render_text("Paused", {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        msg_font->render_text(get_str("paused"), {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
 
-        sub_msg_font->render_text("Tap anywhere to continue", {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        sub_msg_font->render_text(get_str("cont"), {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
