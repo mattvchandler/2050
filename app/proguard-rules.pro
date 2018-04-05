@@ -21,6 +21,11 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class org.mattvchandler.a2050.MainActivity {
-    void game_win(int);
-    void game_over(int);
+    void game_win(int, boolean);
+    void game_over(int, boolean);
 }
+
+-keepclasseswithmembers class org.mattvchandler.a2050.R$string {
+    public static <fields>;
+}
+
