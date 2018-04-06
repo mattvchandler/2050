@@ -20,7 +20,6 @@
             android:onClick="pause_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/score"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -43,11 +42,9 @@
             android:text="@{@string/score(data.score)}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintTop_toBottomOf="@id/pause"
             app:layout_constraintBottom_toTopOf="@id/surface_view"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/high_score"
             />
 
         <TextView
@@ -56,7 +53,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBaseline_toBaselineOf="@id/score"
-            app:layout_constraintLeft_toRightOf="@id/score"
             app:layout_constraintRight_toRightOf="parent"
             />
 

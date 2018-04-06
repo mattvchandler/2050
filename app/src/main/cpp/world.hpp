@@ -93,6 +93,8 @@ public:
 
     void new_game();
 
+    std::tuple<int, int> get_ui_data();
+
     void deserialize(const nlohmann::json & data);
     nlohmann::json serialize() const;
 };

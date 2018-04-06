@@ -328,9 +328,6 @@ bool World::render()
         font->render_text(get_str("pressure"), {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    font->render_text(get_str("score") + ": "s + std::to_string(score) + " "s + get_str("high_score") + ": "s + std::to_string(high_score),
-          {black, 1.0f}, screen_size, text_coord_transform(glm::vec2(win_size - 10.0f, 10.0f)), textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_TOP);
-
     if(paused)
     {
         msg_font->render_text(get_str("paused"), {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
@@ -452,6 +449,11 @@ void World::new_game()
     paused = false;
     score = 0;
     grav_vec = {0.0f, 0.0f};
+}
+
+std::tuple<int ,int> World::get_ui_data()
+{
+    return std::tuple(score, high_score);
 }
 
 void World::deserialize(const nlohmann::json & data)

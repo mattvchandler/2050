@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableInt;
+import android.os.Handler;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,20 +29,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         System.loadLibrary("2050");
     }
 
-    public native void create(AssetManager assetManager, String path, Resources resources);
-    public native void start();
-    public native void resume();
-    public native void pause();
-    public native void stop();
-    public native void destroy();
-    public native void focus(boolean has_focus);
-    public native void surfaceChanged(Surface surface);
-    public native void fling(float x, float y);
-    public native void tap(float x, float y);
-    public native void newGame();
-    public native void pauseGame();
+    private native void create(AssetManager assetManager, String path, Resources resources);
+    private native void start();
+    private native void resume();
+    private native void pause();
+    private native void stop();
+    private native void destroy();
+    private native void focus(boolean has_focus);
+    private native void surfaceChanged(Surface surface);
+    private native void fling(float x, float y);
+    private native void tap(float x, float y);
+    private native void newGame();
+    private native void pauseGame();
+    private native void getUIData(DispData data);
 
     private ActivityMainBinding binding;
+    private DispData data = new DispData();
+    private Handler update_data = new Handler();
 
     private GestureDetectorCompat gestureDetector;
 
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "onCreate");
 
         binding.surfaceView.getHolder().addCallback(this);
+        binding.setData(data);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
 
@@ -99,6 +104,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             Log.e("MainActivity", "Could not get data directory", e);
         }
         create(getResources().getAssets(), path, getResources());
+
+        int delay = 100; // ms
+        update_data.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                getUIData(data);
+                update_data.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
     @Override
@@ -220,57 +236,49 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public void game_win(final int score, final boolean new_high_score)
     {
         Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
-        runOnUiThread(new Runnable()
+        runOnUiThread(() ->
         {
-            @Override
-            public void run()
-            {
-                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
-                        .setMessage(getResources().getString(R.string.final_score, score)
-                                + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
-                        .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
+                    .setMessage(getResources().getString(R.string.final_score, score)
+                            + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
+                    .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                                                                          {
+                                                                             newGame();
+                                                                                       }
+                    })
+                    .setNegativeButton(R.string.continue_playing, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                newGame();
-                            }
-                        })
-                        .setNegativeButton(R.string.continue_playing, new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                tap(0.0f, 0.0f);
-                            }
-                        })
-                        .setCancelable(false)
-                        .show();
-            }
+                            tap(0.0f, 0.0f);
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
         });
     }
     public void game_over(final int score, final boolean new_high_score)
     {
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
-        runOnUiThread(new Runnable()
+        runOnUiThread(() ->
         {
-            @Override
-            public void run()
-            {
-                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
-                        .setMessage(getResources().getString(R.string.final_score, score)
-                                + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
-                        .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
+                    .setMessage(getResources().getString(R.string.final_score, score)
+                            + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
+                    .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                newGame();
-                            }
-                        })
-                        .setCancelable(false)
-                        .show();
-            }
+                            newGame();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
         });
     }
 
