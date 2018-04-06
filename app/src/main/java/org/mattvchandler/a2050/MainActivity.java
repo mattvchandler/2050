@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
 import android.os.Handler;
 import android.support.v4.view.GestureDetectorCompat;
@@ -293,7 +294,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     public class DispData
     {
-        public final ObservableInt score      = new ObservableInt();
-        public final ObservableInt high_score = new ObservableInt();
+        public final ObservableInt   score      = new ObservableInt();
+        public final ObservableInt   high_score = new ObservableInt();
+        public final ObservableFloat grav_angle = new ObservableFloat();
     }
 }

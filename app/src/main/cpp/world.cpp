@@ -451,9 +451,9 @@ void World::new_game()
     grav_vec = {0.0f, 0.0f};
 }
 
-std::tuple<int ,int> World::get_ui_data()
+World::UI_data World::get_ui_data()
 {
-    return std::tuple(score, high_score);
+    return {score, high_score, std::atan2(grav_vec.x, -grav_vec.y)};
 }
 
 void World::deserialize(const nlohmann::json & data)

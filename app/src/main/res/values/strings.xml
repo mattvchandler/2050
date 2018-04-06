@@ -17,4 +17,6 @@
     <string name="continue_playing">Continue playing</string>
 
     <string name="pause">Pause</string>
+
+    <string name="gravity_arrow_desc">Gravity arrow</string>
 </resources>

@@ -9,8 +9,9 @@
 std::unique_ptr<Engine> engine;
 
 #define DISP_DATA_FIELDS \
-X(0, ObservableInt, set_int, score) \
-X(1, ObservableInt, set_int, high_score)
+X(ObservableInt, set_int, score) \
+X(ObservableInt, set_int, high_score)\
+X(ObservableFloat, set_float, grav_angle)
 
 struct JVM_refs
 {
@@ -56,17 +57,25 @@ struct JVM_refs
         // get DispData class fields, and set methods for each
         jclass observable_int = env->FindClass("android/databinding/ObservableInt");
         if(!observable_int)
-            __android_log_assert("Couldn't get 'ObservableIn' field", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ObservableInt' field", "JNI", NULL);
 
         set_int = env->GetMethodID(observable_int, "set", "(I)V");
         if(!set_int)
             __android_log_assert("Couldn't get 'ObservableInt.set' method", "JNI", NULL);
 
+        jclass observable_float = env->FindClass("android/databinding/ObservableFloat");
+        if(!observable_float)
+            __android_log_assert("Couldn't get 'ObservableFloat' field", "JNI", NULL);
+
+        set_float = env->GetMethodID(observable_float, "set", "(F)V");
+        if(!set_float)
+            __android_log_assert("Couldn't get 'ObservableFloat.set' method", "JNI", NULL);
+
         jclass DispData = env->FindClass("org/mattvchandler/a2050/MainActivity$DispData");
         if(!DispData)
             __android_log_assert("Couldn't get 'DispData' class", "JNI", NULL);
 
-#define X(i, type, method, name) \
+#define X(type, method, name) \
             name = env->GetFieldID(DispData, #name, "Landroid/databinding/" #type ";");\
             if(!name)\
                 __android_log_assert("Couldn't get '" #name "' field", "JNI", NULL);
@@ -88,7 +97,8 @@ struct JVM_refs
         R_string          = nullptr;
         get_string_method = nullptr;
         set_int           = nullptr;
-#define X(i, type, method, name) name = nullptr;
+        set_float         = nullptr;
+#define X(type, method, name) name = nullptr;
         DISP_DATA_FIELDS
 #undef X
     }
@@ -104,7 +114,9 @@ struct JVM_refs
     jmethodID get_string_method = nullptr;
 
     jmethodID set_int           = nullptr;
-#define X(i, type, method, name) jfieldID name = nullptr;
+    jmethodID set_float         = nullptr;
+
+#define X(type, method, name) jfieldID name = nullptr;
     DISP_DATA_FIELDS
 #undef X
 };
@@ -281,10 +293,9 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEn
         __android_log_assert("getUIData called before engine initialized", "JNI", NULL);
 
     auto data = engine->get_ui_data();
-#define X(i, type, method, name) \
-        auto name = std::get<i>(data);\
-        jobject name##_obj = env->GetObjectField(dispdata, jvm_refs.name);\
-        env->CallVoidMethod(name##_obj, jvm_refs.method, name);
+#define X(type, method, name) \
+        jobject name = env->GetObjectField(dispdata, jvm_refs.name);\
+        env->CallVoidMethod(name, jvm_refs.method, data.name);
     DISP_DATA_FIELDS
 #undef X
 

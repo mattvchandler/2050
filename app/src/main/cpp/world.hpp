@@ -93,7 +93,13 @@ public:
 
     void new_game();
 
-    std::tuple<int, int> get_ui_data();
+    struct UI_data
+    {
+        int score;
+        int high_score;
+        float grav_angle;
+    };
+    UI_data get_ui_data();
 
     void deserialize(const nlohmann::json & data);
     nlohmann::json serialize() const;

@@ -61,7 +61,7 @@ public:
 
     void new_game() noexcept;
     void pause_game() noexcept;
-    std::tuple<int, int> get_ui_data() noexcept;
+    World::UI_data get_ui_data() noexcept;
 };
 
 

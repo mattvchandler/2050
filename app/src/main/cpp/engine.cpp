@@ -398,7 +398,7 @@ void Engine::pause_game() noexcept
     world.pause();
 }
 
-std::tuple<int, int> Engine::get_ui_data() noexcept
+World::UI_data Engine::get_ui_data() noexcept
 {
     std::scoped_lock lock(mutex);
     return world.get_ui_data();
