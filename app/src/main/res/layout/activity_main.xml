@@ -1,48 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="org.mattvchandler.a2050.MainActivity"
     >
 
-    <Button
-        android:id="@+id/pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:text="@string/pause"
-        android:onClick="pause_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/surface_view"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/new_game"
-        />
+    <data>
+        <import type="org.mattvchandler.a2050.MainActivity.DispData"/>
+        <variable name="data" type="DispData"/>
+    </data>
 
-    <Button
-        android:id="@+id/new_game"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:text="@string/new_game"
-        android:onClick="new_game_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/surface_view"
-        app:layout_constraintLeft_toRightOf="@id/pause"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
 
-    <android.view.SurfaceView
-        android:id="@+id/surface_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintTop_toBottomOf="@id/new_game"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        <Button
+            android:id="@+id/pause"
+            android:text="@string/pause"
+            android:onClick="pause_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/score"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/new_game"
+            />
 
-</android.support.constraint.ConstraintLayout>
+        <Button
+            android:id="@+id/new_game"
+            android:text="@string/new_game"
+            android:onClick="new_game_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/pause"
+            app:layout_constraintLeft_toRightOf="@id/pause"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/score"
+            android:text="@{@string/score(data.score)}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintTop_toBottomOf="@id/pause"
+            app:layout_constraintBottom_toTopOf="@id/surface_view"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/high_score"
+            />
+
+        <TextView
+            android:id="@+id/high_score"
+            android:text="@{@string/high_score(data.high_score)}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/score"
+            app:layout_constraintLeft_toRightOf="@id/score"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <android.view.SurfaceView
+            android:id="@+id/surface_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+    </android.support.constraint.ConstraintLayout>
+</layout>

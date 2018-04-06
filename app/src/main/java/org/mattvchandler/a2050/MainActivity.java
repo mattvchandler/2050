@@ -1,9 +1,10 @@
 package org.mattvchandler.a2050;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
+import android.databinding.ObservableInt;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,9 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
+
+import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 
@@ -39,8 +41,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void newGame();
     public native void pauseGame();
 
+    private ActivityMainBinding binding;
+
     private GestureDetectorCompat gestureDetector;
-    private SurfaceView surfaceView;
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
@@ -68,12 +71,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         Log.d("MainActivity", "onCreate");
 
-        setContentView(R.layout.activity_main);
-
-        surfaceView = (SurfaceView)findViewById(R.id.surface_view);
-        surfaceView.getHolder().addCallback(this);
+        binding.surfaceView.getHolder().addCallback(this);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
 
@@ -137,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         destroy();
 
         // SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
-        surfaceView.getHolder().removeCallback(this);
+        binding.surfaceView.getHolder().removeCallback(this);
 
         super.onDestroy();
     }
@@ -279,5 +281,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public void new_game_button(View view)
     {
         newGame();
+    }
+
+    public class DispData
+    {
+        public final ObservableInt score      = new ObservableInt();
+        public final ObservableInt high_score = new ObservableInt();
     }
 }

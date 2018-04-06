@@ -3,8 +3,8 @@
 
     <string name="pressure">Pressure</string>
 
-    <string name="score">Score</string>
-    <string name="high_score">High score</string>
+    <string name="score">Score: %d</string>
+    <string name="high_score">High score: %d</string>
 
     <string name="paused">Paused</string>
     <string name="cont">Tap anywhere to continue</string>
