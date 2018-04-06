@@ -69,6 +69,8 @@ private:
     std::unordered_map<std::string, std::string> resource_strings;
     std::string get_str(const std::string & id);
 
+    std::vector<float> physx_times;
+
 public:
     World(AAssetManager * asset_manager);
     ~World();

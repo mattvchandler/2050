@@ -347,7 +347,17 @@ bool World::render()
         avg_frame_time = std::accumulate(std::begin(frame_times), std::end(frame_times), 0.0f) / static_cast<float>(std::size(frame_times));
         frame_times.clear();
     }
-    font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)", {black, 1.0f}, screen_size, text_coord_transform({0.0f, win_size}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_BOTTOM);
+
+    static float avg_physx_time;
+    if(std::size(physx_times) >= 100)
+    {
+        avg_physx_time = std::accumulate(std::begin(physx_times), std::end(physx_times), 0.0f) / static_cast<float>(std::size(physx_times));
+        physx_times.clear();
+    }
+
+    font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)" +
+                    "\navg physic time: " + std::to_string(avg_physx_time) + "ms (" + std::to_string(1000.0f / avg_physx_time) + " fps)",
+        {black, 1.0f}, screen_size, text_coord_transform({0.0f, win_size}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_BOTTOM);
 
     GL_CHECK_ERROR("World::render");
 
@@ -356,6 +366,7 @@ bool World::render()
 
 void World::physics_step(float dt)
 {
+    auto start = std::chrono::high_resolution_clock::now();
     if(paused || state == State::LOSE || state == State::WIN)
         return;
 
@@ -403,6 +414,9 @@ void World::physics_step(float dt)
 
         game_over(score, score == high_score);
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    physx_times.push_back(std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(end - start).count());
 }
 
 void World::fling(float x, float y)
