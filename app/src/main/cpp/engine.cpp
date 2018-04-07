@@ -160,6 +160,12 @@ bool Engine::can_render()
         return false;
     }
 
+    if(!win)
+    {
+        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no window");
+        return false;
+    }
+
     if(eglGetCurrentContext() == EGL_NO_CONTEXT)
     {
         if(surface == EGL_NO_SURFACE)
