@@ -20,9 +20,19 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class org.mattvchandler.a2050.MainActivity {
+-keep,includedescriptorclasses class org.mattvchandler.a2050.MainActivity {
     void game_win(int, boolean);
     void game_over(int, boolean);
+    void game_pause();
+    native <methods>;
+}
+
+-keepclasseswithmembers class android.databinding.* {
+    public <methods>;
+}
+
+-keepclasseswithmembers class org.mattvchandler.a2050.MainActivity$DispData {
+    public <fields>;
 }
 
 -keepclasseswithmembers class org.mattvchandler.a2050.R$string {
