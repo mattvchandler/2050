@@ -160,16 +160,31 @@ void World::init()
 
     // font sizes don't matter yet b/c resize should be called immediately after init
     font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
-    msg_font     = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
-    sub_msg_font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void World::pause() { paused = true; }
+void World::pause()
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "World::pause", paused ? "paused" : "unpaused");
+    if(!paused)
+    {
+        paused = true;
+        game_pause();
+    }
+}
 bool World::is_paused() const { return paused; }
+void World::unpause()
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "World::unpause", paused ? "paused" : "unpaused");
+    paused = false;
+    if(state == State::WIN)
+    {
+        state = State::EXTENDED;
+    }
+}
 
 void World::destroy()
 {
@@ -182,9 +197,6 @@ void World::destroy()
 
     ball_texts.clear();
     font.reset();
-
-    msg_font.reset();
-    sub_msg_font.reset();
 }
 
 void World::resize(GLsizei width, GLsizei height)
@@ -218,9 +230,6 @@ void World::resize(GLsizei width, GLsizei height)
     font->resize(text_size);
     for(auto & t: ball_texts)
         t.set_font_sys(*font);
-
-    msg_font->resize(static_cast<int>(text_size * 72.0f / initial_text_size));
-    sub_msg_font->resize(static_cast<int>(text_size * 32.0f / initial_text_size));
 
     ball_prog->use();
     glUniformMatrix3fv(ball_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
@@ -328,13 +337,6 @@ bool World::render()
         font->render_text(get_str("pressure"), {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    if(paused)
-    {
-        msg_font->render_text(get_str("paused"), {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.2}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-
-        sub_msg_font->render_text(get_str("cont"), {black, 1.0f}, screen_size, text_coord_transform({win_size / 2.0f, win_size * 0.6}), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-    }
-
     auto end = std::chrono::high_resolution_clock::now();
     frame_times.push_back(std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(end - start).count());
 
@@ -351,6 +353,9 @@ bool World::render()
         avg_physx_time = std::accumulate(std::begin(physx_times), std::end(physx_times), 0.0f) / static_cast<float>(std::size(physx_times));
         physx_times.clear();
     }
+
+    font->render_text(paused ? "paused" : "unpaused", {black, 1.0}, screen_size, text_coord_transform({win_size, win_size}),
+        textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_BOTTOM);
 
     font->render_text("avg render time: " + std::to_string(avg_frame_time) + "ms (" + std::to_string(1000.0f / avg_frame_time) + " fps)" +
                     "\navg physic time: " + std::to_string(avg_physx_time) + "ms (" + std::to_string(1000.0f / avg_physx_time) + " fps)",
@@ -425,17 +430,6 @@ void World::fling(float x, float y)
         balls.emplace_back(win_size);
     }
 }
-void World::tap(float x, float y)
-{
-    if(paused)
-    {
-        paused = false;
-    }
-    if(state == State::WIN)
-    {
-        state = State::EXTENDED;
-    }
-}
 
 void World::new_game()
 {
@@ -496,6 +490,8 @@ void World::deserialize(const nlohmann::json & data)
         game_win(score, score == high_score);
     else if(state == State::LOSE)
         new_game();
+    else if(paused)
+        game_pause();
 }
 
 nlohmann::json World::serialize() const

@@ -39,9 +39,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private native void focus(boolean has_focus);
     private native void surfaceChanged(Surface surface);
     private native void fling(float x, float y);
-    private native void tap(float x, float y);
     private native void newGame();
     private native void pauseGame();
+    private native void unpause();
     private native void getUIData(DispData data);
 
     private ActivityMainBinding binding;
@@ -56,12 +56,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
         {
             fling(x, y);
-            return true;
-        }
-        @Override
-        public boolean onDown(MotionEvent e)
-        {
-            tap(e.getX(), e.getY());
             return true;
         }
     }
@@ -255,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            tap(0.0f, 0.0f);
+                            unpause();
                         }
                     })
                     .setCancelable(false)
@@ -279,6 +273,31 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                         }
                     })
                     .setCancelable(false)
+                    .show();
+        });
+    }
+    public void game_pause()
+    {
+        Log.d("MainActivity", "game_pause");
+        runOnUiThread(() ->
+        {
+            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
+                    .setPositiveButton(R.string.cont, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            unpause();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            unpause();
+                        }
+                    })
                     .show();
         });
     }

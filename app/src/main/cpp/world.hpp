@@ -61,9 +61,6 @@ private:
     std::unique_ptr<textogl::Font_sys> font;
     std::vector<textogl::Static_text> ball_texts;
 
-    std::unique_ptr<textogl::Font_sys> msg_font;
-    std::unique_ptr<textogl::Font_sys> sub_msg_font;
-
     glm::vec2 text_coord_transform(const glm::vec2 & coord);
 
     std::unordered_map<std::string, std::string> resource_strings;
@@ -84,12 +81,12 @@ public:
     void destroy();
     void pause();
     bool is_paused() const;
+    void unpause();
     void resize(GLsizei width, GLsizei height);
     bool render();
     void physics_step(float dt);
 
     void fling(float x, float y);
-    void tap(float x, float y);
 
     void new_game();
 

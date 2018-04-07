@@ -199,6 +199,15 @@ bool Engine::can_render()
         }
 
         __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "set up to render");
+
+        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if(!eglSwapBuffers(display, surface))
+        {
+            __android_log_write(ANDROID_LOG_ERROR, "Engine::can_render", "couldn't swap");
+        }
+
         world.init();
         world.resize(width, height);
     }
@@ -274,20 +283,6 @@ void Engine::render_loop()
         std::this_thread::sleep_until(frame_start_time + target_frametime);
     }
 
-    mutex.lock();
-
-    world.pause();
-    if(can_render())
-    {
-        world.render();
-
-        if(!eglSwapBuffers(display, surface))
-        {
-            __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
-        }
-    }
-    mutex.unlock();
-
     world.destroy();
     destroy_egl();
 
@@ -344,6 +339,7 @@ void Engine::pause() noexcept
     running = false;
     render_thread.join();
     physics_thread.join();
+    world.pause();
 }
 void Engine::stop() noexcept
 {
@@ -386,12 +382,6 @@ void Engine::fling(float x, float y) noexcept
     world.fling(x, y);
 }
 
-void Engine::tap(float x, float y) noexcept
-{
-    std::scoped_lock lock(mutex);
-    world.tap(x, y);
-}
-
 void Engine::new_game() noexcept
 {
     std::scoped_lock lock(mutex);
@@ -403,6 +393,12 @@ void Engine::pause_game() noexcept
     std::scoped_lock lock(mutex);
     world.pause();
 }
+void Engine::unpause() noexcept
+{
+    std::scoped_lock lock(mutex);
+    world.unpause();
+}
+
 
 World::UI_data Engine::get_ui_data() noexcept
 {

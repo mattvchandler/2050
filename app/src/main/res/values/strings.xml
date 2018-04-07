@@ -7,7 +7,7 @@
     <string name="high_score">High score: %d</string>
 
     <string name="paused">Paused</string>
-    <string name="cont">Tap anywhere to continue</string>
+    <string name="cont">Continue</string>
 
     <string name="win">You Win!</string>
     <string name="game_over">Game Over!</string>

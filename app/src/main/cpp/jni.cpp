@@ -37,6 +37,10 @@ struct JVM_refs
         if(!game_over_method)
             __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
 
+        game_pause_method = env->GetMethodID(main_activity_class, "game_pause", "()V");
+        if(!game_pause_method)
+            __android_log_assert("Couldn't get 'game_pause' method", "JNI", NULL);
+
         // get R.string class and Resources.getString() method
         resources = env->NewGlobalRef(resources_local);
         if(!resources)
@@ -93,6 +97,7 @@ struct JVM_refs
         main_activity     = nullptr;
         game_win_method   = nullptr;
         game_over_method  = nullptr;
+        game_pause_method = nullptr;
         resources         = nullptr;
         R_string          = nullptr;
         get_string_method = nullptr;
@@ -108,6 +113,7 @@ struct JVM_refs
     jobject   main_activity     = nullptr;
     jmethodID game_win_method   = nullptr;
     jmethodID game_over_method  = nullptr;
+    jmethodID game_pause_method = nullptr;
 
     jobject   resources         = nullptr;
     jclass    R_string          = nullptr;
@@ -130,7 +136,7 @@ void game_win(int score, bool new_high_score)
     if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
         attached = true;
     else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+        __android_log_assert("could not attach thread!", "JNI::game_win", NULL);
 
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_win_method, score, new_high_score);
 
@@ -144,9 +150,24 @@ void game_over(int score, bool new_high_score)
     if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
         attached = true;
     else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+        __android_log_assert("could not attach thread!", "JNI::game_over", NULL);
 
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_over_method, score, new_high_score);
+
+    if(!attached)
+        jvm_refs.vm->DetachCurrentThread();
+}
+void game_pause()
+{
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause_game");
+    bool attached = false;
+    JNIEnv * env;
+    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
+        attached = true;
+    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
+        __android_log_assert("could not attach thread!", "JNI::game_pause", NULL);
+
+    env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_pause_method);
 
     if(!attached)
         jvm_refs.vm->DetachCurrentThread();
@@ -265,13 +286,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv *,
         __android_log_assert("fling called before engine initialized", "JNI", NULL);
     engine->fling(x, y);
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_tap(JNIEnv *, jobject, jfloat x, jfloat y)
-{
-    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "tap [%f, %f]", (float)x, (float)y);
-    if(!engine)
-        __android_log_assert("fling called before engine initialized", "JNI", NULL);
-    engine->tap(x, y);
-}
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_newGame(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "newGame");
@@ -286,6 +300,13 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEn
         __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
     engine->pause_game();
 
+}
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_unpause(JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "JNI", "unpause");
+    if(!engine)
+        __android_log_assert("unpause called before engine initialized", "JNI", NULL);
+    engine->unpause();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEnv * env, jobject, jobject dispdata)
 {

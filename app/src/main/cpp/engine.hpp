@@ -57,10 +57,10 @@ public:
     void surface_changed(ANativeWindow * window) noexcept;
 
     void fling(float x, float y) noexcept;
-    void tap(float x, float y) noexcept;
 
     void new_game() noexcept;
     void pause_game() noexcept;
+    void unpause() noexcept;
     World::UI_data get_ui_data() noexcept;
 };
 
