@@ -17,7 +17,6 @@
 #include "ball.hpp"
 
 /* TODO:
- * loading screen?
  * Achievement pop-ups?
  * UI design
  */

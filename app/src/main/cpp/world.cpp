@@ -179,7 +179,7 @@ void World::init()
 void World::pause()
 {
     __android_log_print(ANDROID_LOG_DEBUG, "World::pause", paused ? "paused" : "unpaused");
-    if(!paused)
+    if(!paused && state != State::WIN && state != State::LOSE)
     {
         paused = true;
         game_pause();
