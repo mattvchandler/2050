@@ -64,50 +64,60 @@ void World::init()
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
     const char * ball_vertshader =
      R"(attribute vec2 vert_pos;
+        attribute vec2 ball_pos;
         attribute float radius;
         attribute vec3 vert_color;
 
         uniform mat3 projection;
-        uniform float screen_size;
         uniform float win_size;
-
-        varying vec3 color;
         varying float border_size;
         varying float pixel_size;
 
+        varying vec3 color;
+        varying vec2 center;
+        varying float frag_radius;
+
         const float border_thickness = 2.0;
+
 
         void main()
         {
             color = vert_color;
-            gl_Position = vec4((projection * vec3(vert_pos, 1.0)).xy, 0.0, 1.0);
-            gl_PointSize = 2.0 * radius * screen_size / win_size;
-            border_size = border_thickness / radius;
-            pixel_size = 1.0 / gl_PointSize;
+            gl_Position = vec4((projection * vec3(vert_pos * 2.0 * radius + ball_pos, 1.0)).xy, 0.0, 1.0);
+            center = vec2(ball_pos.x, win_size - ball_pos.y);
+            frag_radius = radius;
+            border_size = border_thickness / frag_radius;
+            pixel_size = 1.0 / win_size;
         }
     )";
     const char * ball_fragshader =
      R"(precision mediump float;
 
         varying vec3 color;
+        varying vec2 center;
+        varying float frag_radius;
         varying float border_size;
         varying float pixel_size;
 
+        uniform float screen_size;
+        uniform float win_size;
+
         void main()
         {
-            vec2 coord = 2.0 * gl_PointCoord - 1.0;
-            float r = dot(coord, coord);
+            vec2 coord = gl_FragCoord.xy * win_size / screen_size;
+            float r = distance(coord, center);
 
-            if(r > 1.0)
-                discard;
+            if(r >= frag_radius)
+               discard;
 
-            r = sqrt(r);
+            r /= frag_radius;
+
             float alpha = 1.0 - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
             gl_FragColor = vec4(mix(color, vec3(0.0), smoothstep(1.0 - border_size - 2.0 * pixel_size, 1.0 - border_size + 2.0 * pixel_size, r)), alpha);
         }
     )";
     ball_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{ball_vertshader, GL_VERTEX_SHADER}, {ball_fragshader, GL_FRAGMENT_SHADER}},
-                                              std::vector<std::string>{"vert_pos", "radius", "vert_color"});
+                                              std::vector<std::string>{"vert_pos", "ball_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
     ball_vbo->bind();
     glBufferData(GL_ARRAY_BUFFER, ball_vbo_alloc * sizeof(float), NULL, GL_DYNAMIC_DRAW);
@@ -251,28 +261,50 @@ bool World::render()
     const glm::vec3 black(0.0f);
     const glm::vec3 white(1.0f);
 
+    // TODO: element buffer to at least reduce the amount of dupes
+    const std::vector<glm::vec2> verts =
+    {
+        {-0.5f, -0.5f},
+        {-0.5f,  0.5f},
+        { 0.5f, -0.5f},
+
+        {-0.5f,  0.5f},
+        { 0.5f, -0.5f},
+        { 0.5f,  0.5f}
+    };
+
+    const std::size_t num_attrs = 8;
+
     glClear(GL_COLOR_BUFFER_BIT);
 
-    std::vector<float> data(std::size(balls) * 6);
+    // load up a buffer with vertex data. unfortunately GL ES 2.0 is pretty limited, so lots of duplication here
+    // if we had instanced rendering or geometry shaders, this would be much easier
+    std::vector<float> data(std::size(balls) * std::size(verts) * num_attrs);
     auto ball_it = std::begin(balls);
-    for(std::size_t i = 0; i < std::size(data); i += 6)
+    for(std::size_t ball_i = 0; ball_i < std::size(balls); ++ball_i)
     {
         const auto & pos = ball_it->get_pos();
-        data[i + 0] = pos.x;
-        data[i + 1] = pos.y;
-
-        data[i + 2] = ball_it->get_radius();
-
         const auto & color = ball_it->get_color();
-        data[i + 3] = color.r;
-        data[i + 4] = color.g;
-        data[i + 5] = color.b;
+
+        for(std::size_t vert_i = 0; vert_i < std::size(verts); ++vert_i)
+        {
+            std::size_t data_i = (ball_i * std::size(verts) + vert_i) * num_attrs;
+            data[data_i + 0] = verts[vert_i].x;
+            data[data_i + 1] = verts[vert_i].y;
+            data[data_i + 2] = pos.x;
+            data[data_i + 3] = pos.y;
+            data[data_i + 4] = ball_it->get_radius();
+            data[data_i + 5] = color.r;
+            data[data_i + 6] = color.g;
+            data[data_i + 7] = color.b;
+        }
 
         ++ball_it;
     }
-    ball_prog->use();
 
+    ball_prog->use();
     ball_vbo->bind();
+
     if(std::size(data) > ball_vbo_alloc)
     {
         ball_vbo_alloc = std::size(data);
@@ -286,16 +318,19 @@ bool World::render()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(data)::value_type)));
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(data)::value_type)));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(3 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(4 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(5 * sizeof(decltype(data)::value_type)));
 
-    glDrawArrays(GL_POINTS, 0, static_cast<GLint>(std::size(balls)));
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(std::size(balls) * std::size(verts)));
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(3);
 
     for(auto & ball: balls)
     {
@@ -304,8 +339,6 @@ bool World::render()
 
         ball_texts[ball.get_size()].render_text({ball.get_text_color(), 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
-
-    using namespace std::string_literals;
 
     // draw compression bar
     if(med_compression > 1.0f)
