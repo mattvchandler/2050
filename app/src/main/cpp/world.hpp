@@ -49,7 +49,10 @@ private:
 
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
-    std::size_t ball_vbo_alloc = 64 * 8 * 3; // enough for 64 balls
+
+    const std::size_t num_ball_attrs = 8;
+    std::vector<float> ball_data; // scratch buffer for ball data
+    std::size_t ball_vbo_alloc = 64 * num_ball_attrs * 3; // enough for 64 balls
 
     std::unique_ptr<Shader_prog> bar_prog;
     std::unique_ptr<Quad> quad;
@@ -66,6 +69,8 @@ private:
     std::string get_str(const std::string & id);
 
     std::vector<float> physx_times;
+
+    void render_balls();
 
 public:
     World(AAssetManager * asset_manager);

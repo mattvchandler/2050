@@ -254,13 +254,9 @@ void World::resize(GLsizei width, GLsizei height)
     GL_CHECK_ERROR("World::resize");
 }
 
-bool World::render()
-{
-    static std::vector<float> frame_times;
-    auto start = std::chrono::high_resolution_clock::now();
-    const glm::vec3 black(0.0f);
-    const glm::vec3 white(1.0f);
 
+void World::render_balls()
+{
     const std::vector<glm::vec2> verts =
     {
         {-0.5f * std::sqrt(3.0f), -0.5f},
@@ -268,46 +264,43 @@ bool World::render()
         { 0.5f * std::sqrt(3.0f), -0.5f}
     };
 
-    const std::size_t num_attrs = 8;
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
     // load up a buffer with vertex data. unfortunately GL ES 2.0 is pretty limited, so lots of duplication here
     // if we had instanced rendering or geometry shaders, this would be much easier
-    std::vector<float> data(std::size(balls) * std::size(verts) * num_attrs);
-    auto ball_it = std::begin(balls);
+    ball_data.resize(std::size(balls) * std::size(verts) * num_ball_attrs);
+
+    auto ball = std::begin(balls);
     for(std::size_t ball_i = 0; ball_i < std::size(balls); ++ball_i)
     {
-        const auto & pos = ball_it->get_pos();
-        const auto & color = ball_it->get_color();
+        const auto & pos = ball->get_pos();
+        const auto & color = ball->get_color();
 
         for(std::size_t vert_i = 0; vert_i < std::size(verts); ++vert_i)
         {
-            std::size_t data_i = (ball_i * std::size(verts) + vert_i) * num_attrs;
-            data[data_i + 0] = verts[vert_i].x;
-            data[data_i + 1] = verts[vert_i].y;
-            data[data_i + 2] = pos.x;
-            data[data_i + 3] = pos.y;
-            data[data_i + 4] = ball_it->get_radius();
-            data[data_i + 5] = color.r;
-            data[data_i + 6] = color.g;
-            data[data_i + 7] = color.b;
+            std::size_t data_i = (ball_i * std::size(verts) + vert_i) * num_ball_attrs;
+            ball_data[data_i + 0] = verts[vert_i].x;
+            ball_data[data_i + 1] = verts[vert_i].y;
+            ball_data[data_i + 2] = pos.x;
+            ball_data[data_i + 3] = pos.y;
+            ball_data[data_i + 4] = ball->get_radius();
+            ball_data[data_i + 5] = color.r;
+            ball_data[data_i + 6] = color.g;
+            ball_data[data_i + 7] = color.b;
         }
 
-        ++ball_it;
+        ++ball;
     }
 
     ball_prog->use();
     ball_vbo->bind();
 
-    if(std::size(data) > ball_vbo_alloc)
+    if(std::size(ball_data) > ball_vbo_alloc)
     {
-        ball_vbo_alloc = std::size(data);
-        glBufferData(GL_ARRAY_BUFFER, std::size(data) * sizeof(decltype(data)::value_type), std::data(data), GL_DYNAMIC_DRAW);
+        ball_vbo_alloc = std::size(ball_data);
+        glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
     }
     else
     {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, std::size(data) * sizeof(decltype(data)::value_type), std::data(data));
+        glBufferSubData(GL_ARRAY_BUFFER, 0, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data));
     }
 
     glEnableVertexAttribArray(0);
@@ -315,10 +308,10 @@ bool World::render()
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(data)::value_type)));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(data)::value_type)));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(4 * sizeof(decltype(data)::value_type)));
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, num_attrs * sizeof(decltype(data)::value_type), reinterpret_cast<GLvoid *>(5 * sizeof(decltype(data)::value_type)));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(4 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(5 * sizeof(decltype(ball_data)::value_type)));
 
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(std::size(balls) * std::size(verts)));
 
@@ -326,6 +319,18 @@ bool World::render()
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(3);
+}
+
+bool World::render()
+{
+    static std::vector<float> frame_times;
+    auto start = std::chrono::high_resolution_clock::now();
+    const glm::vec3 black(0.0f);
+    const glm::vec3 white(1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    render_balls();
 
     for(auto & ball: balls)
     {
