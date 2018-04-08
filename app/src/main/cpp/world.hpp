@@ -50,7 +50,7 @@ private:
 
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
-    std::size_t ball_vbo_alloc = 64 * 8 * 4; // enough for 64 balls
+    std::size_t ball_vbo_alloc = 64 * 8 * 3; // enough for 64 balls
 
     std::unique_ptr<Shader_prog> bar_prog;
     std::unique_ptr<Quad> quad;

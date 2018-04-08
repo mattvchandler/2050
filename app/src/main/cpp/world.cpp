@@ -261,16 +261,11 @@ bool World::render()
     const glm::vec3 black(0.0f);
     const glm::vec3 white(1.0f);
 
-    // TODO: element buffer to at least reduce the amount of dupes
     const std::vector<glm::vec2> verts =
     {
-        {-0.5f, -0.5f},
-        {-0.5f,  0.5f},
-        { 0.5f, -0.5f},
-
-        {-0.5f,  0.5f},
-        { 0.5f, -0.5f},
-        { 0.5f,  0.5f}
+        {-0.5f * std::sqrt(3.0f), -0.5f},
+        { 0.0f,                    1.0f},
+        { 0.5f * std::sqrt(3.0f), -0.5f}
     };
 
     const std::size_t num_attrs = 8;
