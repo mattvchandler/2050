@@ -51,8 +51,7 @@ private:
     std::unique_ptr<GL_buffer> ball_vbo;
 
     const std::size_t num_ball_attrs = 8;
-    std::vector<float> ball_data; // scratch buffer for ball data
-    std::size_t ball_vbo_alloc = 64 * num_ball_attrs * 3; // enough for 64 balls
+    std::vector<float> ball_data = std::vector<float>(64 * num_ball_attrs * 3); // scratch buffer for ball data
 
     std::unique_ptr<Shader_prog> bar_prog;
     std::unique_ptr<Quad> quad;

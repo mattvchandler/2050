@@ -120,7 +120,7 @@ void World::init()
                                               std::vector<std::string>{"vert_pos", "ball_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
     ball_vbo->bind();
-    glBufferData(GL_ARRAY_BUFFER, ball_vbo_alloc * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), NULL, GL_DYNAMIC_DRAW);
 
     const char * bar_vertshader =
      R"(precision mediump float;
@@ -266,7 +266,9 @@ void World::render_balls()
 
     // load up a buffer with vertex data. unfortunately GL ES 2.0 is pretty limited, so lots of duplication here
     // if we had instanced rendering or geometry shaders, this would be much easier
-    ball_data.resize(std::size(balls) * std::size(verts) * num_ball_attrs);
+    auto data_size = std::size(balls) * std::size(verts) * num_ball_attrs;
+    if(std::size(ball_data) < data_size)
+        ball_data.resize(data_size);
 
     auto ball = std::begin(balls);
     for(std::size_t ball_i = 0; ball_i < std::size(balls); ++ball_i)
@@ -293,14 +295,13 @@ void World::render_balls()
     ball_prog->use();
     ball_vbo->bind();
 
-    if(std::size(ball_data) > ball_vbo_alloc)
+    if(data_size > std::size(ball_data))
     {
-        ball_vbo_alloc = std::size(ball_data);
-        glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data_size * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
     }
     else
     {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data));
+        glBufferSubData(GL_ARRAY_BUFFER, 0, data_size * sizeof(decltype(ball_data)::value_type), std::data(ball_data));
     }
 
     glEnableVertexAttribArray(0);
