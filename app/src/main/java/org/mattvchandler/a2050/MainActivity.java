@@ -234,26 +234,26 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         runOnUiThread(() ->
         {
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
-                    .setMessage(getResources().getString(R.string.final_score, score)
-                            + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
-                    .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+                .setMessage(getResources().getString(R.string.final_score, score)
+                        + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
+                .setNegativeButton(R.string.new_game, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                                                                          {
-                                                                             newGame();
-                                                                                       }
-                    })
-                    .setNegativeButton(R.string.continue_playing, new DialogInterface.OnClickListener()
+                        newGame();
+                    }
+                })
+                .setPositiveButton(R.string.continue_playing, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            unpause();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
+                        unpause();
+                    }
+                })
+                .setCancelable(false)
+                .show();
         });
     }
     public void game_over(final int score, final boolean new_high_score)
@@ -262,18 +262,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         runOnUiThread(() ->
         {
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
-                    .setMessage(getResources().getString(R.string.final_score, score)
-                            + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
-                    .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+                .setMessage(getResources().getString(R.string.final_score, score)
+                        + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
+                .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            newGame();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
+                        newGame();
+                    }
+                })
+                .setCancelable(false)
+                .show();
         });
     }
     public void game_pause()
@@ -282,23 +282,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         runOnUiThread(() ->
         {
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
-                    .setPositiveButton(R.string.cont, new DialogInterface.OnClickListener()
+                .setPositiveButton(R.string.cont, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            unpause();
-                        }
-                    })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                        unpause();
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener()
+                {
+                    @Override
+                    public void onCancel(DialogInterface dialog)
                     {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            unpause();
-                        }
-                    })
-                    .show();
+                        unpause();
+                    }
+                })
+                .show();
         });
     }
 
