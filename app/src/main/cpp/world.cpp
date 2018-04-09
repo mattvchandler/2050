@@ -63,7 +63,9 @@ void World::init()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
     const char * ball_vertshader =
-     R"(attribute vec2 vert_pos;
+     R"(precision mediump float;
+
+        attribute vec2 vert_pos;
         attribute vec2 ball_pos;
         attribute float radius;
         attribute vec3 vert_color;

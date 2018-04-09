@@ -24,11 +24,13 @@
     void game_win(int, boolean);
     void game_over(int, boolean);
     void game_pause();
-    native <methods>;
 }
 
--keepclasseswithmembers class android.databinding.* {
-    public <methods>;
+-keepclasseswithmembers class android.databinding.ObservableInt {
+    void set(int);
+}
+-keepclasseswithmembers class android.databinding.ObservableFloat {
+    void set(float);
 }
 
 -keepclasseswithmembers class org.mattvchandler.a2050.MainActivity$DispData {
@@ -38,4 +40,3 @@
 -keepclasseswithmembers class org.mattvchandler.a2050.R$string {
     public static <fields>;
 }
-
