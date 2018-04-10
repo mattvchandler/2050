@@ -11,6 +11,7 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     static
     {
         System.loadLibrary("2050");
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     private native void create(AssetManager assetManager, String path, Resources resources);
