@@ -1,18 +1,22 @@
 package org.mattvchandler.a2050;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
+import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -31,14 +35,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     static
     {
         System.loadLibrary("2050");
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     private native void create(AssetManager assetManager, String path, Resources resources);
     private native void start();
     private native void resume();
-    private native void pause();
+    private native void pause(boolean screen_on);
     private native void stop();
     private native void destroy();
     private native void focus(boolean has_focus);
@@ -103,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         {
             Log.e("MainActivity", "Could not get data directory", e);
         }
+        // TypedValue color = new TypedValue();
+        // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
         create(getResources().getAssets(), path, getResources());
 
         int delay = 100; // ms
@@ -137,8 +143,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onPause()
     {
         super.onPause();
+        PowerManager powerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        boolean screen_on = true;
+        if(powerManager != null)
+        {
+            if(Build.VERSION.SDK_INT >= 20)
+                screen_on = powerManager.isInteractive();
+            else
+                screen_on = powerManager.isScreenOn();
+        }
         Log.d("MainActivity", "onPause");
-        pause();
+        pause(screen_on);
     }
 
     @Override

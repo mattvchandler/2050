@@ -50,7 +50,7 @@ public:
 
     void start() noexcept;
     void resume() noexcept;
-    void pause() noexcept;
+    void pause(bool screen_on) noexcept;
     void stop() noexcept;
 
     void set_focus(bool focus) noexcept;

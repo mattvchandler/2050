@@ -235,12 +235,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *
         __android_log_assert("resume called before engine initialized", "JNI", NULL);
     engine->resume();
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject, jboolean screen_on)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause");
     if(!engine)
         __android_log_assert("pause called before engine initialized", "JNI", NULL);
-    engine->pause();
+    engine->pause(screen_on);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, jobject)

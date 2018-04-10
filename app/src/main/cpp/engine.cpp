@@ -334,12 +334,13 @@ void Engine::resume() noexcept
     render_thread = std::thread(&Engine::render_loop, this);
     physics_thread = std::thread(&Engine::physics_loop, this);
 }
-void Engine::pause() noexcept
+void Engine::pause(bool screen_on) noexcept
 {
     running = false;
     render_thread.join();
     physics_thread.join();
-    world.pause();
+    if(!screen_on)
+        world.pause();
 }
 void Engine::stop() noexcept
 {
