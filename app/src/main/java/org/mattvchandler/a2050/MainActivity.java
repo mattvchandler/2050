@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -302,13 +304,29 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         });
     }
 
-    public void pause_button(View view)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-        pauseGame();
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.activity_main_action_bar, menu);
+
+        return true;
     }
-    public void new_game_button(View view)
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
     {
-        newGame();
+        switch(item.getItemId())
+        {
+            case R.id.pause:
+                pauseGame();
+                return true;
+
+            case R.id.new_game:
+                newGame();
+                return true;
+        }
+        return false;
     }
 
     public class DispData
