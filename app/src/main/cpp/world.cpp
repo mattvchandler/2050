@@ -81,12 +81,11 @@ void World::init()
 
         const float border_thickness = 2.0;
 
-
         void main()
         {
             color = vert_color;
             gl_Position = vec4((projection * vec3(vert_pos * 2.0 * radius + ball_pos, 1.0)).xy, 0.0, 1.0);
-            center = vec2(ball_pos.x, win_size - ball_pos.y);
+            center = ball_pos;
             frag_radius = radius;
             border_size = border_thickness / frag_radius;
             pixel_size = 1.0 / win_size;
@@ -101,20 +100,22 @@ void World::init()
         varying float border_size;
         varying float pixel_size;
 
-        uniform float screen_size;
+        uniform mat3 inv_projection;
+        uniform vec2 screen_size;
         uniform float win_size;
 
         void main()
         {
-            vec2 coord = gl_FragCoord.xy * win_size / screen_size;
+            //vec2 coord = gl_FragCoord.xy * win_size / screen_size;
+            vec2 coord = (inv_projection * vec3(2.0 * gl_FragCoord.xy / screen_size - vec2(1.0), 1.0)).xy;
             float r = distance(coord, center);
 
             if(r >= frag_radius)
-               discard;
+                discard;
 
             r /= frag_radius;
 
-            float alpha = 1.0 - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
+            float alpha = 1.0;// - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
             gl_FragColor = vec4(mix(color, vec3(0.0), smoothstep(1.0 - border_size - 2.0 * pixel_size, 1.0 - border_size + 2.0 * pixel_size, r)), alpha);
         }
     )";
@@ -243,9 +244,12 @@ void World::resize(GLsizei width, GLsizei height)
     for(auto & t: ball_texts)
         t.set_font_sys(*font);
 
+    auto inv_projection = glm::inverse(projection);
+
     ball_prog->use();
     glUniformMatrix3fv(ball_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
-    glUniform1f(ball_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
+    glUniformMatrix3fv(ball_prog->get_uniform("inv_projection"), 1, GL_FALSE, &inv_projection[0][0]);
+    glUniform2fv(ball_prog->get_uniform("screen_size"), 1, &screen_size[0]);
     glUniform1f(ball_prog->get_uniform("win_size"), win_size);
 
     bar_prog->use();
