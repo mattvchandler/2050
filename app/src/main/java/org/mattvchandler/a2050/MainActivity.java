@@ -68,26 +68,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private DispData data = new DispData();
     private Handler update_data = new Handler();
 
-    private ScaleDrawable progress_color;
+    private Drawable progress_color;
 
     private GestureDetectorCompat gestureDetector;
-
-    class GestureListener extends GestureDetector.SimpleOnGestureListener
-    {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
-        {
-            fling(x, y);
-            return true;
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-        gestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
 
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -100,14 +83,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         binding.setData(data);
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
-
-        progress_color = new ScaleDrawable(new ColorDrawable(Color.GREEN), Gravity.START, 1, -1);
-        LayerDrawable prog = new LayerDrawable(new Drawable[] {new ColorDrawable(Color.LTGRAY), progress_color});
-
-        prog.setId(0, android.R.id.background);
-        prog.setId(1, android.R.id.progress);
-
-        binding.pressure.setProgressDrawable(prog);
 
         /*
         getWindow().getDecorView().setSystemUiVisibility(
@@ -132,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
         create(getResources().getAssets(), path, getResources());
 
+        LayerDrawable prog = (LayerDrawable)binding.pressure.getProgressDrawable();
+        progress_color = DrawableCompat.wrap(prog.findDrawableByLayerId(android.R.id.progress).mutate());
+
         int delay = 100; // ms
         update_data.postDelayed(new Runnable()
         {
@@ -144,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
                 int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);
 
-                progress_color.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                DrawableCompat.setTint(progress_color, color);
                 update_data.postDelayed(this, delay);
             }
         }, delay);
@@ -236,6 +214,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         Log.d("MainActivity", "surfaceChanged");
         surfaceChanged(holder.getSurface());
+    }
+
+    class GestureListener extends GestureDetector.SimpleOnGestureListener
+    {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
+        {
+            fling(x, y);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
