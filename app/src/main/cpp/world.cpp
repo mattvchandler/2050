@@ -106,7 +106,6 @@ void World::init()
 
         void main()
         {
-            //vec2 coord = gl_FragCoord.xy * win_size / screen_size;
             vec2 coord = (inv_projection * vec3(2.0 * gl_FragCoord.xy / screen_size - vec2(1.0), 1.0)).xy;
             float r = distance(coord, center);
 
@@ -115,7 +114,7 @@ void World::init()
 
             r /= frag_radius;
 
-            float alpha = 1.0;// - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
+            float alpha = 1.0 - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
             gl_FragColor = vec4(mix(color, vec3(0.0), smoothstep(1.0 - border_size - 2.0 * pixel_size, 1.0 - border_size + 2.0 * pixel_size, r)), alpha);
         }
     )";

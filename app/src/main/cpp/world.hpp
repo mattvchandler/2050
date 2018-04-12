@@ -19,6 +19,9 @@
 /* TODO:
  * Achievement pop-ups?
  * UI design
+ * gravity sensor mode
+ * ball colors set in XML
+ * background changes w/ theme
  */
 
 class World
