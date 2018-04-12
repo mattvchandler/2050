@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private DispData data = new DispData();
     private Handler update_data = new Handler();
 
-    private Drawable progress_color;
-
     private GestureDetectorCompat gestureDetector;
 
     protected void onCreate(Bundle savedInstanceState)
@@ -109,9 +107,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
         create(getResources().getAssets(), path, getResources());
 
-        LayerDrawable prog = (LayerDrawable)binding.pressure.getProgressDrawable();
-        progress_color = DrawableCompat.wrap(prog.findDrawableByLayerId(android.R.id.progress).mutate());
-
         int delay = 100; // ms
         update_data.postDelayed(new Runnable()
         {
@@ -123,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 float r = clamp(0.2f * (float)data.pressure.get() / 10.0f, 0.0f, 1.0f);
                 float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
                 int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);
-                DrawableCompat.setTint(progress_color, color);
+                ((LayerDrawable)binding.pressure.getProgressDrawable()).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
                 update_data.postDelayed(this, delay);
             }
