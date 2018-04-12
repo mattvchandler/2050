@@ -53,9 +53,6 @@ private:
     const std::size_t num_ball_attrs = 8;
     std::vector<float> ball_data = std::vector<float>(64 * num_ball_attrs * 3); // scratch buffer for ball data
 
-    std::unique_ptr<Shader_prog> bar_prog;
-    std::unique_ptr<Quad> quad;
-
     AAsset * font_asset = nullptr;
     const int initial_text_size = 14;
     int text_size = initial_text_size;
@@ -98,6 +95,7 @@ public:
         int score;
         int high_score;
         float grav_angle;
+        int pressure;
     };
     UI_data get_ui_data();
 

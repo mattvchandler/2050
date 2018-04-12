@@ -67,17 +67,4 @@ public:
     void bind() const;
 };
 
-class Quad
-{
-private:
-    GL_buffer vbo{GL_ARRAY_BUFFER};
-    std::size_t num_indexes;
-    std::vector<std::size_t> offsets;
-
-public:
-    Quad();
-    void draw() const;
-
-};
-
 #endif //INC_2050_OPENGL_HPP

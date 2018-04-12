@@ -125,52 +125,6 @@ void World::init()
     ball_vbo->bind();
     glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), NULL, GL_DYNAMIC_DRAW);
 
-    const char * bar_vertshader =
-     R"(precision mediump float;
-        attribute vec2 vert_pos;
-        attribute vec2 vert_tex;
-
-        uniform mat3 projection;
-        uniform vec2 bar_pos;
-        uniform vec2 bar_size;
-
-        varying vec2 tex_coords;
-
-        void main()
-        {
-            tex_coords = vert_tex;
-            gl_Position = vec4((projection * vec3(vert_pos * bar_size + bar_pos + bar_size / 2.0, 1.0)).xy, 0.0, 1.0);
-        }
-    )";
-    const char * bar_fragshader =
-     R"(precision mediump float;
-        varying vec2 tex_coords;
-
-        uniform vec3 color;
-        uniform float screen_size;
-        uniform float win_size;
-        uniform vec2 bar_size;
-        uniform float border_thickness;
-
-        void main()
-        {
-            float border_size = border_thickness / 2.0 * screen_size / win_size;
-            float xmin = border_size / bar_size.x;
-            float xmax = 1.0 - border_size / bar_size.x;
-            float ymin = border_size / bar_size.y;
-            float ymax = 1.0 - border_size / bar_size.y;
-
-            if(tex_coords.x < xmin || tex_coords.x > xmax ||
-               tex_coords.y < ymin || tex_coords.y > ymax)
-                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-            else
-                gl_FragColor = vec4(color, 1.0);
-        }
-    )";
-    bar_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{bar_vertshader, GL_VERTEX_SHADER}, {bar_fragshader, GL_FRAGMENT_SHADER}},
-                                             std::vector<std::string>{"vert_pos", "tex_coord"});
-    quad = std::make_unique<Quad>();
-
     // font sizes don't matter yet b/c resize should be called immediately after init
     font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
@@ -204,9 +158,6 @@ void World::destroy()
     __android_log_write(ANDROID_LOG_DEBUG, "World::destroy", "destroying opengl objects");
     ball_prog.reset();
     ball_vbo.reset();
-
-    bar_prog.reset();
-    quad.reset();
 
     ball_texts.clear();
     font.reset();
@@ -251,11 +202,6 @@ void World::resize(GLsizei width, GLsizei height)
     glUniformMatrix3fv(ball_prog->get_uniform("inv_projection"), 1, GL_FALSE, &inv_projection[0][0]);
     glUniform2fv(ball_prog->get_uniform("screen_size"), 1, &screen_size[0]);
     glUniform1f(ball_prog->get_uniform("win_size"), win_size);
-
-    bar_prog->use();
-    glUniformMatrix3fv(bar_prog->get_uniform("projection"), 1, GL_FALSE, &projection[0][0]);
-    glUniform1f(bar_prog->get_uniform("screen_size"), std::min(screen_size.x, screen_size.y));
-    glUniform1f(bar_prog->get_uniform("win_size"), win_size);
 
     GL_CHECK_ERROR("World::resize");
 }
@@ -345,36 +291,6 @@ bool World::render()
             ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
 
         ball_texts[ball.get_size()].render_text({ball.get_text_color(), 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
-    }
-
-    // draw compression bar
-    if(med_compression > 1.0f)
-    {
-        const glm::vec2 bar_pos {10.0f, 10.0f};
-        const glm::vec2 bar_size {200.0f, 30.0f};
-        const float border_thickness = 2.0f;
-
-        bar_prog->use();
-
-        // frame
-        glUniform3fv(bar_prog->get_uniform("color"), 1, &white[0]);
-        glUniform2fv(bar_prog->get_uniform("bar_pos"), 1, &bar_pos[0]);
-        glUniform2fv(bar_prog->get_uniform("bar_size"), 1, &bar_size[0]);
-        glUniform1f(bar_prog->get_uniform("border_thickness"), border_thickness);
-        quad->draw();
-
-        // color fill
-        glm::vec3 fill_color {glm::clamp(0.2f * med_compression, 0.0f, 1.0f), glm::clamp(0.2f * (10.0f - med_compression), 0.0f, 1.0f), 0.0f};
-        const glm::vec2 fill_size {std::min((bar_size.x  - 2.0 * border_thickness) * med_compression * 0.1f, bar_size.x - 2.0 * border_thickness), bar_size.y - 2.0 * border_thickness};
-        const glm::vec2 fill_pos = bar_pos + glm::vec2(border_thickness);
-
-        glUniform3fv(bar_prog->get_uniform("color"), 1, &fill_color[0]);
-        glUniform2fv(bar_prog->get_uniform("bar_pos"), 1, &fill_pos[0]);
-        glUniform2fv(bar_prog->get_uniform("bar_size"), 1, &fill_size[0]);
-        glUniform1f(bar_prog->get_uniform("border_thickness"), 0.0f);
-        quad->draw();
-
-        font->render_text(get_str("pressure"), {black, 1.0f}, screen_size, text_coord_transform(bar_pos + 0.5f * bar_size), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -487,7 +403,7 @@ void World::new_game()
 
 World::UI_data World::get_ui_data()
 {
-    return {score, high_score, std::atan2(grav_vec.x, -grav_vec.y)};
+    return {score, high_score, std::atan2(grav_vec.x, -grav_vec.y), static_cast<int>(std::lround(med_compression * 10.0f))};
 }
 
 void World::deserialize(const nlohmann::json & data)

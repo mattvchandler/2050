@@ -3,13 +3,21 @@ package org.mattvchandler.a2050;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +26,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +38,8 @@ import android.view.View;
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
 import java.io.IOException;
+
+import static android.support.v4.math.MathUtils.clamp;
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback
 {
@@ -56,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ActivityMainBinding binding;
     private DispData data = new DispData();
     private Handler update_data = new Handler();
+
+    private ScaleDrawable progress_color;
 
     private GestureDetectorCompat gestureDetector;
 
@@ -88,6 +101,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
 
+        progress_color = new ScaleDrawable(new ColorDrawable(Color.GREEN), Gravity.START, 1, -1);
+        LayerDrawable prog = new LayerDrawable(new Drawable[] {new ColorDrawable(Color.LTGRAY), progress_color});
+
+        prog.setId(0, android.R.id.background);
+        prog.setId(1, android.R.id.progress);
+
+        binding.pressure.setProgressDrawable(prog);
+
         /*
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -118,6 +139,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             public void run()
             {
                 getUIData(data);
+
+                float r = clamp(0.2f * (float)data.pressure.get() / 10.0f, 0.0f, 1.0f);
+                float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
+                int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);
+
+                progress_color.setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 update_data.postDelayed(this, delay);
             }
         }, delay);
@@ -352,5 +379,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         public final ObservableInt   score      = new ObservableInt();
         public final ObservableInt   high_score = new ObservableInt();
         public final ObservableFloat grav_angle = new ObservableFloat();
+        public final ObservableInt   pressure   = new ObservableInt();
     }
 }

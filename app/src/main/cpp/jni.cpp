@@ -11,7 +11,8 @@ std::unique_ptr<Engine> engine;
 #define DISP_DATA_FIELDS \
 X(ObservableInt, set_int, score) \
 X(ObservableInt, set_int, high_score)\
-X(ObservableFloat, set_float, grav_angle)
+X(ObservableFloat, set_float, grav_angle)\
+X(ObservableInt, set_int, pressure)
 
 struct JVM_refs
 {
