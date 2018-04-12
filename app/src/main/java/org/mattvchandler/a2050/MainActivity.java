@@ -10,6 +10,7 @@ import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -34,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
@@ -121,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 float r = clamp(0.2f * (float)data.pressure.get() / 10.0f, 0.0f, 1.0f);
                 float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
                 int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);
-
                 DrawableCompat.setTint(progress_color, color);
+
                 update_data.postDelayed(this, delay);
             }
         }, delay);
