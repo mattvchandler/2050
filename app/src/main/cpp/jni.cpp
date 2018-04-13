@@ -132,6 +132,9 @@ JVM_refs jvm_refs;
 
 void game_win(int score, bool new_high_score)
 {
+    if(!jvm_refs.vm)
+        return;
+
     bool attached = false;
     JNIEnv * env;
     if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
@@ -146,6 +149,9 @@ void game_win(int score, bool new_high_score)
 }
 void game_over(int score, bool new_high_score)
 {
+    if(!jvm_refs.vm)
+        return;
+
     bool attached = false;
     JNIEnv * env;
     if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
@@ -160,6 +166,9 @@ void game_over(int score, bool new_high_score)
 }
 void game_pause()
 {
+    if(!jvm_refs.vm)
+        return;
+
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause_game");
     bool attached = false;
     JNIEnv * env;

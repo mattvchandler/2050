@@ -106,6 +106,22 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // TypedValue color = new TypedValue();
         // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
         create(getResources().getAssets(), path, getResources());
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Log.d("MainActivity", "onStart");
+        start();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.d("MainActivity", "onResume");
+        resume();
 
         int delay = 100; // ms
         update_data.postDelayed(new Runnable()
@@ -126,22 +142,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     @Override
-    protected void onStart()
-    {
-        super.onStart();
-        Log.d("MainActivity", "onStart");
-        start();
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.d("MainActivity", "onResume");
-        resume();
-    }
-
-    @Override
     protected void onPause()
     {
         super.onPause();
@@ -156,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
         Log.d("MainActivity", "onPause");
         pause(screen_on);
+
+        update_data.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -272,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
+            if(isDestroyed() || isFinishing())
+                return;
+
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
@@ -300,6 +305,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
+            if(isDestroyed() || isFinishing())
+                return;
+
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
@@ -320,6 +328,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "game_pause");
         runOnUiThread(() ->
         {
+            if(isDestroyed() || isFinishing())
+                return;
+
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
                 .setPositiveButton(R.string.cont, new DialogInterface.OnClickListener()
                 {
