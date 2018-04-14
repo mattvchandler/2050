@@ -6,24 +6,9 @@
         xmlns:aapt="http://schemas.android.com/aapt">
      <!--TODO: darker border color for night theme -->
     <path
+        android:fillColor="@android:color/black"
         android:strokeColor="?attr/colorControlNormal"
         android:strokeWidth="0.5"
         android:pathData="M24,47l-3,-10h6zm-3,-10c0,-1,0,-2,1,-2h4c1,0,1,1,1,2m-4,-2v-1h2v1m-1,-1v-9m-1,-1a1,1,0,1,0,2,0a1,1,0,1,0,-2,0">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:type="linear"
-                android:startX="21"
-                android:endX="27">
-                <item
-                    android:offset="0.0"
-                    android:color="#E0E000"/>
-                <item
-                    android:offset="0.5"
-                    android:color="#FFFF80"/>
-                <item
-                    android:offset="1.0"
-                    android:color="#808000"/>
-            </gradient>
-        </aapt:attr>
     </path>
 </vector>
