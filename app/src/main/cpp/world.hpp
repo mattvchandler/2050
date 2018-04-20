@@ -22,6 +22,7 @@
  * gravity sensor mode
  * ball colors set in XML
  * background changes w/ theme
+ * don't pause on start-up
  */
 
 class World
