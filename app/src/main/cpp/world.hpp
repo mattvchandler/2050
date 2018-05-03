@@ -18,11 +18,13 @@
 
 /* TODO:
  * Achievement pop-ups?
- * UI design
  * gravity sensor mode
  * ball colors set in XML
  * background changes w/ theme
+ * icon
+ * * Kotlin?
  * don't pause on start-up
+ * remove (or at least disable logging)
  */
 
 class World
