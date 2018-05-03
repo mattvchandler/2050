@@ -25,6 +25,7 @@
  * * Kotlin?
  * don't pause on start-up
  * remove (or at least disable logging)
+ * surface disp seems to have crept up again / really wrong on landscape
  */
 
 class World

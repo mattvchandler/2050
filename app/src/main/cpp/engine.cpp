@@ -339,8 +339,7 @@ void Engine::pause(bool screen_on) noexcept
     running = false;
     render_thread.join();
     physics_thread.join();
-    if(!screen_on)
-        world.pause();
+    pause_game();
 }
 void Engine::stop() noexcept
 {
@@ -355,8 +354,7 @@ void Engine::set_focus(bool focus) noexcept
     __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
     if(!focus)
     {
-        std::scoped_lock lock(mutex);
-        world.pause();
+        pause_game();
     }
 }
 
@@ -399,7 +397,6 @@ void Engine::unpause() noexcept
     std::scoped_lock lock(mutex);
     world.unpause();
 }
-
 
 World::UI_data Engine::get_ui_data() noexcept
 {

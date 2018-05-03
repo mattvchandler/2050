@@ -169,7 +169,7 @@ void game_pause()
     if(!jvm_refs.vm)
         return;
 
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause_game");
+    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "game_pause");
     bool attached = false;
     JNIEnv * env;
     if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
@@ -309,7 +309,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEn
     if(!engine)
         __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
     engine->pause_game();
-
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_unpause(JNIEnv *, jobject)
 {
