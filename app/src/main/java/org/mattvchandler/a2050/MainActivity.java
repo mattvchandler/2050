@@ -280,22 +280,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
-                .setNegativeButton(R.string.new_game, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        newGame();
-                    }
-                })
-                .setPositiveButton(R.string.continue_playing, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        unpause();
-                    }
-                })
+                .setNegativeButton(R.string.new_game, (dialog, which) -> newGame())
+                .setPositiveButton(R.string.continue_playing, (dialog, which) -> unpause())
                 .setCancelable(false)
                 .show();
         });
@@ -311,14 +297,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
-                .setPositiveButton(R.string.new_game, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        newGame();
-                    }
-                })
+                .setPositiveButton(R.string.new_game, (dialog, which) -> newGame())
                 .setCancelable(false)
                 .show();
         });
@@ -332,22 +311,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 return;
 
             new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
-                .setPositiveButton(R.string.cont, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        unpause();
-                    }
-                })
-                .setOnCancelListener(new DialogInterface.OnCancelListener()
-                {
-                    @Override
-                    public void onCancel(DialogInterface dialog)
-                    {
-                        unpause();
-                    }
-                })
+                .setPositiveButton(R.string.cont, (dialog, which) -> unpause())
+                .setOnCancelListener(dialog -> unpause())
                 .show();
         });
     }
