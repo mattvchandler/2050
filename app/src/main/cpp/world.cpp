@@ -432,8 +432,6 @@ void World::deserialize(const nlohmann::json & data)
             state = State::EXTENDED;
     }
 
-    if(data.find("paused") != std::end(data))
-        paused = data["paused"];
     if(data.find("score") != std::end(data))
         score = data["score"];
     if(data.find("high_score") != std::end(data))
@@ -477,7 +475,6 @@ nlohmann::json World::serialize() const
         break;
     }
 
-    data["paused"] = paused;
     data["score"] = score;
     data["high_score"] = high_score;
     data["grav_vec"] = {grav_vec.x, grav_vec.y};

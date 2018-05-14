@@ -22,10 +22,9 @@
  * ball colors set in XML
  * background changes w/ theme
  * icon
- * * Kotlin?
- * don't pause on start-up
+ * Kotlin?
  * remove (or at least disable logging)
- * surface disp seems to have crept up again / really wrong on landscape
+ * cleanup commented code in MainActivity
  */
 
 class World

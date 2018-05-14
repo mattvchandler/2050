@@ -46,7 +46,7 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path);
+    Engine(AAssetManager * asset_manager, const std::string & data_path, bool startup_pause);
 
     void start() noexcept;
     void resume() noexcept;

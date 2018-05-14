@@ -6,6 +6,7 @@
 
 #include "engine.hpp"
 
+std::atomic<bool> startup_pause = false;
 std::unique_ptr<Engine> engine;
 
 #define DISP_DATA_FIELDS \
@@ -225,7 +226,8 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path);
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, startup_pause);
+    startup_pause = true;
 
     env->ReleaseStringUTFChars(path, data_path);
 }
