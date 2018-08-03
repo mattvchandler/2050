@@ -41,6 +41,14 @@ int main(int argc, char * argv[])
     textogl::Static_text static_text2(font2, "GIANT TEXT IS THE\nBEST KIND OF TEXT");
     textogl::Static_text static_text3(font, "More text");
 
+    std::vector<textogl::Font_sys> font_arr;
+    std::vector<textogl::Static_text> static_arr;
+    for(int i = 0; i < 10; ++i)
+    {
+        font_arr.emplace_back(argv[2], 72);
+        static_arr.emplace_back(font_arr[i], std::to_string(i));
+    }
+
     bool running = true;
     while(running)
     {
@@ -100,6 +108,10 @@ int main(int argc, char * argv[])
 
         static_text3.render_text(textogl::Color{0.0f, 1.0f, 1.0f, 1.0f}, textogl::Vec2<float>{(float)win.getSize().x, (float)win.getSize().y},
                 textogl::Vec2<float>{0.0f, 550.0f}, textogl::ORIGIN_VERT_TOP | textogl::ORIGIN_HORIZ_LEFT);
+
+        for(std::size_t i = 0; i < font_arr.size(); ++i)
+            static_arr[i].render_text(textogl::Color{0.0f, 0.0f, 0.0f, 1.0f}, textogl::Vec2<float>{(float)win.getSize().x, (float)win.getSize().y},
+                textogl::Vec2<float>{win.getSize().x, i * 60}, textogl::ORIGIN_VERT_TOP | textogl::ORIGIN_HORIZ_RIGHT);
 
         win.display();
     }

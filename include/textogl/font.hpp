@@ -122,19 +122,6 @@ namespace textogl
                  const std::size_t font_data_size, ///< Font file data's size in memory
                  const unsigned int font_size      ///< Font size (in pixels)
                  );
-        ~Font_sys() = default;
-
-        /// @name Non-copyable
-        /// @{
-        Font_sys(const Font_sys &) = delete;
-        Font_sys & operator=(const Font_sys &) = delete;
-        /// @}
-
-        /// @name Movable
-        /// @{
-        Font_sys(Font_sys &&) = default;
-        Font_sys & operator=(Font_sys &&) = default;
-        /// @}
 
         /// Resize font
 

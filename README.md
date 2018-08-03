@@ -20,8 +20,7 @@ Freetype).
 ### Dependencies
 
 * [Freetype](https://www.freetype.org/)
-* OpenGL 3.0 +
-    * OpenGL ES Support coming soon™
+* OpenGL 3.3 + OR OpenGL ES 2.0+
 * GLM (Optional - Allows passing glm vectors to textogl for colors and positions)
 * Compiler supporting c++11
 
