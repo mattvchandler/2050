@@ -130,7 +130,7 @@ std::u32string utf8_to_utf32(const std::string & utf8)
 namespace textogl
 {
     Font_sys::Font_sys(const std::string & font_path, const unsigned int font_size):
-        pimpl(new Impl(font_path, font_size), [](Impl * impl) { delete impl; })
+        pimpl(std::make_shared<Impl>(font_path, font_size))
     {}
     Font_sys::Impl::Impl(const std::string & font_path, const unsigned int font_size)
     {
@@ -149,7 +149,7 @@ namespace textogl
     }
 
     Font_sys::Font_sys(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size):
-        pimpl(new Impl(font_data, font_data_size, font_size), [](Impl * impl) { delete impl; })
+        pimpl(std::make_shared<Impl>(font_data, font_data_size, font_size))
     {}
     Font_sys::Impl::Impl(const unsigned char * font_data, std::size_t font_data_size, const unsigned int font_size)
     {
