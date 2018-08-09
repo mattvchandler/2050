@@ -25,6 +25,8 @@
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
+ * remove debug text
+ * Don't pause on rotation
  */
 
 class World

@@ -1,5 +1,6 @@
 package org.mattvchandler.a2050;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         System.loadLibrary("2050");
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); //TODO: only for testing
     }
 
     private native void create(AssetManager assetManager, String path, Resources resources);
@@ -84,16 +85,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
 
-        /*
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        */
-
         String path = "";
         try
         {
@@ -105,6 +96,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
         // TypedValue color = new TypedValue();
         // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
+
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility ->
+        {
+            android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+            if(actionBar != null)
+            {
+                if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+                    actionBar.show();
+                else
+                    actionBar.hide();
+            }
+        });
+
         create(getResources().getAssets(), path, getResources());
     }
 
@@ -173,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "onDestroy");
         destroy();
 
-        // SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surface_view);
         binding.surfaceView.getHolder().removeCallback(this);
 
         super.onDestroy();
@@ -184,18 +187,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         super.onWindowFocusChanged(hasFocus);
         Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
-        /*
-        if(hasFocus)
-        {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-        */
         focus(hasFocus);
     }
 
@@ -337,6 +328,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
             case R.id.new_game:
                 newGame();
+                return true;
+
+            case R.id.fullscreen:
+                getWindow().getDecorView().setSystemUiVisibility(
+                      View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
                 return true;
         }
         return false;

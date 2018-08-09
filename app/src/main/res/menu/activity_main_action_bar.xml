@@ -13,4 +13,10 @@
         android:title="@string/new_game"
         app:showAsAction="ifRoom"
     />
+    <item
+        android:id="@+id/fullscreen"
+        android:icon="@drawable/ic_fullscreen"
+        android:title="@string/fullscreen"
+        app:showAsAction="ifRoom"
+        />
 </menu>

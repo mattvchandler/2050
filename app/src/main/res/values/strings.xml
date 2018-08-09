@@ -18,5 +18,7 @@
 
     <string name="pause">Pause</string>
 
+    <string name="fullscreen">Fullscreen</string>
+
     <string name="gravity_arrow_desc">Gravity arrow</string>
 </resources>
