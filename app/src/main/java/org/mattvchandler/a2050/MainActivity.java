@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         Log.d("MainActivity", "onCreate");
 
+        setSupportActionBar(binding.toolbar);
+
         binding.surfaceView.getHolder().addCallback(this);
         binding.setData(data);
 
@@ -102,10 +104,16 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             android.support.v7.app.ActionBar actionBar = getSupportActionBar();
             if(actionBar != null)
             {
-                if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+                if((visibility & (View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)) == 0)
+                {
+                    Log.d("VisibilityChanged", "visible");
                     actionBar.show();
+                }
                 else
+                {
+                    Log.d("VisibilityChanged", "invisible");
                     actionBar.hide();
+                }
             }
         });
 
@@ -335,6 +343,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                       View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE);
+
+                android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+                if(actionBar != null)
+                    actionBar.hide();
+
                 return true;
         }
         return false;

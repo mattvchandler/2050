@@ -278,7 +278,7 @@ bool World::render()
     static std::vector<float> frame_times;
     auto start = std::chrono::high_resolution_clock::now();
     const glm::vec3 black(0.0f);
-    const glm::vec3 white(1.0f);
+    const glm::vec3 white(1.0f); // TODO: unused
 
     glClear(GL_COLOR_BUFFER_BIT);
 

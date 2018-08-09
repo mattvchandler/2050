@@ -27,6 +27,7 @@
  * cleanup commented code in MainActivity
  * remove debug text
  * Don't pause on rotation
+ * Don't pause when menu opened
  */
 
 class World
