@@ -10,9 +10,10 @@
         <variable name="data" type="DispData"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         >
 
         <android.support.v7.widget.Toolbar
@@ -23,117 +24,124 @@
             android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
             />
 
-        <TextView
-            android:id="@+id/high_score"
-            android:text="@{@string/high_score(data.high_score)}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toTopOf="@id/score"
-            app:layout_constraintLeft_toRightOf="@id/gravity"
-            app:layout_constraintRight_toRightOf="parent"
-            />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
-        <TextView
-            android:id="@+id/score"
-            android:text="@{@string/score(data.score)}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintTop_toBottomOf="@id/high_score"
-            app:layout_constraintBottom_toTopOf="@id/surface_view"
-            app:layout_constraintLeft_toRightOf="@id/gravity"
-            app:layout_constraintRight_toRightOf="parent"
-            />
+            <TextView
+                android:id="@+id/high_score"
+                android:text="@{@string/high_score(data.high_score)}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/score"
+                app:layout_constraintLeft_toRightOf="@id/gravity"
+                app:layout_constraintRight_toRightOf="parent"
+                />
 
-        <ImageView
-            android:id="@+id/gravity_bg"
-            app:srcCompat="@drawable/plumb_bob_bg"
-            android:contentDescription="@string/gravity_arrow_desc"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            tools:ignore="UnusedAttribute"
-            android:elevation="8dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toTopOf="@id/gravity"
-            app:layout_constraintBottom_toBottomOf="@id/gravity"
-            app:layout_constraintStart_toStartOf="@id/gravity"
-            app:layout_constraintEnd_toEndOf="@id/gravity"
-            />
-        <ImageView
-            android:id="@+id/gravity"
-            app:srcCompat="@drawable/plumb_bob"
-            android:contentDescription="@string/gravity_arrow_desc"
-            android:rotation="@{data.grav_angle * 180.0f / 3.14159f + 180.0f}"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            tools:ignore="UnusedAttribute"
-            android:elevation="16dp"
-            android:layout_margin="8dp"
-            app:layout_constraintVertical_chainStyle="spread_inside"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toTopOf="@id/pressure_txt"
-            app:layout_constraintLeft_toLeftOf="parent"
-            />
+            <TextView
+                android:id="@+id/score"
+                android:text="@{@string/score(data.score)}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintTop_toBottomOf="@id/high_score"
+                app:layout_constraintBottom_toTopOf="@id/surface_view"
+                app:layout_constraintLeft_toRightOf="@id/gravity"
+                app:layout_constraintRight_toRightOf="parent"
+                />
 
-        <TextView
-            android:id="@+id/pressure_txt"
-            android:text="@string/pressure"
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:ignore="UnusedAttribute"
-            android:elevation="24dp"
-            app:layout_constraintTop_toBottomOf="@id/gravity"
-            app:layout_constraintBottom_toTopOf="@id/pressure"
-            app:layout_constraintStart_toStartOf="@id/pressure"
-            app:layout_constraintEnd_toEndOf="@id/pressure"
-            />
+            <ImageView
+                android:id="@+id/gravity_bg"
+                app:srcCompat="@drawable/plumb_bob_bg"
+                android:contentDescription="@string/gravity_arrow_desc"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                tools:ignore="UnusedAttribute"
+                android:elevation="8dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toTopOf="@id/gravity"
+                app:layout_constraintBottom_toBottomOf="@id/gravity"
+                app:layout_constraintStart_toStartOf="@id/gravity"
+                app:layout_constraintEnd_toEndOf="@id/gravity"
+                />
+            <ImageView
+                android:id="@+id/gravity"
+                app:srcCompat="@drawable/plumb_bob"
+                android:contentDescription="@string/gravity_arrow_desc"
+                android:rotation="@{data.grav_angle * 180.0f / 3.14159f + 180.0f}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintHeight_default="percent"
+                app:layout_constraintHeight_percent="0.15"
+                tools:ignore="UnusedAttribute"
+                android:elevation="16dp"
+                android:layout_margin="8dp"
+                app:layout_constraintVertical_chainStyle="spread_inside"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/pressure_txt"
+                app:layout_constraintLeft_toLeftOf="parent"
+                />
 
-        <ProgressBar
-            android:id="@+id/pressure"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:indeterminate="false"
-            android:max="100"
-            android:progress="@{data.pressure}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            tools:ignore="UnusedAttribute"
-            android:elevation="16dp"
-            app:layout_constraintTop_toBottomOf="@id/gravity"
-            app:layout_constraintBottom_toTopOf="@id/pressure_txt"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            />
+            <TextView
+                android:id="@+id/pressure_txt"
+                android:text="@string/pressure"
+                android:textSize="12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="UnusedAttribute"
+                android:elevation="24dp"
+                app:layout_constraintTop_toBottomOf="@id/gravity"
+                app:layout_constraintBottom_toTopOf="@id/pressure"
+                app:layout_constraintStart_toStartOf="@id/pressure"
+                app:layout_constraintEnd_toEndOf="@id/pressure"
+                />
 
-        <android.view.SurfaceView
-            android:id="@+id/surface_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            tools:ignore="UnusedAttribute"
-            android:outlineProvider="bounds"
-            android:elevation="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintVertical_bias="1.0"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toBottomOf="@id/pressure"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            />
-    </android.support.constraint.ConstraintLayout>
+            <ProgressBar
+                android:id="@+id/pressure"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="@{data.pressure}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                tools:ignore="UnusedAttribute"
+                android:elevation="16dp"
+                app:layout_constraintTop_toBottomOf="@id/gravity"
+                app:layout_constraintBottom_toTopOf="@id/pressure_txt"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                />
+
+            <android.view.SurfaceView
+                android:id="@+id/surface_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                tools:ignore="UnusedAttribute"
+                android:outlineProvider="bounds"
+                android:elevation="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toBottomOf="@id/pressure"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.LinearLayoutCompat>
 </layout>
