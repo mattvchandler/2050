@@ -43,8 +43,6 @@ std::string World::get_str(const std::string & id)
 World::World(AAssetManager * asset_manager)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
-    for(std::size_t i = 0; i < num_starting_balls; ++i)
-        balls.emplace_back(win_size);
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
 
@@ -52,6 +50,18 @@ World::World(AAssetManager * asset_manager)
     {
         resource_strings[i] = get_res_string(i);
     }
+
+    auto color_array = get_res_int_array("ball_colors");
+    for(auto & color: color_array)
+    {
+       ball_colors.emplace_back(
+           static_cast<float>((color >> 16) & 0xFF) / 256.0f,
+           static_cast<float>((color >>  8) & 0xFF) / 256.0f,
+           static_cast<float>((color)       & 0xFF) / 256.0f
+       );
+    }
+
+    new_game();
 }
 World::~World()
 {
@@ -382,7 +392,7 @@ void World::fling(float x, float y)
     {
         auto fling = -glm::normalize(glm::vec2(x, y));
         grav_vec = fling * g;
-        balls.emplace_back(win_size);
+        balls.emplace_back(win_size, ball_colors);
     }
 }
 
@@ -390,7 +400,7 @@ void World::new_game()
 {
     balls.clear();
     for(std::size_t i = 0; i < num_starting_balls; ++i)
-        balls.emplace_back(win_size);
+        balls.emplace_back(win_size, ball_colors);
 
     last_compressions = std::deque<float>(100, 0.0f);
     med_compression = 0.0f;
@@ -411,7 +421,7 @@ void World::deserialize(const nlohmann::json & data, bool first_run)
     {
         balls.clear();
         for(auto &b: data["balls"])
-            balls.emplace_back(win_size, b);
+            balls.emplace_back(win_size, ball_colors, b);
     }
 
     if(data.find("last_compressions") != std::end(data))

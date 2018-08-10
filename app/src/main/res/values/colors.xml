@@ -2,4 +2,18 @@
 <resources>
     <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#087f23</color>
+
+    <array name="ball_colors">
+        <item>#FF0000</item>
+        <item>#FF8000</item>
+        <item>#FFFF00</item>
+        <item>#FF8080</item>
+        <item>#FF00FF</item>
+        <item>#8000FF</item>
+        <item>#0000FF</item>
+        <item>#0080FF</item>
+        <item>#00FFFF</item>
+        <item>#00FF80</item>
+        <item>#00FF00</item>
+    </array>
 </resources>

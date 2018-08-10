@@ -19,7 +19,7 @@
 /* TODO:
  * Achievement pop-ups?
  * gravity sensor mode
- * ball colors set in XML
+ * pass ball colors as ints (since that's how we're defining them)
  * background / ball colors changes w/ theme
  * icon
  * Kotlin?
@@ -27,6 +27,7 @@
  * cleanup commented code in MainActivity
  * remove debug text
  * shrink bundled font file
+ * not using resource strings in c++ anymore - delete the code supporing that
  */
 
 class World
@@ -71,6 +72,7 @@ private:
 
     std::unordered_map<std::string, std::string> resource_strings;
     std::string get_str(const std::string & id);
+    std::vector<glm::vec3> ball_colors;
 
     std::vector<float> physx_times;
 

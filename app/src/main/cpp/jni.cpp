@@ -42,7 +42,7 @@ struct JVM_refs
         if(!game_pause_method)
             __android_log_assert("Couldn't get 'game_pause' method", "JNI", NULL);
 
-        // get R.string class and Resources.getString() method
+        // get R.string / R.array classes and Resources.getString() / getIntArray methods
         resources = env->NewGlobalRef(resources_local);
         if(!resources)
             __android_log_assert("Couldn't get resources global ref", "JNI", NULL);
@@ -51,6 +51,10 @@ struct JVM_refs
         if(!get_string_method)
             __android_log_assert("Couldn't get 'get_string' method", "JNI", NULL);
 
+        get_int_array_method = env->GetMethodID(env->GetObjectClass(resources), "getIntArray", "(I)[I");
+        if(!get_int_array_method)
+            __android_log_assert("Couldn't get 'get_int_array' method", "JNI", NULL);
+
         jclass R_string_local = env->FindClass("org/mattvchandler/a2050/R$string");
         if(!R_string_local)
             __android_log_assert("Couldn't get 'R.string' class", "JNI", NULL);
@@ -58,6 +62,14 @@ struct JVM_refs
         R_string = static_cast<jclass>(env->NewGlobalRef(R_string_local));
         if(!R_string)
             __android_log_assert("Couldn't get 'R.string' global ref", "JNI", NULL);
+
+        jclass R_array_local = env->FindClass("org/mattvchandler/a2050/R$array");
+        if(!R_array_local)
+            __android_log_assert("Couldn't get 'R.array' class", "JNI", NULL);
+
+        R_array = static_cast<jclass>(env->NewGlobalRef(R_array_local));
+        if(!R_array)
+            __android_log_assert("Couldn't get 'R.array' global ref", "JNI", NULL);
 
         // get DispData class fields, and set methods for each
         jclass observable_int = env->FindClass("android/databinding/ObservableInt");
@@ -94,34 +106,37 @@ struct JVM_refs
         env->DeleteGlobalRef(resources);
         env->DeleteGlobalRef(R_string);
 
-        vm                = nullptr;
-        main_activity     = nullptr;
-        game_win_method   = nullptr;
-        game_over_method  = nullptr;
-        game_pause_method = nullptr;
-        resources         = nullptr;
-        R_string          = nullptr;
-        get_string_method = nullptr;
-        set_int           = nullptr;
-        set_float         = nullptr;
+        vm                   = nullptr;
+        main_activity        = nullptr;
+        game_win_method      = nullptr;
+        game_over_method     = nullptr;
+        game_pause_method    = nullptr;
+        resources            = nullptr;
+        R_string             = nullptr;
+        get_string_method    = nullptr;
+        get_int_array_method = nullptr;
+        set_int              = nullptr;
+        set_float            = nullptr;
 #define X(type, method, name) name = nullptr;
         DISP_DATA_FIELDS
 #undef X
     }
 
-    JavaVM * vm                 = nullptr;
+    JavaVM * vm                    = nullptr;
 
-    jobject   main_activity     = nullptr;
-    jmethodID game_win_method   = nullptr;
-    jmethodID game_over_method  = nullptr;
-    jmethodID game_pause_method = nullptr;
+    jobject   main_activity        = nullptr;
+    jmethodID game_win_method      = nullptr;
+    jmethodID game_over_method     = nullptr;
+    jmethodID game_pause_method    = nullptr;
 
-    jobject   resources         = nullptr;
-    jclass    R_string          = nullptr;
-    jmethodID get_string_method = nullptr;
+    jobject   resources            = nullptr;
+    jclass    R_string             = nullptr;
+    jclass    R_array              = nullptr;
+    jmethodID get_string_method    = nullptr;
+    jmethodID get_int_array_method = nullptr;
 
-    jmethodID set_int           = nullptr;
-    jmethodID set_float         = nullptr;
+    jmethodID set_int              = nullptr;
+    jmethodID set_float            = nullptr;
 
 #define X(type, method, name) jfieldID name = nullptr;
     DISP_DATA_FIELDS
@@ -220,6 +235,37 @@ std::string get_res_string(const std::string & id)
     return cpp_str;
 }
 
+std::vector<int> get_res_int_array(const std::string & id)
+{
+    bool attached = false;
+    JNIEnv * env;
+    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
+        attached = true;
+    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
+        __android_log_assert("could not attach thread!", "JNI::test", NULL);
+
+    jfieldID id_field = env->GetStaticFieldID(jvm_refs.R_array, id.c_str(), "I");
+    if(!id_field)
+    {
+        __android_log_print(ANDROID_LOG_ERROR, "get_res_int_array", "Could not find resource array: %s", id.c_str());
+        return {};
+    }
+
+    int array_id = env->GetStaticIntField(jvm_refs.R_array, id_field);
+
+    jintArray j_arr = static_cast<jintArray>(env->CallObjectMethod(jvm_refs.resources, jvm_refs.get_int_array_method, array_id));
+    int * c_arr = env->GetIntArrayElements(j_arr, NULL);
+    jsize c_arr_size = env->GetArrayLength(j_arr);
+
+    std::vector<int> ret(c_arr, c_arr + c_arr_size);
+
+    env->ReleaseIntArrayElements(j_arr, c_arr, NULL);
+
+    if(!attached)
+        jvm_refs.vm->DetachCurrentThread();
+
+    return ret;
+}
 extern "C"
 {
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local)

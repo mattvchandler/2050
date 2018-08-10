@@ -34,29 +34,15 @@ void Ball::update_size()
 
 glm::vec3 Ball::color_func()
 {
-    const std::vector<glm::vec3> colors =
-    {
-        {1.0f, 0.0f, 0.0f}, //    2
-        {1.0f, 0.5f, 0.0f}, //    4
-        {1.0f, 1.0f, 0.0f}, //    8
-        {1.0f, 0.5f, 0.5f}, //   16
-        {1.0f, 0.0f, 1.0f}, //   32
-        {0.5f, 0.0f, 1.0f}, //   64
-        {0.0f, 0.0f, 1.0f}, //  128
-        {0.0f, 0.5f, 1.0f}, //  256
-        {0.0f, 1.0f, 1.0f}, //  512
-        {0.0f, 1.0f, 0.5f}, // 1024
-        {0.0f, 1.0f, 0.0f}  // 2048
-    };
+    auto index = (size - 1) % (2 * std::size(ball_colors) - 2);
+    if(index >= std::size(ball_colors))
+        index = 2 * std::size(ball_colors) - index - 2;
 
-    auto index = (size - 1) % (2 * std::size(colors) - 2);
-    if(index >= std::size(colors))
-        index = 2 * std::size(colors) - index - 2;
-
-    return colors[index];
+    return ball_colors[index];
 }
 
-Ball::Ball(float win_size, const nlohmann::json & data)
+Ball::Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data):
+ball_colors(ball_colors)
 {
     if(data.empty())
     {

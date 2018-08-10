@@ -40,3 +40,7 @@
 -keepclasseswithmembers class org.mattvchandler.a2050.R$string {
     public static <fields>;
 }
+
+-keepclasseswithmembers class org.mattvchandler.a2050.R$array {
+    public static <fields>;
+}

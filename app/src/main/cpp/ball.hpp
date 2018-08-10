@@ -17,9 +17,10 @@ private:
 
     void update_size();
     glm::vec3 color_func();
+    const std::vector<glm::vec3> & ball_colors;
 
 public:
-    Ball(float win_size, const nlohmann::json & data = {});
+    Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data = {});
 
     int get_size() const { return size; }
     float get_radius() const { return radius; }
