@@ -119,7 +119,7 @@ void World::init()
     glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), NULL, GL_DYNAMIC_DRAW);
 
     // font sizes don't matter yet b/c resize should be called immediately after init
-    font         = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
+    font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
@@ -212,8 +212,10 @@ void World::render_balls()
     // load up a buffer with vertex data. unfortunately GL ES 2.0 is pretty limited, so lots of duplication here
     // if we had instanced rendering or geometry shaders, this would be much easier
     auto data_size = std::size(balls) * std::size(verts) * num_ball_attrs;
-    if(std::size(ball_data) < data_size)
-        ball_data.resize(data_size);
+    auto old_ball_data_size = std::size(ball_data);
+
+    while(std::size(ball_data) < data_size)
+        ball_data.resize(2 * std::size(ball_data));
 
     auto ball = std::begin(balls);
     for(std::size_t ball_i = 0; ball_i < std::size(balls); ++ball_i)
@@ -240,9 +242,10 @@ void World::render_balls()
     ball_prog->use();
     ball_vbo->bind();
 
-    if(data_size > std::size(ball_data))
+    if(std::size(ball_data) > old_ball_data_size)
     {
-        glBufferData(GL_ARRAY_BUFFER, data_size * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
+        __android_log_print(ANDROID_LOG_DEBUG, "World::render_balls", "ball_data buffer resized from %d to %d", static_cast<int>(old_ball_data_size), static_cast<int>(std::size(ball_data)));
+        glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
     }
     else
     {
