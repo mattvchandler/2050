@@ -234,11 +234,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, persists.first_run);
 
-    if(persists.paused)
-    {
-        engine->pause_game();
-    }
-
     persists.first_run = false;
 
     env->ReleaseStringUTFChars(path, data_path);
@@ -257,6 +252,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "resume");
     if(!engine)
         __android_log_assert("resume called before engine initialized", "JNI", NULL);
+
+    if(persists.paused)
+    {
+        engine->pause_game();
+    }
+
     engine->resume();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
@@ -264,6 +265,9 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *,
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause");
     if(!engine)
         __android_log_assert("pause called before engine initialized", "JNI", NULL);
+
+    persists.paused = engine->is_paused();
+
     engine->pause();
 }
 
@@ -277,7 +281,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv * env, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "destroy");
-    persists.paused = engine->is_paused();
     if(!engine)
         __android_log_assert("destroy called before engine initialized", "JNI", NULL);
     engine.reset();

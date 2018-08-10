@@ -27,7 +27,6 @@
  * cleanup commented code in MainActivity
  * remove debug text
  * shrink bundled font file
- * still leaking window on rotationg while paused
  */
 
 class World

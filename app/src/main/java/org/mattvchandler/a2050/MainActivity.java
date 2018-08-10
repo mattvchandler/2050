@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ActivityMainBinding binding;
     private DispData data = new DispData();
     private Handler update_data = new Handler();
+    private AlertDialog dialog = null;
 
     private GestureDetectorCompat gestureDetector;
 
@@ -170,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "onDestroy");
         destroy();
 
+        if(dialog != null)
+            dialog.dismiss();
+
         binding.surfaceView.getHolder().removeCallback(this);
 
         super.onDestroy();
@@ -258,16 +262,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
-            if(isDestroyed() || isFinishing())
+            if(dialog != null)
                 return;
 
-            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
+            dialog = new AlertDialog.Builder(MainActivity.this).setTitle(R.string.win)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ?  "\n" + getResources().getString(R.string.new_high_score) : ""))
                 .setNegativeButton(R.string.new_game, (dialog, which) -> newGame())
                 .setPositiveButton(R.string.continue_playing, (dialog, which) -> unpause())
                 .setCancelable(false)
-                .show();
+                .setOnDismissListener(dialog -> this.dialog = null)
+                .create();
+            dialog.show();
         });
     }
     public void game_over(final int score, final boolean new_high_score)
@@ -275,15 +281,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
-            if(isDestroyed() || isFinishing())
+            if(dialog != null)
                 return;
 
-            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
+            dialog = new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
-                .setPositiveButton(R.string.new_game, (dialog, which) -> newGame())
+                .setPositiveButton(R.string.new_game, (dialog, which) -> {newGame(); dialog = null; })
                 .setCancelable(false)
-                .show();
+                .setOnDismissListener(dialog -> this.dialog = null)
+                .create();
+            dialog.show();
         });
     }
     public void game_pause()
@@ -291,13 +299,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "game_pause");
         runOnUiThread(() ->
         {
-            if(isDestroyed() || isFinishing())
+            if(dialog != null)
                 return;
 
-            new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
+            dialog = new AlertDialog.Builder(MainActivity.this).setTitle(R.string.paused)
                 .setPositiveButton(R.string.cont, (dialog, which) -> unpause())
                 .setOnCancelListener(dialog -> unpause())
-                .show();
+                .setOnDismissListener(dialog -> this.dialog = null)
+                .create();
+            dialog.show();
         });
     }
 
