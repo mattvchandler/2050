@@ -20,15 +20,14 @@
  * Achievement pop-ups?
  * gravity sensor mode
  * ball colors set in XML
- * background changes w/ theme
+ * background / ball colors changes w/ theme
  * icon
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
  * remove debug text
- * unpausing on rotate
- * starts new game when game-over'd on rotate
  * shrink bundled font file
+ * still leaking window on rotationg while paused
  */
 
 class World
@@ -109,7 +108,7 @@ public:
     };
     UI_data get_ui_data();
 
-    void deserialize(const nlohmann::json & data);
+    void deserialize(const nlohmann::json & data, bool first_run);
     nlohmann::json serialize() const;
 };
 

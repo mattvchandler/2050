@@ -313,14 +313,14 @@ void Engine::physics_loop()
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
 
-Engine::Engine(AAssetManager * asset_manager, const std::string & data_path): data_path(data_path), world(asset_manager)
+Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run): data_path(data_path), world(asset_manager)
 {
     std::ifstream savefile(data_path + "/save.json");
     if(savefile)
     {
         nlohmann::json data;
         savefile>>data;
-        world.deserialize(data);
+        world.deserialize(data, first_run);
     }
 }
 
@@ -395,6 +395,11 @@ void Engine::unpause() noexcept
 {
     std::scoped_lock lock(mutex);
     world.unpause();
+}
+bool Engine::is_paused() noexcept
+{
+    std::scoped_lock lock(mutex);
+    return world.is_paused();
 }
 
 World::UI_data Engine::get_ui_data() noexcept

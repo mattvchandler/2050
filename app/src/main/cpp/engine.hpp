@@ -46,7 +46,7 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path);
+    Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run);
 
     void start() noexcept;
     void resume() noexcept;
@@ -61,6 +61,7 @@ public:
     void new_game() noexcept;
     void pause_game() noexcept;
     void unpause() noexcept;
+    bool is_paused() noexcept;
     World::UI_data get_ui_data() noexcept;
 };
 

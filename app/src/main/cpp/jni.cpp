@@ -130,6 +130,13 @@ struct JVM_refs
 
 JVM_refs jvm_refs;
 
+struct Persists
+{
+    bool first_run = true;
+    bool paused = false;
+};
+Persists persists;
+
 void game_win(int score, bool new_high_score)
 {
     if(!jvm_refs.vm)
@@ -225,7 +232,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path);
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, persists.first_run);
+
+    if(persists.paused)
+    {
+        engine->pause_game();
+    }
+
+    persists.first_run = false;
 
     env->ReleaseStringUTFChars(path, data_path);
 }
@@ -263,6 +277,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv * env, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "destroy");
+    persists.paused = engine->is_paused();
     if(!engine)
         __android_log_assert("destroy called before engine initialized", "JNI", NULL);
     engine.reset();

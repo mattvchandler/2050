@@ -405,7 +405,7 @@ World::UI_data World::get_ui_data()
     return {score, high_score, std::atan2(grav_vec.x, -grav_vec.y), static_cast<int>(std::lround(med_compression * 10.0f))};
 }
 
-void World::deserialize(const nlohmann::json & data)
+void World::deserialize(const nlohmann::json & data, bool first_run)
 {
     if(data.find("balls") != std::end(data))
     {
@@ -440,11 +440,16 @@ void World::deserialize(const nlohmann::json & data)
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 
     if(state == State::WIN)
+    {
         game_win(score, score == high_score);
+    }
     else if(state == State::LOSE)
-        new_game();
-    else if(paused)
-        game_pause();
+    {
+        if(first_run)
+            new_game();
+        else
+            game_over(score, score == high_score);
+    }
 }
 
 nlohmann::json World::serialize() const
