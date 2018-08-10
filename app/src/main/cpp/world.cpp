@@ -29,27 +29,11 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
     return scale * coord + offset;
 }
 
-std::string World::get_str(const std::string & id)
-{
-    auto str = resource_strings.find(id);
-    if(str == std::end(resource_strings))
-    {
-        str = resource_strings.insert({id, get_res_string(id)}).first;
-    }
-
-    return str->second;
-}
-
 World::World(AAssetManager * asset_manager)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
-
-    for(auto & i: {"pressure"})
-    {
-        resource_strings[i] = get_res_string(i);
-    }
 
     auto color_array = get_res_int_array("ball_colors");
     for(auto & color: color_array)
@@ -288,7 +272,6 @@ bool World::render()
     static std::vector<float> frame_times;
     auto start = std::chrono::high_resolution_clock::now();
     const glm::vec3 black(0.0f);
-    const glm::vec3 white(1.0f); // TODO: unused
 
     glClear(GL_COLOR_BUFFER_BIT);
 

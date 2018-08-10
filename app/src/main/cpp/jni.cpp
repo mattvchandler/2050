@@ -42,26 +42,14 @@ struct JVM_refs
         if(!game_pause_method)
             __android_log_assert("Couldn't get 'game_pause' method", "JNI", NULL);
 
-        // get R.string / R.array classes and Resources.getString() / getIntArray methods
+        // get R.array classe and Resources.getIntArray method
         resources = env->NewGlobalRef(resources_local);
         if(!resources)
             __android_log_assert("Couldn't get resources global ref", "JNI", NULL);
 
-        get_string_method = env->GetMethodID(env->GetObjectClass(resources), "getString", "(I)Ljava/lang/String;");
-        if(!get_string_method)
-            __android_log_assert("Couldn't get 'get_string' method", "JNI", NULL);
-
         get_int_array_method = env->GetMethodID(env->GetObjectClass(resources), "getIntArray", "(I)[I");
         if(!get_int_array_method)
             __android_log_assert("Couldn't get 'get_int_array' method", "JNI", NULL);
-
-        jclass R_string_local = env->FindClass("org/mattvchandler/a2050/R$string");
-        if(!R_string_local)
-            __android_log_assert("Couldn't get 'R.string' class", "JNI", NULL);
-
-        R_string = static_cast<jclass>(env->NewGlobalRef(R_string_local));
-        if(!R_string)
-            __android_log_assert("Couldn't get 'R.string' global ref", "JNI", NULL);
 
         jclass R_array_local = env->FindClass("org/mattvchandler/a2050/R$array");
         if(!R_array_local)
@@ -104,7 +92,7 @@ struct JVM_refs
     {
         env->DeleteGlobalRef(main_activity);
         env->DeleteGlobalRef(resources);
-        env->DeleteGlobalRef(R_string);
+        env->DeleteGlobalRef(R_array);
 
         vm                   = nullptr;
         main_activity        = nullptr;
@@ -112,8 +100,7 @@ struct JVM_refs
         game_over_method     = nullptr;
         game_pause_method    = nullptr;
         resources            = nullptr;
-        R_string             = nullptr;
-        get_string_method    = nullptr;
+        R_array              = nullptr;
         get_int_array_method = nullptr;
         set_int              = nullptr;
         set_float            = nullptr;
@@ -130,9 +117,7 @@ struct JVM_refs
     jmethodID game_pause_method    = nullptr;
 
     jobject   resources            = nullptr;
-    jclass    R_string             = nullptr;
     jclass    R_array              = nullptr;
-    jmethodID get_string_method    = nullptr;
     jmethodID get_int_array_method = nullptr;
 
     jmethodID set_int              = nullptr;
@@ -203,36 +188,6 @@ void game_pause()
 
     if(!attached)
         jvm_refs.vm->DetachCurrentThread();
-}
-
-std::string get_res_string(const std::string & id)
-{
-    bool attached = false;
-    JNIEnv * env;
-    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
-        attached = true;
-    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::test", NULL);
-
-    jfieldID id_field = env->GetStaticFieldID(jvm_refs.R_string, id.c_str(), "I");
-    if(!id_field)
-    {
-        __android_log_print(ANDROID_LOG_ERROR, "get_res_string", "Could not find resource string: %s", id.c_str());
-        return "";
-    }
-
-    int string_id = env->GetStaticIntField(jvm_refs.R_string, id_field);
-
-    jstring j_str = static_cast<jstring>(env->CallObjectMethod(jvm_refs.resources, jvm_refs.get_string_method, string_id));
-    const char * c_str = env->GetStringUTFChars(j_str, NULL);
-    std::string cpp_str = c_str;
-
-    env->ReleaseStringUTFChars(j_str, c_str);
-
-    if(!attached)
-        jvm_refs.vm->DetachCurrentThread();
-
-    return cpp_str;
 }
 
 std::vector<int> get_res_int_array(const std::string & id)

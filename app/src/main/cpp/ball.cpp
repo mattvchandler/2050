@@ -41,8 +41,7 @@ glm::vec3 Ball::color_func()
     return ball_colors[index];
 }
 
-Ball::Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data):
-ball_colors(ball_colors)
+Ball::Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data): ball_colors(ball_colors)
 {
     if(data.empty())
     {
