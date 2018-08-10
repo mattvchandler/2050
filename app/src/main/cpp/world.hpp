@@ -26,8 +26,9 @@
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
  * remove debug text
- * Don't pause on rotation
- * Don't pause when menu opened
+ * unpausing on rotate
+ * starts new game when game-over'd on rotate
+ * shrink bundled font file
  */
 
 class World

@@ -313,7 +313,7 @@ void Engine::physics_loop()
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
 
-Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool startup_pause): data_path(data_path), world(asset_manager)
+Engine::Engine(AAssetManager * asset_manager, const std::string & data_path): data_path(data_path), world(asset_manager)
 {
     std::ifstream savefile(data_path + "/save.json");
     if(savefile)
@@ -322,8 +322,6 @@ Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, boo
         savefile>>data;
         world.deserialize(data);
     }
-    if(startup_pause)
-        pause_game();
 }
 
 void Engine::start() noexcept
@@ -336,12 +334,11 @@ void Engine::resume() noexcept
     render_thread = std::thread(&Engine::render_loop, this);
     physics_thread = std::thread(&Engine::physics_loop, this);
 }
-void Engine::pause(bool screen_on) noexcept
+void Engine::pause() noexcept
 {
     running = false;
     render_thread.join();
     physics_thread.join();
-    pause_game();
 }
 void Engine::stop() noexcept
 {

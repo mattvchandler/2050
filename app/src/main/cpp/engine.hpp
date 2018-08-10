@@ -46,11 +46,11 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path, bool startup_pause);
+    Engine(AAssetManager * asset_manager, const std::string & data_path);
 
     void start() noexcept;
     void resume() noexcept;
-    void pause(bool screen_on) noexcept;
+    void pause() noexcept;
     void stop() noexcept;
 
     void set_focus(bool focus) noexcept;

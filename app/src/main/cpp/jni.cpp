@@ -6,7 +6,6 @@
 
 #include "engine.hpp"
 
-std::atomic<bool> startup_pause = false;
 std::unique_ptr<Engine> engine;
 
 #define DISP_DATA_FIELDS \
@@ -226,8 +225,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, startup_pause);
-    startup_pause = true;
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path);
 
     env->ReleaseStringUTFChars(path, data_path);
 }
@@ -247,12 +245,12 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *
         __android_log_assert("resume called before engine initialized", "JNI", NULL);
     engine->resume();
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject, jboolean screen_on)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause");
     if(!engine)
         __android_log_assert("pause called before engine initialized", "JNI", NULL);
-    engine->pause(screen_on);
+    engine->pause();
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, jobject)

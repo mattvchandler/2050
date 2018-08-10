@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private native void create(AssetManager assetManager, String path, Resources resources);
     private native void start();
     private native void resume();
-    private native void pause(boolean screen_on);
+    private native void pause();
     private native void stop();
     private native void destroy();
     private native void focus(boolean has_focus);
@@ -105,15 +105,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             if(actionBar != null)
             {
                 if((visibility & (View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)) == 0)
-                {
-                    Log.d("VisibilityChanged", "visible");
                     actionBar.show();
-                }
                 else
-                {
-                    Log.d("VisibilityChanged", "invisible");
                     actionBar.hide();
-                }
             }
         });
 
@@ -157,17 +151,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onPause()
     {
         super.onPause();
-        PowerManager powerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
-        boolean screen_on = true;
-        if(powerManager != null)
-        {
-            if(Build.VERSION.SDK_INT >= 20)
-                screen_on = powerManager.isInteractive();
-            else
-                screen_on = powerManager.isScreenOn();
-        }
         Log.d("MainActivity", "onPause");
-        pause(screen_on);
+        pause();
 
         update_data.removeCallbacksAndMessages(null);
     }
