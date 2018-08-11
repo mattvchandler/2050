@@ -346,6 +346,12 @@ void World::physics_step(float dt)
                     other = std::prev(balls.erase(other));
                     score += 1 << (ball->get_size());
                     high_score = std::max(high_score, score);
+                    if(ball->get_size() >= next_achievement_size)
+                    {
+                        __android_log_print(ANDROID_LOG_DEBUG, "World::physics_step", "achievment get: %d", next_achievement_size);
+                        achievement(next_achievement_size);
+                        ++next_achievement_size;
+                    }
                 } else
                 {
                     compression += collision.compression;
@@ -432,6 +438,8 @@ void World::deserialize(const nlohmann::json & data, bool first_run)
         score = data["score"];
     if(data.find("high_score") != std::end(data))
         high_score = data["high_score"];
+    if(data.find("next_achievement_size") != std::end(data))
+        next_achievement_size = data["next_achievement_size"];
     if(data.find("grav_vec") != std::end(data))
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 
@@ -478,6 +486,7 @@ nlohmann::json World::serialize() const
 
     data["score"] = score;
     data["high_score"] = high_score;
+    data["next_achievement_size"] = next_achievement_size;
     data["grav_vec"] = {grav_vec.x, grav_vec.y};
 
     return data;

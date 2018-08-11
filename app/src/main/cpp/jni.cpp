@@ -42,6 +42,10 @@ struct JVM_refs
         if(!game_pause_method)
             __android_log_assert("Couldn't get 'game_pause' method", "JNI", NULL);
 
+        achievement_method = env->GetMethodID(main_activity_class, "achievement", "(I)V");
+        if(!achievement_method)
+            __android_log_assert("Couldn't get 'achievement' method", "JNI", NULL);
+
         // get R.array classe and Resources.getIntArray method
         resources = env->NewGlobalRef(resources_local);
         if(!resources)
@@ -99,6 +103,7 @@ struct JVM_refs
         game_win_method      = nullptr;
         game_over_method     = nullptr;
         game_pause_method    = nullptr;
+        achievement_method   = nullptr;
         resources            = nullptr;
         R_array              = nullptr;
         get_int_array_method = nullptr;
@@ -115,6 +120,7 @@ struct JVM_refs
     jmethodID game_win_method      = nullptr;
     jmethodID game_over_method     = nullptr;
     jmethodID game_pause_method    = nullptr;
+    jmethodID achievement_method   = nullptr;
 
     jobject   resources            = nullptr;
     jclass    R_array              = nullptr;
@@ -137,57 +143,70 @@ struct Persists
 };
 Persists persists;
 
+class Java_thread_env
+{
+private:
+    JNIEnv *env = nullptr;
+    bool attached = false;
+    bool valid = false;
+
+public:
+    Java_thread_env()
+    {
+        if(!jvm_refs.vm)
+            return;
+
+        if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
+            attached = true;
+        else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
+            __android_log_assert("could not attach thread!", "JNI::Java_thread_env", NULL);
+
+        valid = true;
+    }
+    ~Java_thread_env()
+    {
+        if(valid && !attached)
+            jvm_refs.vm->DetachCurrentThread();
+    }
+
+    Java_thread_env(const Java_thread_env &) = delete;
+    Java_thread_env & operator=(const Java_thread_env &) = delete;
+
+    operator bool() { return valid; }
+    JNIEnv *operator->() { return env; }
+};
+
 void game_win(int score, bool new_high_score)
 {
-    if(!jvm_refs.vm)
+    Java_thread_env env;
+    if(!env)
         return;
 
-    bool attached = false;
-    JNIEnv * env;
-    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
-        attached = true;
-    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::game_win", NULL);
-
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_win_method, score, new_high_score);
-
-    if(!attached)
-    jvm_refs.vm->DetachCurrentThread();
 }
 void game_over(int score, bool new_high_score)
 {
-    if(!jvm_refs.vm)
+    Java_thread_env env;
+    if(!env)
         return;
 
-    bool attached = false;
-    JNIEnv * env;
-    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
-        attached = true;
-    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::game_over", NULL);
-
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_over_method, score, new_high_score);
-
-    if(!attached)
-        jvm_refs.vm->DetachCurrentThread();
 }
 void game_pause()
 {
-    if(!jvm_refs.vm)
+    Java_thread_env env;
+    if(!env)
         return;
 
-    __android_log_write(ANDROID_LOG_DEBUG, "JNI", "game_pause");
-    bool attached = false;
-    JNIEnv * env;
-    if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
-        attached = true;
-    else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-        __android_log_assert("could not attach thread!", "JNI::game_pause", NULL);
-
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_pause_method);
+}
+void achievement(int size)
+{
+    Java_thread_env env;
+    if(!env)
+        return;
 
-    if(!attached)
-        jvm_refs.vm->DetachCurrentThread();
+    env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.achievement_method, size);
 }
 
 std::vector<int> get_res_int_array(const std::string & id)

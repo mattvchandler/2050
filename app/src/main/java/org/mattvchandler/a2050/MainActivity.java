@@ -37,6 +37,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
@@ -308,6 +309,16 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 .setOnDismissListener(dialog -> this.dialog = null)
                 .create();
             dialog.show();
+        });
+    }
+
+    public void achievement(int size)
+    {
+        String size_str = String.valueOf(size);
+        Log.d("MainActivity", "achievement");
+        runOnUiThread(() ->
+        {
+            Toast.makeText(this, size_str + "Achievement!", Toast.LENGTH_SHORT).show();
         });
     }
 

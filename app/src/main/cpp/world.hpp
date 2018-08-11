@@ -47,6 +47,7 @@ private:
 
     int high_score = 0;
     int score = 0;
+    int next_achievement_size = 3;
 
     glm::vec2 grav_vec{0.0f};
 
