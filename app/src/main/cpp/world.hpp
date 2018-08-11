@@ -17,7 +17,6 @@
 #include "ball.hpp"
 
 /* TODO:
- * Achievement pop-ups?
  * gravity sensor mode
  * background / ball colors changes w/ theme
  * icon

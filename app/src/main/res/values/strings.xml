@@ -21,4 +21,24 @@
     <string name="fullscreen">Fullscreen</string>
 
     <string name="gravity_arrow_desc">Gravity arrow</string>
+    <string name="achievement_unlocked">Achievement Unlocked</string>
+    <string name="ball">Ball</string>
+
+    <string-array name="achieve_texts">
+        <item>"Congrats, you shouldn't be seeing this!"</item>
+        <item>"Congrats, you shouldn't be seeing this!"</item>
+        <item>"Congrats, you shouldn't be seeing this!"</item>
+        <item>"Just getting started"</item>
+        <item>"Baby steps"</item>
+        <item>"Not so small now"</item>
+        <item>"Finally getting somewhere"</item>
+        <item>"Are we there yet?"</item>
+        <item>"Big Leagues"</item>
+        <item>"It's a little tight in here"</item>
+        <item>"Halfway there!"</item>
+        <item>"Victory"</item>
+        <item>"Very impressive"</item>
+        <item>"Now you're just showing off"</item>
+        <item>"Cheating?"</item>
+    </string-array>
 </resources>

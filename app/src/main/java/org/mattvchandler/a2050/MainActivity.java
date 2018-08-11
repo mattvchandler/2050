@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,13 +31,17 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
@@ -318,7 +323,24 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("MainActivity", "achievement");
         runOnUiThread(() ->
         {
-            Toast.makeText(this, size_str + "Achievement!", Toast.LENGTH_SHORT).show();
+            LayoutInflater inflater = getLayoutInflater();
+            View layout = inflater.inflate(R.layout.achievement_popup, (ViewGroup)findViewById(R.id.achievement_popup));
+
+            ((TextView)layout.findViewById(R.id.ball_num)).setText(String.valueOf(1 << size));
+
+            String [] achieve_texts = getResources().getStringArray(R.array.achieve_texts);
+            ((TextView)layout.findViewById(R.id.achieve_text)).setText(size  >= achieve_texts.length ? achieve_texts[achieve_texts.length - 1] : achieve_texts[size]);
+
+            int[] ball_colors = getResources().getIntArray(R.array.ball_colors);
+            int color_index = (size - 1) % (2 * ball_colors.length - 2);
+            if(color_index >= ball_colors.length)
+            color_index = 2 * ball_colors.length - color_index - 2;
+            ImageViewCompat.setImageTintList(layout.findViewById(R.id.ball), ColorStateList.valueOf(ball_colors[color_index]));
+
+            Toast toast = new Toast(getApplicationContext());
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setView(layout);
+            toast.show();
         });
     }
 
