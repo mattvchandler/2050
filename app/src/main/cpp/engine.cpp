@@ -293,6 +293,17 @@ void Engine::physics_loop()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "start physics loop");
 
+    sensor_queue = ASensorManager_createEventQueue(sensor_mgr, ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS), sensor_ident, NULL, NULL);
+    if(!sensor_queue)
+        __android_log_assert("Could not prepare queue for gravity sensor", "Engine::physics_loop", NULL);
+
+    grav_sensor = ASensorManager_getDefaultSensor(sensor_mgr, ASENSOR_TYPE_GRAVITY);
+
+    if(!grav_sensor)
+        __android_log_assert("Could not get Gravity Sensor", "Engine::physics_loop", NULL);
+
+    ASensorEventQueue_enableSensor(sensor_queue, grav_sensor);
+
     const std::chrono::duration<float> target_frametime{10ms};
     auto last_frame_time = std::chrono::steady_clock::now() - target_frametime;
 
@@ -304,11 +315,27 @@ void Engine::physics_loop()
         dt = std::min(dt, target_frametime.count() * 1.5f);
         last_frame_time = frame_start_time;
 
-        world.physics_step(dt);
+        int ident = ALooper_pollOnce(0, NULL, NULL, NULL);
+        if(ident == sensor_ident)
+        {
+            ASensorEvent sensorEvent;
+            ASensorEventQueue_getEvents(sensor_queue, &sensorEvent, 1);
+            grav_sensor_vec.x = sensorEvent.vector.x;
+            grav_sensor_vec.y = sensorEvent.vector.y;
+            grav_sensor_vec.z = sensorEvent.vector.z;
+        }
+
+        world.physics_step(dt, grav_sensor_vec);
 
         mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);
     }
+
+    if(ASensorEventQueue_disableSensor(sensor_queue, grav_sensor) != 0)
+        __android_log_assert("Could not disable gravity sensor", "Engine::physics_loop", NULL);
+
+    if(ASensorManager_destroyEventQueue(sensor_mgr, sensor_queue) != 0)
+        __android_log_assert("Could not destroy gravity sensor queue", "Engine::physics_loop", NULL);
 
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
 }
@@ -322,6 +349,14 @@ Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, boo
         savefile>>data;
         world.deserialize(data, first_run);
     }
+
+#if __ANDROID_API__ >= __ANDROID_API_O__
+    sensor_mgr = ASensorManager_getInstanceForPackage("2050");
+#else
+    sensor_mgr = ASensorManager_getInstance();
+#endif
+    if(!sensor_mgr)
+        __android_log_assert("Could not get ASensorManager", "Engine::Engine", NULL);
 }
 
 void Engine::start() noexcept

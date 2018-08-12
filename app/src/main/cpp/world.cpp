@@ -199,7 +199,6 @@ void World::resize(GLsizei width, GLsizei height)
     GL_CHECK_ERROR("World::resize");
 }
 
-
 void World::render_balls()
 {
     const std::vector<glm::vec2> verts =
@@ -305,6 +304,9 @@ bool World::render()
         physx_times.clear();
     }
 
+    font->render_text("Gravity: " + std::to_string(grav_sensor_vec.x) + ", " + std::to_string(grav_sensor_vec.y) + ", " + std::to_string(grav_sensor_vec.z),
+        {black, 1.0}, screen_size, text_coord_transform({0, 0}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_TOP);
+
     font->render_text(paused ? "paused" : "unpaused", {black, 1.0}, screen_size, text_coord_transform({win_size, win_size}),
         textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_BOTTOM);
 
@@ -317,11 +319,13 @@ bool World::render()
     return !paused;
 }
 
-void World::physics_step(float dt)
+void World::physics_step(float dt, const glm::vec3 & grav_sensor_vec)
 {
     auto start = std::chrono::high_resolution_clock::now();
     if(paused || state == State::LOSE || state == State::WIN)
         return;
+
+    this->grav_sensor_vec = grav_sensor_vec; // TODO: No.
 
     float compression = 0.0f;
     for(auto ball = std::begin(balls); ball != std::end(balls); ++ball)

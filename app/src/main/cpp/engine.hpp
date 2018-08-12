@@ -8,6 +8,7 @@
 
 #include <android/asset_manager.h>
 #include <android/native_window.h>
+#include <android/sensor.h>
 
 #include <EGL/egl.h>
 
@@ -27,6 +28,12 @@ private:
     EGLSurface surface = EGL_NO_SURFACE;
     EGLContext context = EGL_NO_CONTEXT;
     EGLConfig config;
+
+    ASensorManager * sensor_mgr;
+    const ASensor * grav_sensor;
+    ASensorEventQueue * sensor_queue;
+    const int sensor_ident = 1;
+    glm::vec3 grav_sensor_vec;
 
     std::thread render_thread;
     std::thread physics_thread;
