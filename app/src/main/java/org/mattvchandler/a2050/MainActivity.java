@@ -47,6 +47,7 @@ import android.widget.Toast;
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static android.support.v4.math.MathUtils.clamp;
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     static
     {
         System.loadLibrary("2050");
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM); // TODO: make a setting?
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); //TODO: only for testing
     }
 
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private DispData data = new DispData();
     private Handler update_data = new Handler();
     private AlertDialog dialog = null;
+
+    private boolean menu_opened;
 
     private GestureDetectorCompat gestureDetector;
 
@@ -117,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     actionBar.hide();
             }
         });
+
+        Objects.requireNonNull(getSupportActionBar()).addOnMenuVisibilityListener(isVisible -> menu_opened = isVisible);
 
         create(getResources().getAssets(), path, getResources());
     }
@@ -190,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     {
         super.onWindowFocusChanged(hasFocus);
         Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
-        focus(hasFocus);
+        focus(hasFocus || menu_opened);
     }
 
     @Override
