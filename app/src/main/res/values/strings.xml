@@ -21,9 +21,9 @@
     <string name="fullscreen">Fullscreen</string>
 
     <string name="gravity_arrow_desc">Gravity arrow</string>
-    <string name="achievement_unlocked">Achievement Unlocked</string>
     <string name="ball">Ball</string>
 
+    <string name="achievement_unlocked">Achievement Unlocked</string>
     <string-array name="achieve_texts">
         <item>"Congrats, you shouldn't be seeing this!"</item>
         <item>"Congrats, you shouldn't be seeing this!"</item>
