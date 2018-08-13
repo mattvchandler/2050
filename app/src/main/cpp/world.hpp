@@ -49,7 +49,7 @@ private:
     int next_achievement_size = 3;
 
     glm::vec2 grav_vec{0.0f};
-    glm::vec3 grav_sensor_vec;
+    float grav_ref_angle = 0.0f;
 
     glm::vec2 screen_size;
     glm::mat3 projection;
@@ -91,7 +91,7 @@ public:
     void unpause();
     void resize(GLsizei width, GLsizei height);
     bool render();
-    void physics_step(float dt, const glm::vec3 & grav_sensor_vec);
+    void physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec);
 
     void fling(float x, float y);
 

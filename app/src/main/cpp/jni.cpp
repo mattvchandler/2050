@@ -242,7 +242,7 @@ std::vector<int> get_res_int_array(const std::string & id)
 }
 extern "C"
 {
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local, jboolean gravity_mode)
 {
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "create");
     if(engine)
@@ -252,7 +252,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, persists.first_run);
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, persists.first_run, gravity_mode);
 
     persists.first_run = false;
 

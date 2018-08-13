@@ -3,6 +3,9 @@ package org.mattvchandler.a2050;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -19,6 +22,7 @@ import android.graphics.drawable.ScaleDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.ImageViewCompat;
@@ -39,6 +43,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); //TODO: only for testing
     }
 
-    private native void create(AssetManager assetManager, String path, Resources resources);
+    private native void create(AssetManager assetManager, String path, Resources resources, boolean gravity_mode);
     private native void start();
     private native void resume();
     private native void pause();
@@ -79,13 +84,29 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private Handler update_data = new Handler();
     private AlertDialog dialog = null;
 
-    private boolean menu_opened;
+    private boolean menu_opened = false;
+    private boolean gravity_mode = false;
 
     private GestureDetectorCompat gestureDetector;
+
+    private static final int SETTINGS_RESULT = 1;
 
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        gravity_mode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("gravity", false);
+        if(gravity_mode)
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         Log.d("MainActivity", "onCreate");
@@ -123,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         Objects.requireNonNull(getSupportActionBar()).addOnMenuVisibilityListener(isVisible -> menu_opened = isVisible);
 
-        create(getResources().getAssets(), path, getResources());
+        create(getResources().getAssets(), path, getResources(), gravity_mode);
     }
 
     @Override
@@ -227,14 +248,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        gestureDetector.onTouchEvent(event);
+        if(!gravity_mode)
+            gestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        if(event.getRepeatCount() > 0)
+        if(gravity_mode || event.getRepeatCount() > 0)
             return super.onKeyDown(keyCode, event);
 
         switch(keyCode)

@@ -304,9 +304,6 @@ bool World::render()
         physx_times.clear();
     }
 
-    font->render_text("Gravity: " + std::to_string(grav_sensor_vec.x) + ", " + std::to_string(grav_sensor_vec.y) + ", " + std::to_string(grav_sensor_vec.z),
-        {black, 1.0}, screen_size, text_coord_transform({0, 0}), textogl::ORIGIN_HORIZ_LEFT | textogl::ORIGIN_VERT_TOP);
-
     font->render_text(paused ? "paused" : "unpaused", {black, 1.0}, screen_size, text_coord_transform({win_size, win_size}),
         textogl::ORIGIN_HORIZ_RIGHT | textogl::ORIGIN_VERT_BOTTOM);
 
@@ -319,18 +316,29 @@ bool World::render()
     return !paused;
 }
 
-void World::physics_step(float dt, const glm::vec3 & grav_sensor_vec)
+void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec)
 {
     auto start = std::chrono::high_resolution_clock::now();
     if(paused || state == State::LOSE || state == State::WIN)
         return;
 
-    this->grav_sensor_vec = grav_sensor_vec; // TODO: No.
+    if(gravity_mode)
+    {
+        auto grav_vec_3 = -g * glm::normalize(grav_sensor_vec);
+        grav_vec = {grav_vec_3.y, grav_vec_3.x};
+
+        float grav_angle = std::atan2(grav_vec.x, -grav_vec.y);
+        if(std::abs(grav_angle - grav_ref_angle) > M_PI / 4.0f)
+        {
+            grav_ref_angle = grav_angle;
+            balls.emplace_back(win_size, ball_colors);
+        }
+    }
 
     float compression = 0.0f;
     for(auto ball = std::begin(balls); ball != std::end(balls); ++ball)
     {
-        if(state != State::EXTENDED && ball->get_size() >= 11) // 2048
+        if(state != State::EXTENDED && ball->get_size() >= 11) // 2^11 = 2048
         {
             state = State::WIN;
             game_win(score, score == high_score);

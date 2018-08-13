@@ -29,11 +29,12 @@ private:
     EGLContext context = EGL_NO_CONTEXT;
     EGLConfig config;
 
+    const bool gravity_mode = false;
     ASensorManager * sensor_mgr;
-    const ASensor * grav_sensor;
+    const ASensor * accelerometer_sensor;
     ASensorEventQueue * sensor_queue;
     const int sensor_ident = 1;
-    glm::vec3 grav_sensor_vec;
+    glm::vec3 grav_sensor_vec = glm::vec3(-1.0f, 0.0f, 0.0f);
 
     std::thread render_thread;
     std::thread physics_thread;
@@ -53,7 +54,7 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run);
+    Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode);
 
     void start() noexcept;
     void resume() noexcept;
