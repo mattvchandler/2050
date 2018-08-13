@@ -163,7 +163,7 @@ void World::resize(GLsizei width, GLsizei height)
     glViewport(0, 0, width, height);
     screen_size = {width, height};
 
-    screen_projection = ortho3x3(0.0f, screen_size.x, screen_size.y, 0.0f);
+    screen_projection = ortho3x3(0.0f, screen_size.x, screen_size.y, 0.0f); // TODO: unused?
 
     auto aspect = screen_size.x / screen_size.y;
     float left = 0.0f, right = win_size, bottom = win_size, top = 0.0f;

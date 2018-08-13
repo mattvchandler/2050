@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_pause"
         android:title="@string/pause"
         app:showAsAction="ifRoom"
-        />
+    />
     <item
         android:id="@+id/new_game"
         android:icon="@drawable/ic_refresh"
@@ -18,5 +18,15 @@
         android:icon="@drawable/ic_fullscreen"
         android:title="@string/fullscreen"
         app:showAsAction="ifRoom"
-        />
+    />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        app:showAsAction="never"
+    />
+    <item
+        android:id="@+id/help"
+        android:title="@string/help"
+        app:showAsAction="never"
+    />
 </menu>

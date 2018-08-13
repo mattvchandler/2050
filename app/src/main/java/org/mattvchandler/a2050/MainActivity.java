@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {}
+    public void surfaceCreated(SurfaceHolder holder) {} // TODO: remove
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
@@ -382,8 +382,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     actionBar.hide();
 
                 return true;
+
+            case R.id.settings:
+                startActivityForResult(new Intent(this, Settings.class), SETTINGS_RESULT);
+                return true;
+
+            case R.id.help:
+                return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Log.d("MainActivity", "resultCode: " + String.valueOf(resultCode) + " requestCode: " + String.valueOf(requestCode));
+        if(requestCode == SETTINGS_RESULT)
+            recreate();
     }
 
     public class DispData
