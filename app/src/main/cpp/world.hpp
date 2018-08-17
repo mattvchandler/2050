@@ -17,7 +17,8 @@
 #include "ball.hpp"
 
 /* TODO:
- * gravity sensor mode
+ * remove pause dialog?
+ * Help text
  * background / ball colors changes w/ theme
  * icon
  * Kotlin?
