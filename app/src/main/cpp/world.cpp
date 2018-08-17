@@ -328,7 +328,11 @@ void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sen
         grav_vec = {grav_vec_3.y, grav_vec_3.x};
 
         float grav_angle = std::atan2(grav_vec.x, -grav_vec.y);
-        if(std::abs(grav_angle - grav_ref_angle) > M_PI / 4.0f)
+        auto diff = std::abs(grav_angle - grav_ref_angle);
+        if(diff > M_PI)
+            diff = 2.0f * static_cast<float>(M_PI) - diff;
+
+        if(diff > M_PI / 4.0f)
         {
             grav_ref_angle = grav_angle;
             balls.emplace_back(win_size, ball_colors);
