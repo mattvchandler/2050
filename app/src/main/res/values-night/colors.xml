@@ -2,4 +2,20 @@
 <resources>
     <color name="colorPrimary">#1b5e20</color>
     <color name="colorPrimaryDark">#003300</color>
+
+    <color name="bg_color">#FF202020</color>
+
+    <array name="ball_colors">
+        <item>#800000</item>
+        <item>#804000</item>
+        <item>#808000</item>
+        <item>#804040</item>
+        <item>#800080</item>
+        <item>#400080</item>
+        <item>#000080</item>
+        <item>#004080</item>
+        <item>#008080</item>
+        <item>#008040</item>
+        <item>#008000</item>
+    </array>
 </resources>

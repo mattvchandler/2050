@@ -38,6 +38,12 @@
     public <fields>;
 }
 
+-keepclasseswithmembers class android.support.v4.content.ContextCompat {
+    int getColor(android.content.Context, int);
+}
 -keepclasseswithmembers class org.mattvchandler.a2050.R$array {
+    public static <fields>;
+}
+-keepclasseswithmembers class org.mattvchandler.a2050.R$color {
     public static <fields>;
 }

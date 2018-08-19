@@ -3,6 +3,8 @@
     <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#087f23</color>
 
+    <color name="bg_color">#FFFFFFFF</color>
+
     <array name="ball_colors">
         <item>#FF0000</item>
         <item>#FF8000</item>

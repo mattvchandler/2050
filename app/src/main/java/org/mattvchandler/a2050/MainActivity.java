@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.ImageViewCompat;
@@ -170,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             {
                 getUIData(data);
 
+                // TODO: get colors from theme
                 float r = clamp(0.2f * (float)data.pressure.get() / 10.0f, 0.0f, 1.0f);
                 float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
                 int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);

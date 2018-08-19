@@ -35,6 +35,13 @@ World::World(AAssetManager * asset_manager)
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
 
+    auto bg_color_i = get_res_color("bg_color");
+    bg_color = {
+            static_cast<float>((bg_color_i >> 16) & 0xFF) / 256.0f,
+            static_cast<float>((bg_color_i >>  8) & 0xFF) / 256.0f,
+            static_cast<float>((bg_color_i)       & 0xFF) / 256.0f
+    };
+
     auto color_array = get_res_int_array("ball_colors");
     for(auto & color: color_array)
     {
@@ -121,7 +128,7 @@ void World::init()
     // font sizes don't matter yet b/c resize should be called immediately after init
     font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

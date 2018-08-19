@@ -17,9 +17,9 @@
 #include "ball.hpp"
 
 /* TODO:
+ * light/dark theme settings
  * remove pause dialog?
  * Help text
- * background / ball colors changes w/ theme
  * icon
  * Kotlin?
  * remove (or at least disable logging)
@@ -70,6 +70,7 @@ private:
 
     glm::vec2 text_coord_transform(const glm::vec2 & coord);
 
+    glm::vec3 bg_color;
     std::vector<glm::vec3> ball_colors;
 
     std::vector<float> physx_times;

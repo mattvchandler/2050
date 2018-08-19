@@ -10,6 +10,7 @@ void game_over(int score, bool new_high_score);
 void game_win(int score, bool new_high_score);
 void game_pause();
 void achievement(int size);
+int get_res_color(const std::string & id);
 std::vector<int> get_res_int_array(const std::string & id);
 
 #endif //INC_2050_JNI_HPP
