@@ -233,7 +233,7 @@ std::vector<int> get_res_int_array(const std::string & id)
 
     std::vector<int> ret(c_arr, c_arr + c_arr_size);
 
-    env->ReleaseIntArrayElements(j_arr, c_arr, NULL);
+    env->ReleaseIntArrayElements(j_arr, c_arr, 0);
 
     if(!attached)
         jvm_refs.vm->DetachCurrentThread();
