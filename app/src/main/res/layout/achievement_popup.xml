@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/achievement_popup"
-    android:background="@android:drawable/toast_frame"
+    android:background="@drawable/achievement_bkg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 >
@@ -35,11 +35,10 @@
         app:layout_constraintLeft_toLeftOf="@id/ball"
         app:layout_constraintRight_toRightOf="@id/ball"
     />
-    <!-- TODO: text is too light when default toast is white -->
     <TextView
         android:id="@+id/achieve"
         android:text="@string/achievement_unlocked"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -51,7 +50,7 @@
     />
     <TextView
         android:id="@+id/achieve_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"

@@ -17,8 +17,6 @@
 #include "ball.hpp"
 
 /* TODO:
- * remove pause dialog?
- * toast text color wrong on oreo+ (white toast)
  * colors as uints
  * disable accel. switch if there isn't one to use
  * pressure bar colors from theme
