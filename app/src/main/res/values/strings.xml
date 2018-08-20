@@ -55,4 +55,8 @@
         <item>"Cheating?"</item>
     </string-array>
 
+    <string name="help_general">Combine balls of like size and number to reach the 2048 ball, while avoiding packing the balls too tightly together.</string>
+    <string name="help_touch">Slide your finger to change the direction the balls move towards. A new ball will be generated each time you do.</string>
+    <string name="help_accel">Rotate your device so that the balls fall downward. New balls are generated as you turn.</string>
+
 </resources>

@@ -20,7 +20,6 @@
  * colors as uints
  * disable accel. switch if there isn't one to use
  * pressure bar colors from theme
- * Help text
  * icon
  * Kotlin?
  * remove (or at least disable logging)

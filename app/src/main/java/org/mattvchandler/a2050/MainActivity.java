@@ -405,6 +405,11 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
                 return true;
 
             case R.id.help:
+                Toast.makeText(this, getResources().getString(R.string.help_general), Toast.LENGTH_LONG).show();
+                if(gravity_mode)
+                    Toast.makeText(this, getResources().getString(R.string.help_accel), Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(this, getResources().getString(R.string.help_touch), Toast.LENGTH_LONG).show();
                 return true;
         }
         return false;
