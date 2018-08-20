@@ -29,6 +29,13 @@
 
     <string name="control_mode">Accelerometer control mode</string>
     <string name="control_mode_summary">Switch between touch control and accelerometer control</string>
+    <string name="theme_title">Day / Night Theme</string>
+    <string-array name="theme_settings">
+        <item>Follow System (requires restart)</item>
+        <item>Day</item>
+        <item>Night</item>
+        <item>Auto (time based)</item>
+    </string-array>
 
     <string-array name="achieve_texts">
         <item>"Congrats, you shouldn't be seeing this!"</item>
@@ -38,13 +45,14 @@
         <item>"Baby steps"</item>
         <item>"Not so small now"</item>
         <item>"Finally getting somewhere"</item>
+        <item>"Triple digits!"</item>
         <item>"Are we there yet?"</item>
         <item>"Big Leagues"</item>
-        <item>"It's a little tight in here"</item>
         <item>"Halfway there!"</item>
         <item>"Victory"</item>
         <item>"Very impressive"</item>
         <item>"Now you're just showing off"</item>
         <item>"Cheating?"</item>
     </string-array>
+
 </resources>

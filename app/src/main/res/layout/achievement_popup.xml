@@ -35,6 +35,7 @@
         app:layout_constraintLeft_toLeftOf="@id/ball"
         app:layout_constraintRight_toRightOf="@id/ball"
     />
+    <!-- TODO: text is too light when default toast is white -->
     <TextView
         android:id="@+id/achieve"
         android:text="@string/achievement_unlocked"

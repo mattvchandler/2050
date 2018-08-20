@@ -57,13 +57,11 @@ import java.util.Objects;
 
 import static android.support.v4.math.MathUtils.clamp;
 
-public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback
+public class MainActivity extends Themed_activity implements SurfaceHolder.Callback
 {
     static
     {
         System.loadLibrary("2050");
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM); // TODO: make a setting?
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); //TODO: only for testing
     }
 
     private native void create(AssetManager assetManager, String path, Resources resources, boolean gravity_mode);

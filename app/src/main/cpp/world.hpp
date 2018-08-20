@@ -17,7 +17,7 @@
 #include "ball.hpp"
 
 /* TODO:
- * light/dark theme settings
+ * colors as uints
  * remove pause dialog?
  * Help text
  * icon

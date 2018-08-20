@@ -10,15 +10,15 @@ import android.view.MenuItem;
 
 import org.mattvchandler.a2050.databinding.ActivitySettingsBinding;
 
-public class Settings extends AppCompatActivity
+public class Settings extends Themed_activity
 {
     public static class Settings_frag extends PreferenceFragment
-            implements SharedPreferences.OnSharedPreferenceChangeListener // TODO: Probably won't need
+            implements SharedPreferences.OnSharedPreferenceChangeListener
     {
         @Override
         public void onCreate(Bundle savedInstanceState)
         {
-            // TODO: check to see if we have an accelerometer, disable if we don't
+            // TODO: check to see if we have an accelerometer, disable that switch if we don't
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings);
             PreferenceManager.setDefaultValues(getActivity(), R.xml.settings, false);
@@ -43,9 +43,10 @@ public class Settings extends AppCompatActivity
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
         {
-            if(key.equals("gravity"))
+            if(key.equals("theme"))
             {
-                // TODO
+                // recreate this activity to apply the new theme
+                getActivity().recreate();
             }
         }
     }
