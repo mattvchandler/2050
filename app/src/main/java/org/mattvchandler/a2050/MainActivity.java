@@ -83,7 +83,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     private Handler update_data = new Handler();
     private AlertDialog dialog = null;
 
-    private boolean menu_opened = false;
     private boolean gravity_mode = false;
 
     private GestureDetectorCompat gestureDetector;
@@ -126,8 +125,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
         {
             Log.e("MainActivity", "Could not get data directory", e);
         }
-        // TypedValue color = new TypedValue();
-        // getTheme().resolveAttribute(android.R.attr.windowBackground, color, true);
 
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility ->
         {
@@ -140,8 +137,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
                     actionBar.hide();
             }
         });
-
-        Objects.requireNonNull(getSupportActionBar()).addOnMenuVisibilityListener(isVisible -> menu_opened = isVisible);
 
         create(getResources().getAssets(), path, getResources(), gravity_mode);
     }
@@ -216,7 +211,7 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     {
         super.onWindowFocusChanged(hasFocus);
         Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
-        focus(hasFocus || menu_opened);
+        focus(hasFocus);
     }
 
     @Override

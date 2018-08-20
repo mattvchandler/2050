@@ -67,7 +67,7 @@ public:
     void fling(float x, float y) noexcept;
 
     void new_game() noexcept;
-    void pause_game() noexcept;
+    void pause_game(bool show_dialog = false) noexcept;
     void unpause() noexcept;
     bool is_paused() noexcept;
     World::UI_data get_ui_data() noexcept;

@@ -399,10 +399,10 @@ void Engine::stop() noexcept
 void Engine::set_focus(bool focus) noexcept
 {
     __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
-    if(!focus)
-    {
+    if(focus)
+        unpause();
+    else
         pause_game();
-    }
 }
 
 void Engine::surface_changed(ANativeWindow *window) noexcept
@@ -434,10 +434,10 @@ void Engine::new_game() noexcept
     world.new_game();
 }
 
-void Engine::pause_game() noexcept
+void Engine::pause_game(bool show_dialog) noexcept
 {
     std::scoped_lock lock(mutex);
-    world.pause();
+    world.pause(show_dialog);
 }
 void Engine::unpause() noexcept
 {

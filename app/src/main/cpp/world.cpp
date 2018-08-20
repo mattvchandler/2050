@@ -133,13 +133,14 @@ void World::init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void World::pause()
+void World::pause(bool show_dialog)
 {
     __android_log_print(ANDROID_LOG_DEBUG, "World::pause", paused ? "paused" : "unpaused");
     if(!paused && state != State::WIN && state != State::LOSE)
     {
         paused = true;
-        game_pause();
+        if(show_dialog)
+            game_pause();
     }
 }
 bool World::is_paused() const { return paused; }

@@ -17,8 +17,11 @@
 #include "ball.hpp"
 
 /* TODO:
- * colors as uints
  * remove pause dialog?
+ * toast text color wrong on oreo+ (white toast)
+ * colors as uints
+ * disable accel. switch if there isn't one to use
+ * pressure bar colors from theme
  * Help text
  * icon
  * Kotlin?
@@ -88,7 +91,7 @@ public:
 
     void init();
     void destroy();
-    void pause();
+    void pause(bool show_dialog = false);
     bool is_paused() const;
     void unpause();
     void resize(GLsizei width, GLsizei height);

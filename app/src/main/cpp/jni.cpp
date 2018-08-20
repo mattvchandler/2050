@@ -167,7 +167,6 @@ JVM_refs jvm_refs;
 struct Persists
 {
     bool first_run = true;
-    bool paused = false;
 };
 Persists persists;
 
@@ -297,11 +296,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *
     if(!engine)
         __android_log_assert("resume called before engine initialized", "JNI", NULL);
 
-    if(persists.paused)
-    {
-        engine->pause_game();
-    }
-
     engine->resume();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
@@ -309,8 +303,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *,
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pause");
     if(!engine)
         __android_log_assert("pause called before engine initialized", "JNI", NULL);
-
-    persists.paused = engine->is_paused();
 
     engine->pause();
 }
@@ -370,7 +362,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEn
     __android_log_write(ANDROID_LOG_DEBUG, "JNI", "pauseGame");
     if(!engine)
         __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
-    engine->pause_game();
+    engine->pause_game(true);
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_unpause(JNIEnv *, jobject)
 {
