@@ -19,8 +19,8 @@
 /* TODO:
  * colors as uints
  * disable accel. switch if there isn't one to use
+ * text color on achievement balls
  * pressure bar colors from theme
- * icon
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
