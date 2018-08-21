@@ -17,9 +17,8 @@
 #include "ball.hpp"
 
 /* TODO:
- * de-dupe ball color func
+ * move shaders to their own file
  * disable accel. switch if there isn't one to use
- * text color on achievement balls
  * pressure bar colors from theme
  * Kotlin?
  * remove (or at least disable logging)

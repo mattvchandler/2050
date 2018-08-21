@@ -1,7 +1,7 @@
 #include "color.hpp"
 
 // convert 0xAARRGGBB to {R,G,B,A}
-glm::vec4 color_int_to_vec(const int color)
+glm::vec4 color_int_to_vec(const int color) noexcept
 {
     return
             {
@@ -13,7 +13,7 @@ glm::vec4 color_int_to_vec(const int color)
 }
 
 // convert {R, G, B, A} to 0xAARRGGBB
-int color_vec_to_int(const glm::vec4 & color)
+int color_vec_to_int(const glm::vec4 & color) noexcept
 {
     return
             (static_cast<unsigned int>(color.a * 255.0f) & 0xFF) << 24 | // A
@@ -23,7 +23,7 @@ int color_vec_to_int(const glm::vec4 & color)
 }
 
 // get black or white color, depending on which has more contrast w/ passed color
-glm::vec4 calc_text_color(const glm::vec4 & color)
+glm::vec4 calc_text_color(const glm::vec4 & color) noexcept
 {
     // calculate text color (luminance / contrast  formulas from https://www.w3.org/TR/WCAG20/)
     auto luminance_color = color;
@@ -39,11 +39,11 @@ glm::vec4 calc_text_color(const glm::vec4 & color)
     return (luminance > std::sqrt(0.0525f) - 0.05f) ? glm::vec4{0.0f, 0.0f, 0.0f, color.a} : glm::vec4{1.0f, 1.0f, 1.0f, color.a};
 }
 
-glm::vec4 ball_color_func(int size, const std::vector<glm::vec4> ball_colors)
+int ball_color_index(int size, int num_colors) noexcept
 {
-    auto index = (size - 1) % (2 * std::size(ball_colors) - 2);
-    if(index >= std::size(ball_colors))
-        index = 2 * std::size(ball_colors) - index - 2;
+    auto index = (size - 1) % (2 * num_colors - 2);
+    if(index >= num_colors)
+        index = 2 * num_colors - index - 2;
 
-    return ball_colors[index];
+    return index;
 }

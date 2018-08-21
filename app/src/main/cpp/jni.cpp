@@ -4,7 +4,11 @@
 #include <android/native_window_jni.h>
 #include <android/log.h>
 
+#include <glm/glm.hpp>
+
+#include "color.hpp"
 #include "engine.hpp"
+
 
 std::unique_ptr<Engine> engine;
 
@@ -382,8 +386,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEn
         env->CallVoidMethod(name, jvm_refs.method, data.name);
     DISP_DATA_FIELDS
 #undef X
+}
 
-
-
+JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_calcTextColor(JNIEnv *env, jclass, jint color)
+{
+    return color_vec_to_int(calc_text_color(color_int_to_vec(color)));
+}
+JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_ballColorIndex(JNIEnv *env, jclass, jint size, jint num_colors)
+{
+    return ball_color_index(size, num_colors);
 }
 }

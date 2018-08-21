@@ -21,7 +21,7 @@ void Ball::update_size()
 {
     radius = size * 10.0f;
     mass = 4.0f / 3.0f * pi * std::pow(radius, 3.0f);
-    color = ball_color_func(size, ball_colors);
+    color = ball_colors[ball_color_index(size, std::size(ball_colors))];
 
     text_color = calc_text_color(color);
 }

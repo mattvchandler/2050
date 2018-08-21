@@ -77,6 +77,8 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     private native void pauseGame();
     private native void unpause();
     private native void getUIData(DispData data);
+    private native static int calcTextColor(int color);
+    private native static int ballColorIndex(int size, int num_colors);
 
     private ActivityMainBinding binding;
     private DispData data = new DispData();
@@ -354,10 +356,9 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
             ((TextView)layout.findViewById(R.id.achieve_text)).setText(size  >= achieve_texts.length ? achieve_texts[achieve_texts.length - 1] : achieve_texts[size]);
 
             int[] ball_colors = getResources().getIntArray(R.array.ball_colors);
-            int color_index = (size - 1) % (2 * ball_colors.length - 2);
-            if(color_index >= ball_colors.length)
-            color_index = 2 * ball_colors.length - color_index - 2;
-            ImageViewCompat.setImageTintList(layout.findViewById(R.id.ball), ColorStateList.valueOf(ball_colors[color_index]));
+            int ball_color = ball_colors[ballColorIndex(size, ball_colors.length)];
+            ImageViewCompat.setImageTintList(layout.findViewById(R.id.ball), ColorStateList.valueOf(ball_color));
+            ((TextView)layout.findViewById(R.id.ball_num)).setTextColor(calcTextColor(ball_color));
 
             Toast toast = new Toast(getApplicationContext());
             toast.setDuration(Toast.LENGTH_SHORT);
