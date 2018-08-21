@@ -6,6 +6,7 @@
 
 #include <android/log.h>
 
+#include "color.hpp"
 #include "jni.hpp"
 
 glm::mat3 ortho3x3(float left, float right, float bottom, float top)
@@ -35,21 +36,12 @@ World::World(AAssetManager * asset_manager)
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
 
-    auto bg_color_i = get_res_color("bg_color");
-    bg_color = {
-            static_cast<float>((bg_color_i >> 16) & 0xFF) / 256.0f,
-            static_cast<float>((bg_color_i >>  8) & 0xFF) / 256.0f,
-            static_cast<float>((bg_color_i)       & 0xFF) / 256.0f
-    };
+    bg_color = color_int_to_vec(get_res_color("bg_color"));
 
     auto color_array = get_res_int_array("ball_colors");
     for(auto & color: color_array)
     {
-       ball_colors.emplace_back(
-           static_cast<float>((color >> 16) & 0xFF) / 256.0f,
-           static_cast<float>((color >>  8) & 0xFF) / 256.0f,
-           static_cast<float>((color)       & 0xFF) / 256.0f
-       );
+       ball_colors.emplace_back(color_int_to_vec(color));
     }
 
     new_game();
@@ -63,6 +55,7 @@ World::~World()
 void World::init()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
+    // TODO: move to separate files
     const char * ball_vertshader =
      R"(precision mediump float;
 
@@ -128,7 +121,7 @@ void World::init()
     // font sizes don't matter yet b/c resize should be called immediately after init
     font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
 
-    glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.0f);
+    glClearColor(bg_color.r, bg_color.g, bg_color.b, bg_color.a);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -292,7 +285,7 @@ bool World::render()
         while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
             ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
 
-        ball_texts[ball.get_size()].render_text({ball.get_text_color(), 1.0f}, screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        ball_texts[ball.get_size()].render_text(ball.get_text_color(), screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     auto end = std::chrono::high_resolution_clock::now();

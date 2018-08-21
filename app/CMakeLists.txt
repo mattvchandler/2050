@@ -14,6 +14,7 @@ add_subdirectory(../libraries/textogl ${CMAKE_CURRENT_BINARY_DIR}/textogl EXCLUD
 
 add_library(2050 SHARED
     src/main/cpp/ball.cpp
+    src/main/cpp/color.cpp
     src/main/cpp/engine.cpp
     src/main/cpp/jni.cpp
     src/main/cpp/opengl.cpp

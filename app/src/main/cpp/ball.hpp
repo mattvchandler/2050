@@ -12,21 +12,20 @@ private:
     float mass;
     glm::vec2 pos;
     glm::vec2 vel;
-    glm::vec3 color;
-    glm::vec3 text_color;
+    glm::vec4 color;
+    glm::vec4 text_color;
 
     void update_size();
-    glm::vec3 color_func();
-    const std::vector<glm::vec3> & ball_colors;
+    const std::vector<glm::vec4> & ball_colors;
 
 public:
-    Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data = {});
+    Ball(float win_size, const std::vector<glm::vec4> & ball_colors, const nlohmann::json & data = {});
 
     int get_size() const { return size; }
     float get_radius() const { return radius; }
     glm::vec2 get_pos() const { return pos; }
-    glm::vec3 get_color() const { return color; }
-    glm::vec3 get_text_color() const { return text_color; }
+    glm::vec4 get_color() const { return color; }
+    glm::vec4 get_text_color() const { return text_color; }
 
     void grow();
     void physics_step(float dt, float win_size, const glm::vec2 & grav_vec, float wall_damp);

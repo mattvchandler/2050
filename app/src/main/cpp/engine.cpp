@@ -13,7 +13,7 @@ using namespace std::chrono_literals;
 #define CASE_STR( value ) case value: return #value;
 const char* eglGetErrorString( EGLint error )
 {
-    switch( error )
+    switch(error)
     {
     CASE_STR( EGL_SUCCESS             )
     CASE_STR( EGL_NOT_INITIALIZED     )

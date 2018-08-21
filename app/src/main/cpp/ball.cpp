@@ -3,6 +3,8 @@
 #include <vector>
 #include <random>
 
+#include "color.hpp"
+
 thread_local std::default_random_engine prng(std::random_device{}());
 
 const auto pi = std::acos(-1.0f);
@@ -19,29 +21,12 @@ void Ball::update_size()
 {
     radius = size * 10.0f;
     mass = 4.0f / 3.0f * pi * std::pow(radius, 3.0f);
-    color = color_func();
+    color = ball_color_func(size, ball_colors);
 
-    // pre-calculate text color (luminance / contrast  formulas from https://www.w3.org/TR/WCAG20/)
-    auto luminance_color = color;
-    for(unsigned int i = 0; i < 3; ++i)
-    {
-        auto & c = luminance_color[i];
-        c = (c <= 0.03928f) ? c / 12.92f : std::pow((c + 0.055f) / 1.055f, 2.4f);
-    }
-    auto luminance = 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
-    text_color = (luminance > std::sqrt(0.0525f) - 0.05f) ? glm::vec3(0.0f) : glm::vec3(1.0f);
+    text_color = calc_text_color(color);
 }
 
-glm::vec3 Ball::color_func()
-{
-    auto index = (size - 1) % (2 * std::size(ball_colors) - 2);
-    if(index >= std::size(ball_colors))
-        index = 2 * std::size(ball_colors) - index - 2;
-
-    return ball_colors[index];
-}
-
-Ball::Ball(float win_size, const std::vector<glm::vec3> & ball_colors, const nlohmann::json & data): ball_colors(ball_colors)
+Ball::Ball(float win_size, const std::vector<glm::vec4> & ball_colors, const nlohmann::json & data): ball_colors(ball_colors)
 {
     if(data.empty())
     {

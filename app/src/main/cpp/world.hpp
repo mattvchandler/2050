@@ -17,7 +17,7 @@
 #include "ball.hpp"
 
 /* TODO:
- * colors as uints
+ * de-dupe ball color func
  * disable accel. switch if there isn't one to use
  * text color on achievement balls
  * pressure bar colors from theme
@@ -26,6 +26,7 @@
  * cleanup commented code in MainActivity
  * remove debug text
  * shrink bundled font file
+ * copyright headers
  */
 
 class World
@@ -70,8 +71,8 @@ private:
 
     glm::vec2 text_coord_transform(const glm::vec2 & coord);
 
-    glm::vec3 bg_color;
-    std::vector<glm::vec3> ball_colors;
+    glm::vec4 bg_color;
+    std::vector<glm::vec4> ball_colors;
 
     std::vector<float> physx_times;
 
