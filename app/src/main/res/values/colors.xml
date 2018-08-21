@@ -18,4 +18,10 @@
         <item>#00FF80</item>
         <item>#00FF00</item>
     </array>
+
+    <array name="pressure_colors">
+        <item>#00FF00</item>
+        <item>#FFFF00</item>
+        <item>#FF0000</item>
+    </array>
 </resources>

@@ -1,5 +1,6 @@
 package org.mattvchandler.a2050;
 
+import android.animation.ArgbEvaluator;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -166,10 +167,20 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
             {
                 getUIData(data);
 
-                // TODO: get colors from theme
-                float r = clamp(0.2f * (float)data.pressure.get() / 10.0f, 0.0f, 1.0f);
-                float g = clamp(0.2f * (10.0f - (float)data.pressure.get() / 10.0f), 0.0f, 1.0f);
-                int color = 0xFF000000 | (((int)(r * 255.0f)) << 16) | (((int)(g * 255.0f)) << 8);
+                int [] color_stops = getResources().getIntArray(R.array.pressure_colors);
+                if(color_stops.length <= 1)
+                    throw new AssertionError("Not enough color stops for pressure_colors");
+
+                float percent = (float)data.pressure.get() / 100.0f;
+
+                int start_color_i = (int)(percent * ((float)color_stops.length - 1));
+                if(start_color_i >= color_stops.length - 1)
+                    start_color_i = color_stops.length - 2;
+
+                float stop_percent = (float)(color_stops.length -1) * percent - (float)(start_color_i);
+
+                int color = (Integer)new ArgbEvaluator().evaluate(stop_percent, color_stops[start_color_i], color_stops[start_color_i + 1]);
+
                 ((LayerDrawable)binding.pressure.getProgressDrawable()).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
                 update_data.postDelayed(this, delay);
