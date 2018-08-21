@@ -18,7 +18,6 @@
 
 /* TODO:
  * move shaders to their own file
- * disable accel. switch if there isn't one to use
  * pressure bar colors from theme
  * Kotlin?
  * remove (or at least disable logging)

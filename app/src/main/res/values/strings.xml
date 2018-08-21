@@ -29,6 +29,8 @@
 
     <string name="control_mode">Accelerometer control mode</string>
     <string name="control_mode_summary">Switch between touch control and accelerometer control</string>
+    <string name="no_accel">No accelerometer detected</string>
+
     <string name="theme_title">Day / Night Theme</string>
     <string-array name="theme_settings">
         <item>Follow System (requires restart)</item>
