@@ -18,7 +18,6 @@
 
 /* TODO:
  * move shaders to their own file
- * vertical progressbar for landscape
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
