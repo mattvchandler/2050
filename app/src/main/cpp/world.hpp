@@ -20,7 +20,6 @@
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
- * remove debug text
  * shrink bundled font file
  * copyright headers
  */
@@ -71,8 +70,6 @@ private:
 
     glm::vec4 bg_color;
     std::vector<glm::vec4> ball_colors;
-
-    std::vector<float> physx_times;
 
     void render_balls();
 
