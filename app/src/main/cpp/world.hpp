@@ -18,7 +18,6 @@
 
 /* TODO:
  * Kotlin?
- * shrink bundled font file
  * copyright headers
  * linting
  */

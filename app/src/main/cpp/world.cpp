@@ -33,7 +33,7 @@ World::World(AAssetManager * asset_manager)
 {
     LOG_DEBUG_WRITE("World::World", "World object created");
 
-    font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+    font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono_ascii.ttf", AASSET_MODE_STREAMING);
     vert_shader_asset = AAssetManager_open(asset_manager, "2050.vert", AASSET_MODE_STREAMING);
     frag_shader_asset = AAssetManager_open(asset_manager, "2050.frag", AASSET_MODE_STREAMING);
 
