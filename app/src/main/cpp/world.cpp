@@ -79,7 +79,7 @@ void World::init()
 
 void World::pause(bool show_dialog)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "World::pause", paused ? "paused" : "unpaused");
+    __android_log_write(ANDROID_LOG_DEBUG, "World::pause", "paused");
     if(!paused && state != State::WIN && state != State::LOSE)
     {
         paused = true;
@@ -90,7 +90,7 @@ void World::pause(bool show_dialog)
 bool World::is_paused() const { return paused; }
 void World::unpause()
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "World::unpause", paused ? "paused" : "unpaused");
+    __android_log_print(ANDROID_LOG_DEBUG, "World::unpause", "unpaused");
     paused = false;
     if(state == State::WIN)
     {
@@ -223,8 +223,6 @@ void World::render_balls()
 
 bool World::render()
 {
-    auto start = std::chrono::high_resolution_clock::now();
-
     glClear(GL_COLOR_BUFFER_BIT);
 
     render_balls();
@@ -237,8 +235,6 @@ bool World::render()
         ball_texts[ball.get_size()].render_text(ball.get_text_color(), screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-
     GL_CHECK_ERROR("World::render");
 
     return !paused;
@@ -246,7 +242,6 @@ bool World::render()
 
 void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec)
 {
-    auto start = std::chrono::high_resolution_clock::now();
     if(paused || state == State::LOSE || state == State::WIN)
         return;
 
@@ -292,7 +287,6 @@ void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sen
                     high_score = std::max(high_score, score);
                     if(ball->get_size() >= next_achievement_size)
                     {
-                        __android_log_print(ANDROID_LOG_DEBUG, "World::physics_step", "achievment get: %d", next_achievement_size);
                         achievement(next_achievement_size);
                         ++next_achievement_size;
                     }
@@ -317,8 +311,6 @@ void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sen
 
         game_over(score, score == high_score);
     }
-
-    auto end = std::chrono::high_resolution_clock::now();
 }
 
 void World::fling(float x, float y)

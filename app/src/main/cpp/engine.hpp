@@ -56,7 +56,6 @@ private:
 public:
     Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode);
 
-    void start() noexcept;
     void resume() noexcept;
     void pause() noexcept;
     void stop() noexcept;

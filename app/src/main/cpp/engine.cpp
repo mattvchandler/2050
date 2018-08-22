@@ -43,16 +43,14 @@ void Engine::destroy_egl()
     {
         if(eglGetCurrentContext() != EGL_NO_CONTEXT)
             eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "unbound");
+
         if(context != EGL_NO_CONTEXT)
             eglDestroyContext(display, context);
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "context");
+
         if(surface != EGL_NO_SURFACE)
             eglDestroySurface(display, surface);
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "surface");
 
         eglTerminate(display);
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "display");
     }
 
     display = EGL_NO_DISPLAY;
@@ -62,7 +60,6 @@ void Engine::destroy_egl()
 
 bool Engine::init_egl()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_egl", "begin egl initialization");
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(display == EGL_NO_DISPLAY)
     {
@@ -81,8 +78,6 @@ bool Engine::init_egl()
 }
 bool Engine::init_surface()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_surface", "begin surface creation");
-
     if(!has_surface)
         return false;
 
@@ -121,7 +116,6 @@ bool Engine::init_surface()
 }
 bool Engine::init_context()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_context", "begin context creation");
     EGLint attribs[] =
             {
                     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
@@ -372,10 +366,6 @@ Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, boo
         __android_log_assert("Could not get ASensorManager", "Engine::Engine", NULL);
 }
 
-void Engine::start() noexcept
-{
-    // TODO: needed?
-}
 void Engine::resume() noexcept
 {
     running = true;
@@ -390,8 +380,6 @@ void Engine::pause() noexcept
 }
 void Engine::stop() noexcept
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "stop");
-
     std::ofstream savefile(data_path + "/save.json");
     savefile<<world.serialize();
     __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "saved data");

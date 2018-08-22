@@ -18,10 +18,10 @@
 
 /* TODO:
  * Kotlin?
- * remove (or at least disable logging)
- * cleanup commented code in MainActivity
+ * strip debug logs in release apk
  * shrink bundled font file
  * copyright headers
+ * linting
  */
 
 class World

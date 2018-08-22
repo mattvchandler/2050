@@ -66,7 +66,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     }
 
     private native void create(AssetManager assetManager, String path, Resources resources, boolean gravity_mode);
-    private native void start();
     private native void resume();
     private native void pause();
     private native void stop();
@@ -110,7 +109,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
 
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        Log.d("MainActivity", "onCreate");
 
         setSupportActionBar(binding.toolbar);
 
@@ -145,18 +143,9 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     }
 
     @Override
-    protected void onStart()
-    {
-        super.onStart();
-        Log.d("MainActivity", "onStart");
-        start();
-    }
-
-    @Override
     protected void onResume()
     {
         super.onResume();
-        Log.d("MainActivity", "onResume");
         resume();
 
         int delay = 100; // ms
@@ -192,7 +181,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     protected void onPause()
     {
         super.onPause();
-        Log.d("MainActivity", "onPause");
         pause();
 
         update_data.removeCallbacksAndMessages(null);
@@ -202,13 +190,11 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     protected void onStop()
     {
         super.onStop();
-        Log.d("MainActivity", "onStop");
         stop();
     }
     @Override
     protected void onDestroy()
     {
-        Log.d("MainActivity", "onDestroy");
         destroy();
 
         if(dialog != null)
@@ -223,23 +209,20 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     public void onWindowFocusChanged(boolean hasFocus)
     {
         super.onWindowFocusChanged(hasFocus);
-        Log.d("MainActivity", "onWindowFocusChanged: " + String.valueOf(hasFocus));
         focus(hasFocus);
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {} // TODO: remove
+    public void surfaceCreated(SurfaceHolder holder) {}
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        Log.d("MainActivity", "surfaceDestroyed");
         surfaceChanged(null);
     }
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
-        Log.d("MainActivity", "surfaceChanged");
         surfaceChanged(holder.getSurface());
     }
 
@@ -300,7 +283,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
 
     public void game_win(final int score, final boolean new_high_score)
     {
-        Log.d("MainActivity::game_win", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
             if(dialog != null)
@@ -319,7 +301,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     }
     public void game_over(final int score, final boolean new_high_score)
     {
-        Log.d("MainActivity::game_over", "score: " + String.valueOf(score));
         runOnUiThread(() ->
         {
             if(dialog != null)
@@ -337,7 +318,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     }
     public void game_pause()
     {
-        Log.d("MainActivity", "game_pause");
         runOnUiThread(() ->
         {
             if(dialog != null)
@@ -355,7 +335,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     public void achievement(int size)
     {
         String size_str = String.valueOf(size);
-        Log.d("MainActivity", "achievement");
         runOnUiThread(() ->
         {
             LayoutInflater inflater = getLayoutInflater();
@@ -430,7 +409,6 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.d("MainActivity", "resultCode: " + String.valueOf(resultCode) + " requestCode: " + String.valueOf(requestCode));
         if(requestCode == SETTINGS_RESULT)
             recreate();
     }
