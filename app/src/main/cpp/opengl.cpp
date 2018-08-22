@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include "log.hpp"
+
 namespace detail
 {
 #define CASE_STR(value) case value: return #value;
@@ -29,7 +31,7 @@ namespace detail
         if(e != GL_NO_ERROR)
         {
             using namespace std::string_literals;
-            __android_log_print(ANDROID_LOG_ERROR, "GL_check_error", "Error at %s (%s:%d): %s", at.c_str(), file, line, glGetErrorString(e));
+            LOG_ERROR_PRINT("GL_check_error", "Error at %s (%s:%d): %s", at.c_str(), file, line, glGetErrorString(e));
         }
     }
 }
@@ -64,7 +66,7 @@ Shader_prog::Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> 
         glDeleteProgram(id);
         id = 0;
 
-        __android_log_print(ANDROID_LOG_ERROR, "Shader_prog::Shader_proj", "Error linking shader program:\n %s", log.c_str());
+        LOG_ERROR_PRINT("Shader_prog::Shader_proj", "Error linking shader program:\n %s", log.c_str());
         throw std::system_error(link_status, std::system_category(), "Error linking shader program:\n" + log);
     }
 
@@ -111,7 +113,7 @@ GLint Shader_prog::get_uniform(const std::string & uniform) const
     }
     catch(std::out_of_range & e)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Shader_prog::get_uniform", "Could not find uniform %s: %s", uniform.c_str(), e.what());
+        LOG_ERROR_PRINT("Shader_prog::get_uniform", "Could not find uniform %s: %s", uniform.c_str(), e.what());
         return 0;
     }
 }
@@ -138,7 +140,7 @@ Shader_prog::Shader_obj::Shader_obj(const std::string_view & src, GLenum type)
         glDeleteShader(id);
         id = 0;
 
-        __android_log_print(ANDROID_LOG_ERROR, "Shader_prog::Shader_obj::Shader_obj", "Error compiling shader:\n %s", log.c_str());
+        LOG_ERROR_PRINT("Shader_prog::Shader_obj::Shader_obj", "Error compiling shader:\n %s", log.c_str());
         throw std::system_error(compile_status, std::system_category(), "Error compiling shader:\n" + log);
     }
 }

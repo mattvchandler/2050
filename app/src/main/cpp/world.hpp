@@ -18,7 +18,6 @@
 
 /* TODO:
  * Kotlin?
- * strip debug logs in release apk
  * shrink bundled font file
  * copyright headers
  * linting

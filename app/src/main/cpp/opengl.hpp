@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <android/log.h>
-
 #include <GLES2/gl2.h>
 
 namespace detail

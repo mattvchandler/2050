@@ -4,9 +4,9 @@
 #include <chrono>
 #include <fstream>
 
-
-#include <android/log.h>
 #include <GLES2/gl2.h>
+
+#include "log.hpp"
 
 using namespace std::chrono_literals;
 
@@ -37,7 +37,7 @@ const char* eglGetErrorString( EGLint error )
 
 void Engine::destroy_egl()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::destroy_egl", "Destroying display");
+    LOG_DEBUG_WRITE("Engine::destroy_egl", "Destroying display");
 
     if(display != EGL_NO_DISPLAY)
     {
@@ -63,17 +63,17 @@ bool Engine::init_egl()
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(display == EGL_NO_DISPLAY)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_egl", "eglGetDisplay error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_egl", "eglGetDisplay error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
     if(!eglInitialize(display, NULL, NULL))
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_egl", "eglGetInitialize error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_egl", "eglGetInitialize error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_egl", "egl initialized");
+    LOG_DEBUG_WRITE("Engine::init_egl", "egl initialized");
     return true;
 }
 bool Engine::init_surface()
@@ -84,7 +84,7 @@ bool Engine::init_surface()
     EGLint native_visual_id;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &native_visual_id))
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_surface", "eglConfigAttrib error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_surface", "eglConfigAttrib error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
@@ -93,13 +93,13 @@ bool Engine::init_surface()
     surface = eglCreateWindowSurface(display, config, win, NULL);
     if(surface == EGL_NO_SURFACE)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_surface", "eglCreateWindowSurface error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_surface", "eglCreateWindowSurface error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
     if(!eglQuerySurface(display, surface, EGL_WIDTH, &width) || !eglQuerySurface(display, surface, EGL_HEIGHT, &height))
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_surface", "eglQuerySurface error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_surface", "eglQuerySurface error: %s", eglGetErrorString(eglGetError()));
         eglDestroySurface(display, surface);
         return false;
     }
@@ -111,7 +111,7 @@ bool Engine::init_surface()
         return false;
     }
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_surface", "surface created");
+    LOG_DEBUG_WRITE("Engine::init_surface", "surface created");
     return true;
 }
 bool Engine::init_context()
@@ -129,7 +129,7 @@ bool Engine::init_context()
     EGLint num_configs;
     if(!eglChooseConfig(display, attribs, &config, 1, &num_configs))
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_context", "eglChooseConfig error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_context", "eglChooseConfig error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
@@ -137,11 +137,11 @@ bool Engine::init_context()
     context = eglCreateContext(display, config, EGL_NO_CONTEXT, context_version);
     if(context == EGL_NO_CONTEXT)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "Engine::init_context", "eglCreateContext error: %s", eglGetErrorString(eglGetError()));
+        LOG_ERROR_PRINT("Engine::init_context", "eglCreateContext error: %s", eglGetErrorString(eglGetError()));
         return false;
     }
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::init_context", "context created");
+    LOG_DEBUG_WRITE("Engine::init_context", "context created");
 
     return true;
 }
@@ -150,13 +150,13 @@ bool Engine::can_render()
 {
     if(display == EGL_NO_DISPLAY)
     {
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no display");
+        LOG_DEBUG_WRITE("Engine::can_render", "can't render: no display");
         return false;
     }
 
     if(!win)
     {
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no window");
+        LOG_DEBUG_WRITE("Engine::can_render", "can't render: no window");
         return false;
     }
 
@@ -168,38 +168,38 @@ bool Engine::can_render()
             {
                 if(!init_context())
                 {
-                    __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: couldn't init context");
+                    LOG_DEBUG_WRITE("Engine::can_render", "can't render: couldn't init context");
                     return false;
                 }
             }
 
             if(!has_surface)
             {
-                __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: no surface");
+                LOG_DEBUG_WRITE("Engine::can_render", "can't render: no surface");
                 return false;
             }
 
             if(!init_surface())
             {
-                __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "can't render: couldn't init surface");
+                LOG_DEBUG_WRITE("Engine::can_render", "can't render: couldn't init surface");
                 return false;
             }
         }
 
         if(!eglMakeCurrent(display, surface, surface, context))
         {
-            __android_log_print(ANDROID_LOG_ERROR, "Engine::can_render", "eglMakeCurrent error: %s", eglGetErrorString(eglGetError()));
+            LOG_ERROR_PRINT("Engine::can_render", "eglMakeCurrent error: %s", eglGetErrorString(eglGetError()));
             return false;
         }
 
-        __android_log_write(ANDROID_LOG_DEBUG, "Engine::can_render", "set up to render");
+        LOG_DEBUG_WRITE("Engine::can_render", "set up to render");
 
         glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if(!eglSwapBuffers(display, surface))
         {
-            __android_log_write(ANDROID_LOG_ERROR, "Engine::can_render", "couldn't swap");
+            LOG_ERROR_WRITE("Engine::can_render", "couldn't swap");
         }
 
         world.init();
@@ -211,7 +211,7 @@ bool Engine::can_render()
 
 void Engine::render_loop()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "start render loop");
+    LOG_DEBUG_WRITE("Engine::render_loop", "start render loop");
 
     mutex.lock();
     init_egl();
@@ -235,7 +235,7 @@ void Engine::render_loop()
         int new_width, new_height;
         if(!eglQuerySurface(display, surface, EGL_WIDTH, &new_width) || !eglQuerySurface(display, surface, EGL_HEIGHT, &new_height))
         {
-            __android_log_print(ANDROID_LOG_ERROR, "Engine::render_loop", "eglQuerySurface error: %s", eglGetErrorString(eglGetError()));
+            LOG_ERROR_PRINT("Engine::render_loop", "eglQuerySurface error: %s", eglGetErrorString(eglGetError()));
         }
 
         if(new_width <= 0 || new_height <= 0)
@@ -270,7 +270,7 @@ void Engine::render_loop()
 
             if(!eglSwapBuffers(display, surface))
             {
-                __android_log_write(ANDROID_LOG_ERROR, "Engine::render_loop", "couldn't swap");
+                LOG_ERROR_WRITE("Engine::render_loop", "couldn't swap");
             }
         }
         mutex.unlock();
@@ -280,12 +280,12 @@ void Engine::render_loop()
     world.destroy();
     destroy_egl();
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::render_loop", "end render loop");
+    LOG_DEBUG_WRITE("Engine::render_loop", "end render loop");
 }
 
 void Engine::physics_loop()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "start physics loop");
+    LOG_DEBUG_WRITE("Engine::physics_loop", "start physics loop");
 
     if(gravity_mode)
     {
@@ -341,7 +341,7 @@ void Engine::physics_loop()
                                  NULL);
     }
 
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::physics_loop", "end physics loop");
+    LOG_DEBUG_WRITE("Engine::physics_loop", "end physics loop");
 }
 
 Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode):
@@ -382,11 +382,11 @@ void Engine::stop() noexcept
 {
     std::ofstream savefile(data_path + "/save.json");
     savefile<<world.serialize();
-    __android_log_write(ANDROID_LOG_DEBUG, "Engine::stop", "saved data");
+    LOG_DEBUG_WRITE("Engine::stop", "saved data");
 }
 void Engine::set_focus(bool focus) noexcept
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "Engine::set_focus", "focused: %s", focus ? "true" : "false");
+    LOG_DEBUG_PRINT("Engine::set_focus", "focused: %s", focus ? "true" : "false");
     if(focus)
         unpause();
     else
@@ -398,7 +398,7 @@ void Engine::surface_changed(ANativeWindow *window) noexcept
     std::scoped_lock lock(mutex);
     if(window)
     {
-        __android_log_print(ANDROID_LOG_DEBUG, "Engine::surface_changed", "surfaceChanged, with size: %d x %d", ANativeWindow_getWidth(window), ANativeWindow_getHeight(window));
+        LOG_DEBUG_PRINT("Engine::surface_changed", "surfaceChanged, with size: %d x %d", ANativeWindow_getWidth(window), ANativeWindow_getHeight(window));
         has_surface = true;
         win = window;
     }

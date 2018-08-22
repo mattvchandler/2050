@@ -2,12 +2,12 @@
 
 #include <android/asset_manager_jni.h>
 #include <android/native_window_jni.h>
-#include <android/log.h>
 
 #include <glm/glm.hpp>
 
 #include "color.hpp"
 #include "engine.hpp"
+#include "log.hpp"
 
 
 std::unique_ptr<Engine> engine;
@@ -235,7 +235,7 @@ std::vector<int> get_res_int_array(const std::string & id)
     jfieldID id_field = env->GetStaticFieldID(jvm_refs.R_array, id.c_str(), "I");
     if(!id_field)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "get_res_int_array", "Could not find resource array: %s", id.c_str());
+        LOG_ERROR_PRINT("get_res_int_array", "Could not find resource array: %s", id.c_str());
         return {};
     }
 
@@ -258,7 +258,7 @@ int get_res_color(const std::string & id)
     jfieldID id_field = env->GetStaticFieldID(jvm_refs.R_color, id.c_str(), "I");
     if(!id_field)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "get_res_color", "Could not find resource color: %s", id.c_str());
+        LOG_ERROR_PRINT("get_res_color", "Could not find resource color: %s", id.c_str());
         return {};
     }
 

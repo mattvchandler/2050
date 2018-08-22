@@ -4,10 +4,9 @@
 #include <numeric>
 #include <string>
 
-#include <android/log.h>
-
 #include "color.hpp"
 #include "jni.hpp"
+#include "log.hpp"
 
 glm::mat3 ortho3x3(float left, float right, float bottom, float top)
 {
@@ -32,7 +31,7 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
 
 World::World(AAssetManager * asset_manager)
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
+    LOG_DEBUG_WRITE("World::World", "World object created");
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
     vert_shader_asset = AAssetManager_open(asset_manager, "2050.vert", AASSET_MODE_STREAMING);
@@ -50,7 +49,7 @@ World::World(AAssetManager * asset_manager)
 }
 World::~World()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "World::~World", "World object destroyed");
+    LOG_DEBUG_WRITE("World::~World", "World object destroyed");
     AAsset_close(font_asset);
     AAsset_close(vert_shader_asset);
     AAsset_close(frag_shader_asset);
@@ -58,7 +57,7 @@ World::~World()
 
 void World::init()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
+    LOG_DEBUG_WRITE("World::init", "initializing opengl objects");
 
     std::string_view ball_vertshader{static_cast<const char *>(AAsset_getBuffer(vert_shader_asset)), static_cast<std::size_t>(AAsset_getLength(vert_shader_asset))};
     std::string_view ball_fragshader{static_cast<const char *>(AAsset_getBuffer(frag_shader_asset)), static_cast<std::size_t>(AAsset_getLength(frag_shader_asset))};
@@ -79,7 +78,7 @@ void World::init()
 
 void World::pause(bool show_dialog)
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "World::pause", "paused");
+    LOG_DEBUG_WRITE("World::pause", "paused");
     if(!paused && state != State::WIN && state != State::LOSE)
     {
         paused = true;
@@ -90,7 +89,7 @@ void World::pause(bool show_dialog)
 bool World::is_paused() const { return paused; }
 void World::unpause()
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "World::unpause", "unpaused");
+    LOG_DEBUG_WRITE("World::unpause", "unpaused");
     paused = false;
     if(state == State::WIN)
     {
@@ -100,7 +99,7 @@ void World::unpause()
 
 void World::destroy()
 {
-    __android_log_write(ANDROID_LOG_DEBUG, "World::destroy", "destroying opengl objects");
+    LOG_DEBUG_WRITE("World::destroy", "destroying opengl objects");
     ball_prog.reset();
     ball_vbo.reset();
 
@@ -110,7 +109,7 @@ void World::destroy()
 
 void World::resize(GLsizei width, GLsizei height)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "resize with %d x %d", width, height);
+    LOG_DEBUG_PRINT("World::resize", "resize with %d x %d", width, height);
 
     glViewport(0, 0, width, height);
     screen_size = {width, height};
@@ -134,7 +133,7 @@ void World::resize(GLsizei width, GLsizei height)
 
     auto scale_factor = std::min(screen_size.x, screen_size.y) / win_size;
     auto new_text_size = static_cast<int>(scale_factor * initial_text_size);
-    __android_log_print(ANDROID_LOG_DEBUG, "World::resize", "font resized from %d to %d", text_size, new_text_size);
+    LOG_DEBUG_PRINT("World::resize", "font resized from %d to %d", text_size, new_text_size);
     text_size = new_text_size;
     font->resize(text_size);
     for(auto & t: ball_texts)
@@ -195,7 +194,7 @@ void World::render_balls()
 
     if(std::size(ball_data) > old_ball_data_size)
     {
-        __android_log_print(ANDROID_LOG_DEBUG, "World::render_balls", "ball_data buffer resized from %d to %d", static_cast<int>(old_ball_data_size), static_cast<int>(std::size(ball_data)));
+        LOG_DEBUG_PRINT("World::render_balls", "ball_data buffer resized from %d to %d", static_cast<int>(old_ball_data_size), static_cast<int>(std::size(ball_data)));
         glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
     }
     else
