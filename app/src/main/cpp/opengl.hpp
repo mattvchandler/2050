@@ -23,7 +23,7 @@ private:
     GLuint id;
 public:
 
-    Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sources,
+    Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> & sources,
                 const std::vector<std::string> & attribs);
     ~Shader_prog();
 
@@ -40,7 +40,7 @@ public:
     private:
         GLuint id;
     public:
-        Shader_obj(const std::string & src, GLenum type);
+        Shader_obj(const std::string_view & src, GLenum type);
         ~Shader_obj();
         Shader_obj(const Shader_obj &) = delete;
         Shader_obj & operator=(const Shader_obj &) = delete;

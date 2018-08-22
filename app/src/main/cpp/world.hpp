@@ -17,7 +17,6 @@
 #include "ball.hpp"
 
 /* TODO:
- * move shaders to their own file
  * Kotlin?
  * remove (or at least disable logging)
  * cleanup commented code in MainActivity
@@ -61,6 +60,8 @@ private:
     std::vector<float> ball_data = std::vector<float>(64 * num_ball_attrs * 3); // scratch buffer for ball data
 
     AAsset * font_asset = nullptr;
+    AAsset * vert_shader_asset = nullptr;
+    AAsset * frag_shader_asset = nullptr;
     const int initial_text_size = 14;
     int text_size = initial_text_size;
     std::unique_ptr<textogl::Font_sys> font;

@@ -34,7 +34,7 @@ namespace detail
     }
 }
 
-Shader_prog::Shader_prog(const std::vector<std::pair<std::string, GLenum>> & sources,
+Shader_prog::Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> & sources,
             const std::vector<std::string> & attribs)
 {
     std::vector<Shader_obj> shaders;
@@ -116,12 +116,13 @@ GLint Shader_prog::get_uniform(const std::string & uniform) const
     }
 }
 
-Shader_prog::Shader_obj::Shader_obj(const std::string & src, GLenum type)
+Shader_prog::Shader_obj::Shader_obj(const std::string_view & src, GLenum type)
 {
     id  = glCreateShader(type);
 
-    const char * data = src.c_str();
-    glShaderSource(id, 1, &data, NULL);
+    auto data = static_cast<const GLchar *>(std::data(src));
+    auto length = static_cast<GLint>(std::size(src));
+    glShaderSource(id, 1, &data, &length);
     glCompileShader(id);
 
     GLint compile_status;

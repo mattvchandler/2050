@@ -35,6 +35,8 @@ World::World(AAssetManager * asset_manager)
     __android_log_write(ANDROID_LOG_DEBUG, "World::World", "World object created");
 
     font_asset = AAssetManager_open(asset_manager, "DejaVuSansMono.ttf", AASSET_MODE_STREAMING);
+    vert_shader_asset = AAssetManager_open(asset_manager, "2050.vert", AASSET_MODE_STREAMING);
+    frag_shader_asset = AAssetManager_open(asset_manager, "2050.frag", AASSET_MODE_STREAMING);
 
     bg_color = color_int_to_vec(get_res_color("bg_color"));
 
@@ -50,69 +52,18 @@ World::~World()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::~World", "World object destroyed");
     AAsset_close(font_asset);
+    AAsset_close(vert_shader_asset);
+    AAsset_close(frag_shader_asset);
 }
 
 void World::init()
 {
     __android_log_write(ANDROID_LOG_DEBUG, "World::init", "initializing opengl objects");
-    // TODO: move to separate files
-    const char * ball_vertshader =
-     R"(precision mediump float;
 
-        attribute vec2 vert_pos;
-        attribute vec2 ball_pos;
-        attribute float radius;
-        attribute vec3 vert_color;
+    std::string_view ball_vertshader{static_cast<const char *>(AAsset_getBuffer(vert_shader_asset)), static_cast<std::size_t>(AAsset_getLength(vert_shader_asset))};
+    std::string_view ball_fragshader{static_cast<const char *>(AAsset_getBuffer(frag_shader_asset)), static_cast<std::size_t>(AAsset_getLength(frag_shader_asset))};
 
-        uniform mat3 projection;
-        uniform float win_size;
-        varying float border_size;
-        varying float pixel_size;
-
-        varying vec3 color;
-        varying vec2 center;
-        varying float frag_radius;
-
-        const float border_thickness = 2.0;
-
-        void main()
-        {
-            color = vert_color;
-            gl_Position = vec4((projection * vec3(vert_pos * 2.0 * radius + ball_pos, 1.0)).xy, 0.0, 1.0);
-            center = ball_pos;
-            frag_radius = radius;
-            border_size = border_thickness / frag_radius;
-            pixel_size = 1.0 / win_size;
-        }
-    )";
-    const char * ball_fragshader =
-     R"(precision mediump float;
-
-        varying vec3 color;
-        varying vec2 center;
-        varying float frag_radius;
-        varying float border_size;
-        varying float pixel_size;
-
-        uniform mat3 inv_projection;
-        uniform vec2 screen_size;
-        uniform float win_size;
-
-        void main()
-        {
-            vec2 coord = (inv_projection * vec3(2.0 * gl_FragCoord.xy / screen_size - vec2(1.0), 1.0)).xy;
-            float r = distance(coord, center);
-
-            if(r >= frag_radius)
-                discard;
-
-            r /= frag_radius;
-
-            float alpha = 1.0 - smoothstep(1.0 - 4.0 * pixel_size, 1.0, r);
-            gl_FragColor = vec4(mix(color, vec3(0.0), smoothstep(1.0 - border_size - 2.0 * pixel_size, 1.0 - border_size + 2.0 * pixel_size, r)), alpha);
-        }
-    )";
-    ball_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string, GLenum>>{{ball_vertshader, GL_VERTEX_SHADER}, {ball_fragshader, GL_FRAGMENT_SHADER}},
+    ball_prog = std::make_unique<Shader_prog>(std::vector<std::pair<std::string_view, GLenum>>{{ball_vertshader, GL_VERTEX_SHADER}, {ball_fragshader, GL_FRAGMENT_SHADER}},
                                               std::vector<std::string>{"vert_pos", "ball_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
     ball_vbo->bind();
