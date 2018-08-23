@@ -1,9 +1,12 @@
 #include <glm/common.hpp>
 #include <glm/exponential.hpp>
-#include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/ulp.hpp>
-#include <glm/gtc/vec1.hpp>
+#include <glm/ext/vector_relational.hpp>
+#include <glm/ext/vector_float1.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 
 static int test_pow()
 {
