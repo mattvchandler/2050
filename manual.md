@@ -8,24 +8,36 @@
 ## Table of Contents
 + [0. Licenses](#section0)
 + [1. Getting started](#section1)
-+ [1.1. Setup](#section1_1)
-+ [1.2. Faster compilation](#section1_2)
-+ [1.3. Example usage](#section1_3)
++ [1.1. Using global headers](#section1_1)
++ [1.2. Using separated headers](#section1_2)
++ [1.3. Using extension headers](#section1_3)
 + [1.4. Dependencies](#section1_4)
-+ [2. Swizzling](#section2)
-+ [2.1. Default C++98 implementation](#section2_1)
-+ [2.2. Anonynous union member implementation](#section2_2)
-+ [3. Preprocessor options](#section3)
-+ [3.1. GLM\_PRECISION\_**: Default precision](#section3_1)
-+ [3.2. GLM\_FORCE\_MESSAGES: Compile-time message system](#section3_2)
-+ [3.3. GLM\_FORCE\_CXX**: C++ language detection](#section3_3)
-+ [3.4. SIMD support](#section3_4)
-+ [3.5. GLM\_FORCE\_INLINE: Force inline](#section3_5)
-+ [3.6. GLM\_FORCE\_SIZE\_T\_LENGTH: Vector and matrix static size](#section3_6)
-+ [3.7. GLM\_FORCE\_EXPLICIT\_CTOR: Requiring explicit conversions](#section3_7)
-+ [3.8. GLM\_FORCE\_UNRESTRICTED\_GENTYPE: Removing genType restriction](#section3_8)
-+ [3.9. GLM\_FORCE\_SINGLE\_ONLY: Removed explicit 64-bits floating point types](#section3_9)
-+ [4. Stable extensions](#section4)
++ [2. Preprocessor configurations](#section2)
++ [2.1. GLM\_FORCE\_MESSAGES: Platform auto detection and default configuration](#section2_1)
++ [2.2. GLM_\FORCE\_PLATFORM\_UNKNOWN: Force GLM to no detect the build platform](#section2_2)
++ [2.3. GLM\_FORCE\_CXX**: C++ language detection](#section2_3)
++ [2.4. GLM\_FORCE\_EXPLICIT\_CTOR: Requiring explicit conversions](#section2_4)
++ [2.5. GLM\_FORCE\_INLINE: Force inline](#section2_5)
++ [2.6. GLM\_FORCE\_DEFAULT\_ALIGNED_GENTYPES: Force GLM to use aligned types by default](#section2_6)
++ [2.7. GLM\_FORCE\_SIMD\_**: Using SIMD optimizations](#section2_7)
++ [2.8. GLM\_PRECISION\_**: Default precision](#section2_8)
++ [2.9. GLM\_FORCE\_SINGLE\_ONLY: Removed explicit 64-bits floating point types](#section2_9)
++ [2.10. GLM\_FORCE\_SWIZZLE: Enable swizzle operators](#section2_10)
++ [2.11. GLM\_FORCE\_XYZW\_ONLY: Only exposes x, y, z and w components](#section2_11)
++ [2.12. GLM\_FORCE\_LEFT\_HANDED: Force left handed coordinate system](#section2_12)
++ [2.13. GLM\_FORCE\_DEPTH\_ZERO\_TO\_ONE: Force the use of a clip space between 0 to 1](#section2_13)
++ [2.14. GLM\_FORCE\_SIZE\_T\_LENGTH: Vector and matrix static size type](#section2_14)
++ [2.15. GLM\_FORCE\_UNRESTRICTED\_GENTYPE: Removing genType restriction](#section2_15)
++ [3. Stable extensions](#section3)
++ [3.1. Scalar types](#section3_1)
++ [3.2. Scalar functions](#section3_2)
++ [3.3. Vector types](#section3_3)
++ [3.4. Vector functions](#section3_4)
++ [3.5. Matrix types](#section3_5)
++ [3.6. Matrix functions](#section3_6)
++ [3.7. Quaternion types](#section3_7)
++ [3.8. Quaternion functions](#section3_8)
++ [4. Recommended extensions](#section4)
 + [4.1. GLM_GTC_bitfield](#section4_1)
 + [4.2. GLM_GTC_color_space](#section4_2)
 + [4.3. GLM_GTC_constants](#section4_3)
@@ -78,14 +90,14 @@
 + [9.4. Tutorials using GLM](#section9_4)
 + [9.5. Equivalent for other languages](#section9_5)
 + [9.6. Alternatives to GLM](#section9_6)
-+ [9.8. Acknowledgements](#section9_8)
++ [9.7. Acknowledgements](#section9_7)
 
 ---
 ## <a name="section0"></a> Licenses
 
 ### The Happy Bunny License (Modified MIT License)
 
-Copyright (c) 2005 - 2017 G-Truc Creation
+Copyright (c) 2005 - G-Truc Creation
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -113,7 +125,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### The MIT License
 
-Copyright (c) 2005 - 2017 G-Truc Creation
+Copyright (c) 2005 - G-Truc Creation
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -139,63 +151,94 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ---
 
 ## <a name="section1"></a> 1. Getting started
-### <a name="section1_1"></a> 1.1. Setup
+### <a name="section1_1"></a> 1.1. Using global headers
 
-GLM is a header-only library, and thus does not need to be compiled.  We can use GLM's implementation of GLSL's mathematics functionality by including the `<glm/glm.hpp>` header.  The library can also be installed with CMake, though the details of doing so will differ depending on the target build system.
-
-Features can also be included individually to shorten compilation times.
-
+GLM is a header-only library, and thus does not need to be compiled. We can use GLM's implementation of GLSL's mathematics functionality by including the `<glm/glm.hpp>` header:
 ```cpp
-#include <glm/vec2.hpp> // vec2, bvec2, dvec2, ivec2 and uvec2
-#include <glm/vec3.hpp> // vec3, bvec3, dvec3, ivec3 and uvec3
-#include <glm/vec4.hpp> // vec4, bvec4, dvec4, ivec4 and uvec4
-#include <glm/mat2x2.hpp> // mat2, dmat2
-#include <glm/mat2x3.hpp> // mat2x3, dmat2x3
-#include <glm/mat2x4.hpp> // mat2x4, dmat2x4
-#include <glm/mat3x2.hpp> // mat3x2, dmat3x2
-#include <glm/mat3x3.hpp> // mat3, dmat3
-#include <glm/mat3x4.hpp> // mat3x4, dmat2
-#include <glm/mat4x2.hpp> // mat4x2, dmat4x2
-#include <glm/mat4x3.hpp> // mat4x3, dmat4x3
-#include <glm/mat4x4.hpp> // mat4, dmat4
-#include <glm/common.hpp> // all the GLSL common functions
-#include <glm/exponential.hpp> // all the GLSL exponential functions
-#include <glm/geometry.hpp> // all the GLSL geometry functions
-#include <glm/integer.hpp> // all the GLSL integer functions
-#include <glm/matrix.hpp> // all the GLSL matrix functions
-#include <glm/packing.hpp> // all the GLSL packing functions
-#include <glm/trigonometric.hpp> // all the GLSL trigonometric functions
-#include <glm/vector_relational.hpp> // all the GLSL vector relational functions
-```
-### <a name="section1_2"></a> 1.2. Faster compilation
-
-GLM uses C++ templates heavily, and may significantly increase compilation times for projects that use it.  Hence, source files should only include the headers they actually use.
-
-To reduce compilation time, we can include `<glm/fwd.hpp>`, which forward-declares all types should their definitions not be needed.
-
-```cpp
-// Header file (forward declarations only)
-#include <glm/fwd.hpp>
-
-// At this point, we don't care what exactly makes up a vec2; that won't matter
-// until we write this function's implementation.
-glm::vec2 functionDeclaration(const glm::vec2& input);
+#include <glm/glm.hpp>
 ```
 
-Precompiled headers will also be helpful, though are not covered by this manual.
+To extend the feature set supported by GLM and keeping the library as close to GLSL as possible, new features are implemented as extensions that can be included thought a separated header:
+```cpp 
+// Include all GLM core / GLSL features
+#include <glm/glm.hpp> // vec2, vec3, mat4, radians
 
-### <a name="section1_3"></a> 1.3. Example usage
+// Include all GLM extensions
+#include <glm/ext.hpp> // perspective, translate, rotate
 
+glm::mat4 transform(glm::vec2 const& Orientation, glm::vec3 const& Translate, glm::vec3 const& Up)
+{
+    glm::mat4 Proj = glm::perspective(glm::radians(45.f), 1.33f, 0.1f, 10.f);
+    glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.f), Translate);
+    glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Orientation.y, Up);
+    glm::mat4 View = glm::rotate(ViewRotateX, Orientation.x, Up);
+    glm::mat4 Model = glm::mat4(1.0f);
+    return Proj * View * Model;
+}
+```
 
+*Note: Including `glm/glm.hpp` and `glm/ext.hpp` is convenient but pull a lot of code which will significantly increase build time, particularly if these files are included in all source files. We may prefer to use the approaches describe in the two following sections to keep the project build fast.*
+
+### <a name="section1_2"></a> 1.2. Using separated headers
+
+GLM relies on C++ templates heavily, and may significantly increase compilation times for projects that use it. Hence, user projects could only include the features they actually use. Following is the list of all the core features, based on GLSL specification, headers:
+```cpp
+#include <glm/vec2.hpp>               // vec2, bvec2, dvec2, ivec2 and uvec2
+#include <glm/vec3.hpp>               // vec3, bvec3, dvec3, ivec3 and uvec3
+#include <glm/vec4.hpp>               // vec4, bvec4, dvec4, ivec4 and uvec4
+#include <glm/mat2x2.hpp>             // mat2, dmat2
+#include <glm/mat2x3.hpp>             // mat2x3, dmat2x3
+#include <glm/mat2x4.hpp>             // mat2x4, dmat2x4
+#include <glm/mat3x2.hpp>             // mat3x2, dmat3x2
+#include <glm/mat3x3.hpp>             // mat3, dmat3
+#include <glm/mat3x4.hpp>             // mat3x4, dmat2
+#include <glm/mat4x2.hpp>             // mat4x2, dmat4x2
+#include <glm/mat4x3.hpp>             // mat4x3, dmat4x3
+#include <glm/mat4x4.hpp>             // mat4, dmat4
+#include <glm/common.hpp>             // all the GLSL common functions: abs, min, mix, isnan, fma, etc.
+#include <glm/exponential.hpp>        // all the GLSL exponential functions: pow, log, exp2, sqrt, etc.
+#include <glm/geometry.hpp>           // all the GLSL geometry functions: dot, cross, reflect, etc.
+#include <glm/integer.hpp>            // all the GLSL integer functions: findMSB, bitfieldExtract, etc.
+#include <glm/matrix.hpp>             // all the GLSL matrix functions: transpose, inverse, etc.
+#include <glm/packing.hpp>            // all the GLSL packing functions: packUnorm4x8, unpackHalf2x16, etc.
+#include <glm/trigonometric.hpp>      // all the GLSL trigonometric functions: radians, cos, asin, etc.
+#include <glm/vector_relational.hpp>  // all the GLSL vector relational functions: equal, less, etc.
+```
+
+The following is a code sample using separated core headers and an extension:
 ```cpp
 // Include GLM core features
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/trigonometric.hpp>
+#include <glm/vec2.hpp>           // vec2
+#include <glm/vec3.hpp>           // vec3
+#include <glm/mat4x4.hpp>         // mat4
+#include <glm/trigonometric.hpp>  //radians
 
-// Include GLM extensions
-#include <glm/gtc/matrix_transform.hpp>
+// Include GLM extension
+#include <glm/ext/matrix_transform.hpp> // perspective, translate, rotate
+
+glm::mat4 transform(glm::vec2 const& Orientation, glm::vec3 const& Translate, glm::vec3 const& Up)
+{
+    glm::mat4 Proj = glm::perspective(glm::radians(45.f), 1.33f, 0.1f, 10.f);
+    glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.f), Translate);
+    glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Orientation.y, Up);
+    glm::mat4 View = glm::rotate(ViewRotateX, Orientation.x, Up);
+    glm::mat4 Model = glm::mat4(1.0f);
+    return Proj * View * Model;
+}
+```
+
+### <a name="section1_3"></a> 1.3. Using extension headers
+
+Using GLM through split headers to minimize the project build time:
+```cpp
+// Include GLM vector extensions:
+#include <glm/ext/vector_float2.hpp>                // vec2
+#include <glm/ext/vector_float3.hpp>                // vec3
+#include <glm/ext/vector_trigonometric.hpp>         // radians
+
+// Include GLM matrix extensions:
+#include <glm/ext/matrix_float4x4.hpp>              // mat4
+#include <glm/ext/matrix_transform.hpp>             // perspective, translate, rotate
 
 glm::mat4 transform(glm::vec2 const& Orientation, glm::vec3 const& Translate, glm::vec3 const& Up)
 {
@@ -213,114 +256,143 @@ glm::mat4 transform(glm::vec2 const& Orientation, glm::vec3 const& Translate, gl
 GLM does not depend on external libraries or headers such as `<GL/gl.h>`, [`<GL/glcorearb.h>`](http://www.opengl.org/registry/api/GL/glcorearb.h), `<GLES3/gl3.h>`, `<GL/glu.h>`, or `<windows.h>`.
 
 ---
-## <a name="section2"></a> 2. Swizzling
+## <a name="section2"></a> 2. Preprocessor configurations
 
-Shader languages like GLSL often feature so-called swizzle expressions, which may be used to freely select and arrange a vector's components. For example, `variable.x`, `variable.xzy` and `variable.zxyy` respectively form a scalar, a 3D vector and a 4D vector.  The result of a swizzle expression in GLSL can be either an R-value or an L-value. Swizzle expressions can be written with characters from exactly one of `xyzw` (usually for positions), `rgba` (usually for colors), and `stpq` (usually for texture coordinates).
+### <a name="section2_1"></a> 2.1. GLM\_FORCE\_MESSAGES: Platform auto detection and default configuration
+
+When included, GLM will first automatically detect the compiler used, the C++ standard supported, the compiler arguments used to configure itself matching the build environment.
+
+For example, if the compiler arguments request AVX code generation, GLM will rely on its code path providing AVX optimizations when available.
+
+We can change GLM configuration using specific C++ preprocessor defines that must be declared before including any GLM headers.
+
+Using `GLM_FORCE_MESSAGES`, GLM will report the configuration as part of the build log.
 
 ```cpp
-vec4 A;
-vec2 B;
-
-B.yx = A.wy;
-B = A.xx;
-vec3 C = A.bgr;
-vec3 D = B.rsz; // Invalid, won't compile
+#define GLM_FORCE_MESSAGES // Or defined when building (e.g. -DGLM_FORCE_SWIZZLE)
+#include <glm/glm.hpp>
 ```
 
-GLM optionally supports some of this functionality via the methods described in the following sections. Swizzling can be enabled by defining `GLM_FORCE_SWIZZLE` before including any GLM header files, or as part of a project's build process.
+Example of configuration log generated by `GLM_FORCE_MESSAGES`:
+```cpp
+GLM: version 0.9.9.1
+GLM: C++ 17 with extensions
+GLM: Clang compiler detected
+GLM: x86 64 bits with AVX instruction set build target
+GLM: Linux platform detected
+GLM: GLM_FORCE_SWIZZLE is undefined. swizzling functions or operators are disabled.
+GLM: GLM_FORCE_SIZE_T_LENGTH is undefined. .length() returns a glm::length_t, a typedef of int following GLSL.
+GLM: GLM_FORCE_UNRESTRICTED_GENTYPE is undefined. Follows strictly GLSL on valid function genTypes.
+GLM: GLM_FORCE_DEPTH_ZERO_TO_ONE is undefined. Using negative one to one depth clip space.
+GLM: GLM_FORCE_LEFT_HANDED is undefined. Using right handed coordinate system.
+```
 
-*Note that enabling swizzle expressions will massively increase the size of your binaries and the time it takes to compile them!*
+The following subsections describe each configurations and defines.
 
-### <a name="section2_1"></a> 2.1. Default C++98 implementation
+### <a name="section2_2"></a> 2.2. GLM_\FORCE\_PLATFORM\_UNKNOWN: Force GLM to no detect the build platform
 
-When compiling GLM as C++98, R-value swizzle expressions are simulated through member functions of each vector type.
+TODO
+
+### <a name="section2_3"></a> 2.3. GLM\_FORCE\_CXX**: C++ language detection
+
+GLM will automatically take advantage of compilers’ language extensions when enabled. To increase cross platform compatibility and to avoid compiler extensions, a programmer can define GLM\_FORCE\_CXX98 before
+any inclusion of &lt;glm/glm.hpp&gt; to restrict the language feature set C++98:
 
 ```cpp
-#define GLM_FORCE_SWIZZLE // Or defined when building (e.g. -DGLM_FORCE_SWIZZLE)
+#define GLM_FORCE_CXX98
+#include <glm/glm.hpp>
+```
+
+For C++11 and C++14, equivalent defines are available:
+GLM\_FORCE\_CXX11, GLM\_FORCE\_CXX14.
+
+```cpp
+#define GLM_FORCE_CXX11
+#include <glm/glm.hpp>
+
+// If the compiler doesn’t support C++11, compiler errors will happen.
+```
+
+GLM\_FORCE\_CXX14 overrides GLM\_FORCE\_CXX11 and GLM\_FORCE\_CXX11
+overrides GLM\_FORCE\_CXX98 defines.
+
+### <a name="section2_4"></a> 2.4. GLM\_FORCE\_EXPLICIT\_CTOR: Requiring explicit conversions
+
+GLSL supports implicit conversions of vector and matrix types. For example, an ivec4 can be implicitly converted into vec4.
+
+Often, this behaviour is not desirable but following the spirit of the library, this is the default behavior in GLM. However, GLM 0.9.6 introduced the define GLM\_FORCE\_EXPLICIT\_CTOR to require explicit conversion for GLM types.
+
+```cpp
 #include <glm/glm.hpp>
 
 void foo()
 {
-    glm::vec4 ColorRGBA(1.0f, 0.5f, 0.0f, 1.0f);
-    glm::vec3 ColorBGR = ColorRGBA.bgr();
+    glm::ivec4 a;
+    ...
 
-    glm::vec3 PositionA(1.0f, 0.5f, 0.0f, 1.0f);
-    glm::vec3 PositionB = PositionXYZ.xyz() * 2.0f;
-
-    glm::vec2 TexcoordST(1.0f, 0.5f);
-    glm::vec4 TexcoordSTPQ = TexcoordST.stst();
+    glm::vec4 b(a); // Explicit conversion, OK
+    glm::vec4 c = a; // Implicit conversion, OK
+    ...
 }
 ```
 
-Swizzle operators return a **copy** of the component values, and thus *can't* be used as L-values to change a vector's values.
-
+With GLM\_FORCE\_EXPLICIT\_CTOR define, implicit conversions are not allowed:
 
 ```cpp
-#define GLM_FORCE_SWIZZLE
+#define GLM_FORCE_EXPLICIT_CTOR
 #include <glm/glm.hpp>
 
 void foo()
 {
-  glm::vec3 A(1.0f, 0.5f, 0.0f);
-
-  // No compiler error, but A is not modified.
-  // An anonymous copy is being modified (and then discarded).
-  A.bgr() = glm::vec3(2.0f, 1.5f, 1.0f); // A is not modified!
+    glm::ivec4 a;
+    {
+        glm::vec4 b(a); // Explicit conversion, OK
+        glm::vec4 c = a; // Implicit conversion, ERROR
+        ...
 }
 ```
 
-### <a name="section2_2"></a> 2.2. Anonymous union member implementation
+### <a name="section2_5"></a> 2.5. GLM\_FORCE\_INLINE: Force inline
 
-Visual C++ supports, as a _non-standard language extension_, anonymous `struct`s as `union` members. This permits a powerful swizzling implementation that both allows L-value swizzle expressions and GLSL-like syntax.  To use this feature, the language extension must be enabled by a supporting compiler and `GLM_FORCE_SWIZZLE` must be `#define`d.
+To push further the software performance, a programmer can define GLM\_FORCE\_INLINE before any inclusion of &lt;glm/glm.hpp&gt; to force the compiler to inline GLM code.
 
 ```cpp
-#define GLM_FORCE_SWIZZLE
+#define GLM_FORCE_INLINE
 #include <glm/glm.hpp>
-
-// Only guaranteed to work with Visual C++!
-// Some compilers that support Microsoft extensions may compile this.
-void foo()
-{
-  glm::vec4 ColorRGBA(1.0f, 0.5f, 0.0f, 1.0f);
-
-  // l-value:
-  glm::vec4 ColorBGRA = ColorRGBA.bgra;
-
-  // r-value:
-  ColorRGBA.bgra = ColorRGBA;
-
-  // Both l-value and r-value
-  ColorRGBA.bgra = ColorRGBA.rgba;
-}
 ```
 
-This version returns implementation-specific objects that _implicitly convert_ to their respective vector types.  As a consequence of this design, these extra types **can't be directly used** by GLM functions; they must be converted through constructors or `operator()`.
+### <a name="section2_6"></a> 2.6. GLM\_FORCE\_DEFAULT\_ALIGNED_GENTYPES: Force GLM to use aligned types by default
+
+TODO
+
+### <a name="section2_7"></a> 2.7. GLM\_FORCE\_SIMD\_**: Using SIMD optimizations
+
+GLM provides some SIMD optimizations based on [compiler intrinsics](https://msdn.microsoft.com/en-us/library/26td21ds.aspx).
+These optimizations will be automatically thanks to compiler arguments.
+For example, if a program is compiled with Visual Studio using /arch:AVX, GLM will detect this argument and generate code using AVX instructions automatically when available.
+
+It’s possible to avoid the instruction set detection by forcing the use of a specific instruction set with one of the fallowing define:
+GLM\_FORCE\_SSE2, GLM\_FORCE\_SSE3, GLM\_FORCE\_SSSE3, GLM\_FORCE\_SSE41, GLM\_FORCE\_SSE42, GLM\_FORCE\_AVX, GLM\_FORCE\_AVX2 or GLM\_FORCE\_AVX512.
+
+The use of intrinsic functions by GLM implementation can be avoided using the define GLM\_FORCE\_PURE before any inclusion of GLM headers.
 
 ```cpp
-#define GLM_FORCE_SWIZZLE
+#define GLM_FORCE_PURE
 #include <glm/glm.hpp>
 
-using glm::vec4;
-
-void foo()
-{
-  vec4 Color(1.0f, 0.5f, 0.0f, 1.0f);
-
-  // Generates compiler errors. Color.rgba is not a vector type.
-  vec4 ClampedA = glm::clamp(Color.rgba, 0.f, 1.f); // ERROR
-
-  // Explicit conversion through a constructor
-  vec4 ClampedB = glm::clamp(vec4(Color.rgba), 0.f, 1.f); // OK
-
-  // Explicit conversion through operator()
-  vec4 ClampedC = glm::clamp(Color.rgba(), 0.f, 1.f); // OK
-}
+// GLM code will be compiled using pure C++ code without any intrinsics
 ```
 
----
-## <a name="section3"></a> 3. Preprocessor options
+```cpp
+#define GLM_FORCE_SIMD_AVX2
+#include <glm/glm.hpp>
 
-### <a name="section3_1"></a> 3.1. GLM\_PRECISION\_**: Default precision
+// If the compiler doesn’t support AVX2 instrinsics, compiler errors will happen.
+```
+
+Additionally, GLM provides a low level SIMD API in glm/simd directory for users who are really interested in writing fast algorithms.
+
+### <a name="section2_8"></a> 2.8. GLM\_PRECISION\_**: Default precision
 
 C++ does not provide a way to implement GLSL default precision selection (as defined in GLSL 4.10 specification section 4.5.3) with GLSL-like syntax.
 
@@ -361,86 +433,130 @@ Available defines for unsigned integer types (glm::uvec\*):
 * GLM\_PRECISION\_MEDIUMP\_UINT: Medium precision
 * GLM\_PRECISION\_HIGHP\_UINT: High precision (default)
 
-### <a name="section3_2"></a> 3.2. GLM\_FORCE\_MESSAGES: Compile-time message system
+### <a name="section2_9"></a> 2.9. GLM\_FORCE\_SINGLE\_ONLY: Removed explicit 64-bits floating point types
 
-GLM includes a notification system which can display some information at build time:
+Some platforms (Dreamcast) doesn't support double precision floating point values. To compile on such platforms, GCC has the --m4-single-only build argument. When defining GLM\_FORCE\_SINGLE\_ONLY before including GLM headers, GLM releases the requirement of double precision floating point values support. Effectivement, all the float64 types are no longer defined and double behaves like float.
 
-* Platform: Windows, Linux, Native Client, QNX, etc.
-* Compiler: Visual C++, Clang, GCC, ICC, etc.
-* Build model: 32bits or 64 bits
-* C++ version : C++98, C++11, MS extensions, etc.
-* Architecture: x86, SSE, AVX, etc.
-* Included extensions
-* etc.
+### <a name="section2_10"></a> 2.10. GLM\_FORCE\_SWIZZLE: Enable swizzle operators
 
-This system is disabled by default. To enable this system, define GLM\_FORCE\_MESSAGES before any inclusion of &lt;glm/glm.hpp&gt;. The messages are generated only by compiler supporting \#program message and
-only once per project build.
+Shader languages like GLSL often feature so-called swizzle expressions, which may be used to freely select and arrange a vector's components. For example, `variable.x`, `variable.xzy` and `variable.zxyy` respectively form a scalar, a 3D vector and a 4D vector.  The result of a swizzle expression in GLSL can be either an R-value or an L-value. Swizzle expressions can be written with characters from exactly one of `xyzw` (usually for positions), `rgba` (usually for colors), and `stpq` (usually for texture coordinates).
 
 ```cpp
-#define GLM_FORCE_MESSAGES
-#include <glm/glm.hpp>
+vec4 A;
+vec2 B;
+
+B.yx = A.wy;
+B = A.xx;
+vec3 C = A.bgr;
+vec3 D = B.rsz; // Invalid, won't compile
 ```
 
-### <a name="section3_3"></a> 3.3. GLM\_FORCE\_CXX**: C++ language detection
+GLM supports some of this functionality. Swizzling can be enabled by defining `GLM_FORCE_SWIZZLE`.
 
-GLM will automatically take advantage of compilers’ language extensions when enabled. To increase cross platform compatibility and to avoid compiler extensions, a programmer can define GLM\_FORCE\_CXX98 before
-any inclusion of &lt;glm/glm.hpp&gt; to restrict the language feature set C++98:
+*Note: Enabling swizzle expressions will massively increase the size of your binaries and the time it takes to compile them!*
+
+GLM has two levels of swizzling support described in the following subsections.
+
+#### 2.10.1. Swizzle functions for standard C++ 98 
+
+When compiling GLM as C++98, R-value swizzle expressions are simulated through member functions of each vector type.
 
 ```cpp
-#define GLM_FORCE_CXX98
+#define GLM_FORCE_SWIZZLE // Or defined when building (e.g. -DGLM_FORCE_SWIZZLE)
 #include <glm/glm.hpp>
+
+void foo()
+{
+    glm::vec4 ColorRGBA = glm::vec4(1.0f, 0.5f, 0.0f, 1.0f);
+    glm::vec3 ColorBGR = ColorRGBA.bgr();
+
+    glm::vec3 PositionA = glm::vec3(1.0f, 0.5f, 0.0f);
+    glm::vec3 PositionB = PositionXYZ.xyz() * 2.0f;
+
+    glm::vec2 TexcoordST = glm::vec2(1.0f, 0.5f);
+    glm::vec4 TexcoordSTPQ = TexcoordST.stst();
+}
 ```
 
-For C++11 and C++14, equivalent defines are available:
-GLM\_FORCE\_CXX11, GLM\_FORCE\_CXX14.
+Swizzle operators return a **copy** of the component values, and thus *can't* be used as L-values to change a vector's values.
 
 ```cpp
-#define GLM_FORCE_CXX11
+#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 
-// If the compiler doesn’t support C++11, compiler errors will happen.
+void foo()
+{
+  glm::vec3 A = glm::vec3(1.0f, 0.5f, 0.0f);
+
+  // No compiler error, but A is not modified.
+  // An anonymous copy is being modified (and then discarded).
+  A.bgr() = glm::vec3(2.0f, 1.5f, 1.0f); // A is not modified!
+}
 ```
 
-GLM\_FORCE\_CXX14 overrides GLM\_FORCE\_CXX11 and GLM\_FORCE\_CXX11
-overrides GLM\_FORCE\_CXX98 defines.
+#### 2.10.2. Swizzle operations for C++ 98 with language extensions
 
-### <a name="section3_4"></a> 3.4. SIMD support
-
-GLM provides some SIMD optimizations based on [compiler intrinsics](https://msdn.microsoft.com/en-us/library/26td21ds.aspx).
-These optimizations will be automatically thanks to compiler arguments.
-For example, if a program is compiled with Visual Studio using /arch:AVX, GLM will detect this argument and generate code using AVX instructions automatically when available.
-
-It’s possible to avoid the instruction set detection by forcing the use of a specific instruction set with one of the fallowing define:
-GLM\_FORCE\_SSE2, GLM\_FORCE\_SSE3, GLM\_FORCE\_SSSE3, GLM\_FORCE\_SSE41, GLM\_FORCE\_SSE42, GLM\_FORCE\_AVX, GLM\_FORCE\_AVX2 or GLM\_FORCE\_AVX512.
-
-The use of intrinsic functions by GLM implementation can be avoided using the define GLM\_FORCE\_PURE before any inclusion of GLM headers.
+Visual C++, GCC and Clang support, as a _non-standard language extension_, anonymous `struct`s as `union` members. This permits a powerful swizzling implementation that both allows L-value swizzle expressions and GLSL-like syntax. To use this feature, the language extension must be enabled by a supporting compiler and `GLM_FORCE_SWIZZLE` must be `#define`d.
 
 ```cpp
-#define GLM_FORCE_PURE
+#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 
-// GLM code will be compiled using pure C++ code without any intrinsics
+// Only guaranteed to work with Visual C++!
+// Some compilers that support Microsoft extensions may compile this.
+void foo()
+{
+  glm::vec4 ColorRGBA = glm::vec4(1.0f, 0.5f, 0.0f, 1.0f);
+
+  // l-value:
+  glm::vec4 ColorBGRA = ColorRGBA.bgra;
+
+  // r-value:
+  ColorRGBA.bgra = ColorRGBA;
+
+  // Both l-value and r-value
+  ColorRGBA.bgra = ColorRGBA.rgba;
+}
 ```
+
+This version returns implementation-specific objects that _implicitly convert_ to their respective vector types.  As a consequence of this design, these extra types **can't be directly used** as C++ function arguments; they must be converted through constructors or `operator()`.
 
 ```cpp
-#define GLM_FORCE_AVX2
+#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 
-// If the compiler doesn’t support AVX2 instrinsics, compiler errors will happen.
+using namespace glm;
+
+void foo()
+{
+  vec4 Color = vec4(1.0f, 0.5f, 0.0f, 1.0f);
+
+  // Generates compiler errors. Color.rgba is not a vector type.
+  vec4 ClampedA = clamp(Color.rgba, 0.f, 1.f); // ERROR
+
+  // Explicit conversion through a constructor
+  vec4 ClampedB = clamp(vec4(Color.rgba), 0.f, 1.f); // OK
+
+  // Explicit conversion through operator()
+  vec4 ClampedC = clamp(Color.rgba(), 0.f, 1.f); // OK
+}
 ```
 
-Additionally, GLM provides a low level SIMD API in glm/simd directory for users who are really interested in writing fast algorithms.
+*Note: The implementation has a caveat: Swizzle operator types must be different on both size of the equal operator or the operation will fail. There is no known fix for this issue to date*
 
-### <a name="section3_5"></a> 3.5. GLM\_FORCE\_INLINE: Force inline
+### <a name="section2_11"></a> 2.11. GLM\_FORCE\_XYZW\_ONLY: Only exposes x, y, z and w components
 
-To push further the software performance, a programmer can define GLM\_FORCE\_INLINE before any inclusion of &lt;glm/glm.hpp&gt; to force the compiler to inline GLM code.
+TODO
 
-```cpp
-#define GLM_FORCE_INLINE
-#include <glm/glm.hpp>
-```
+### <a name="section2_12"></a> 2.12. GLM\_FORCE\_LEFT\_HANDED: Force left handed coordinate system
 
-### <a name="section3_6"></a> 3.6. GLM\_FORCE\_SIZE\_T\_LENGTH: Vector and matrix static size
+TODO
+
+### <a name="section2_13"></a> 2.13. GLM\_FORCE\_DEPTH\_ZERO\_TO\_ONE: Force the use of a clip space between 0 to 1
+
+TODO
+
+### <a name="section2_14"></a> 2.14. GLM\_FORCE\_SIZE\_T\_LENGTH: Vector and matrix static size
 
 GLSL supports the member function .length() for all vector and matrix types.
 
@@ -469,44 +585,7 @@ void foo(vec4 const& v)
 }
 ```
 
-### <a name="section3_7"></a> 3.7. GLM\_FORCE\_EXPLICIT\_CTOR: Requiring explicit conversions
-
-GLSL supports implicit conversions of vector and matrix types. For example, an ivec4 can be implicitly converted into vec4.
-
-Often, this behaviour is not desirable but following the spirit of the library, this behavior is supported in GLM. However, GLM 0.9.6 introduced the define GLM\_FORCE\_EXPLICIT\_CTOR to require explicit
-conversion for GLM types.
-
-```cpp
-#include <glm/glm.hpp>
-
-void foo()
-{
-    glm::ivec4 a;
-    ...
-
-    glm::vec4 b(a); // Explicit conversion, OK
-    glm::vec4 c = a; // Implicit conversion, OK
-    ...
-}
-```
-
-With GLM\_FORCE\_EXPLICIT\_CTOR define, implicit conversions are not allowed:
-
-```cpp
-#define GLM_FORCE_EXPLICIT_CTOR
-#include <glm/glm.hpp>
-
-void foo()
-{
-    glm::ivec4 a;
-    {
-        glm::vec4 b(a); // Explicit conversion, OK
-        glm::vec4 c = a; // Implicit conversion, ERROR
-        ...
-}
-```
-
-### <a name="section3_8"></a> 3.8. GLM\_FORCE\_UNRESTRICTED\_GENTYPE: Removing genType restriction
+### <a name="section2_15"></a> 2.15. GLM\_FORCE\_UNRESTRICTED\_GENTYPE: Removing genType restriction
 
 By default GLM only supports basic types as genType for vector, matrix and quaternion types:
 
@@ -529,12 +608,137 @@ typedef glm::vec<4, half> my_hvec4;
 
 However, defining GLM\_FORCE\_UNRESTRICTED\_GENTYPE is not compatible with GLM\_FORCE\_SWIZZLE and will generate a compilation error if both are defined at the same time.
 
-### <a name="section3_9"></a> 3.9. GLM\_FORCE\_SINGLE\_ONLY: Removed explicit 64-bits floating point types
+---
+## <a name="section3"></a> 3. Stable extensions
 
-Some platforms (Dreamcast) doesn't support double precision floating point values. To compile on such platforms, GCC has the --m4-single-only build argument. When defining GLM\_FORCE\_SINGLE\_ONLY before including GLM headers, GLM releases the requirement of double precision floating point values support. Effectivement, all the float64 types are no longer defined and double behaves like float. 
+### <a name="section3_1"></a> 3.1. Scalar types
+
+TODO
+
+#### 3.1.1. GLM_EXT_scalar_float_sized
+
+TODO
+
+#### 3.1.2. GLM_EXT_scalar_int_sized
+
+TODO
+
+#### 3.1.3. GLM_EXT_scalar_uint_sized
+
+TODO
+
+### <a name="section3_2"></a> 3.2. Scalar functions
+
+#### 3.2.1. GLM_EXT_scalar_common
+
+TODO
+
+#### 3.2.2. GLM_EXT_scalar_relational
+
+TODO
+
+#### 3.2.3. GLM_EXT_scalar_constants
+
+TODO
+
+### <a name="section3_3"></a> 3.3. Vector types
+
+#### 3.3.1. GLM_EXT_vector_floatX(_precision)
+
+TODO
+
+#### 3.3.2. GLM_EXT_vector_doubleX(_precision)
+
+TODO
+
+#### 3.3.3. GLM_EXT_vector_intX(_precision)
+
+TODO
+
+#### 3.3.4. GLM_EXT_vector_uintX
+
+TODO
+
+#### 3.3.5. GLM_EXT_vector_boolX(_precision)
+
+TODO
+
+### <a name="section3_4"></a> 3.4. Vector functions
+
+### <a name="section3_22"></a> 3.22. GLM_EXT_vector_common
+
+TODO
+
+### <a name="section3_26"></a> 3.26. GLM_EXT_vector_relational
+
+TODO
+
+### <a name="section3_5"></a> 3.5. Matrix types
+
+#### 3.5.1. GLM_EXT_matrix_floatMxN(_precision)
+
+TODO
+
+#### 3.5.2. GLM_EXT_matrix_doubleMxN(_precision)
+
+TODO
+
+### <a name="section3_6"></a> 3.6. Matrix functions
+
+#### 3.6.1. GLM_EXT_matrix_relational
+
+TODO
+
+#### 3.6.2. GLM_EXT_matrix_transform
+
+TODO
+
+#### 3.6.3. GLM_EXT_matrix_clip_space
+
+TODO
+
+#### 3.6.4. GLM_EXT_matrix_projection
+
+TODO
+
+### <a name="section3_5"></a> 3.7. Quaternion types
+
+#### 3.7.1. GLM_EXT_quaternion_float(_precision)
+
+TODO
+
+#### 3.7.2. GLM_EXT_quaternion_double(_precision)
+
+TODO
+
+### <a name="section3_6"></a> 3.8. Quaternion functions
+
+3.8.1. GLM_EXT_quaternion_common
+
+TODO
+
+3.8.2. GLM_EXT_quaternion_geometric
+
+TODO
+
+3.8.3. GLM_EXT_quaternion_trigonometric
+
+TODO
+
+3.8.4. GLM_EXT_quaternion_exponential
+
+TODO
+
+3.8.5. GLM_EXT_quaternion_relation
+
+TODO
+
+3.8.6. GLM_EXT_quaternion_transform
+
+TODO
 
 ---
-## <a name="section4"></a> 4. Stable extensions
+## <a name="section4"></a> 4. Recommended extensions
 
 GLM extends the core GLSL feature set with extensions. These extensions include: quaternion, transformation, spline, matrix inverse, color spaces, etc.
 

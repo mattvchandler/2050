@@ -1,9 +1,15 @@
+glmCreateTestGTC(core_cpp_constexpr)
+glmCreateTestGTC(core_cpp_defaulted_ctor)
+glmCreateTestGTC(core_force_aligned_gentypes)
+glmCreateTestGTC(core_force_ctor_init)
+glmCreateTestGTC(core_force_explicit_ctor)
+glmCreateTestGTC(core_force_inline)
 glmCreateTestGTC(core_force_pure)
 glmCreateTestGTC(core_force_unrestricted_gentype)
+glmCreateTestGTC(core_force_xyzw_only)
 glmCreateTestGTC(core_type_aligned)
 glmCreateTestGTC(core_type_cast)
 glmCreateTestGTC(core_type_ctor)
-glmCreateTestGTC(core_type_float)
 glmCreateTestGTC(core_type_int)
 glmCreateTestGTC(core_type_length)
 glmCreateTestGTC(core_type_mat2x2)
@@ -36,6 +42,3 @@ glmCreateTestGTC(core_setup_force_cxx98)
 glmCreateTestGTC(core_setup_force_size_t_length)
 glmCreateTestGTC(core_setup_message)
 glmCreateTestGTC(core_setup_precision)
-
-
-
