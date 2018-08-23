@@ -38,7 +38,6 @@
 
 /* TODO:
  * Kotlin?
- * copyright headers
  * linting
  */
 

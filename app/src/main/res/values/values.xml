@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Copyright 2018 Matthew Chandler
 
@@ -20,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="theme_values_system">system</string>
     <string name="theme_values_day">day</string>
