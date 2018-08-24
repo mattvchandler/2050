@@ -121,7 +121,6 @@ Ball::Collision collide_balls(Ball & ball, Ball & other, float e)
 
         float c = glm::dot(n, ball.vel - other.vel);
         // merge
-        // TODO: merge aninmation
         if(ball.size == other.size)
         {
             collision.merged = true;

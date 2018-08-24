@@ -37,7 +37,8 @@
 #include "ball.hpp"
 
 /* TODO:
- * Kotlin?
+ * About screen
+ * screenshots for README
  */
 
 class World

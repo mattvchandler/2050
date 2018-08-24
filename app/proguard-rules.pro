@@ -27,15 +27,15 @@
     void achievement(int);
 }
 
+-keepclasseswithmembers class org.mattvchandler.a2050.MainActivity$DispData {
+    public <fields>;
+}
+
 -keepclasseswithmembers class android.databinding.ObservableInt {
     void set(int);
 }
 -keepclasseswithmembers class android.databinding.ObservableFloat {
     void set(float);
-}
-
--keepclasseswithmembers class org.mattvchandler.a2050.MainActivity$DispData {
-    public <fields>;
 }
 
 -keepclasseswithmembers class android.support.v4.content.ContextCompat {
