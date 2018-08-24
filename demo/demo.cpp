@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
 
         for(std::size_t i = 0; i < font_arr.size(); ++i)
             static_arr[i].render_text(textogl::Color{0.0f, 0.0f, 0.0f, 1.0f}, textogl::Vec2<float>{(float)win.getSize().x, (float)win.getSize().y},
-                textogl::Vec2<float>{win.getSize().x, i * 60}, textogl::ORIGIN_VERT_TOP | textogl::ORIGIN_HORIZ_RIGHT);
+                textogl::Vec2<float>{(float)win.getSize().x, (float)(i * 60)}, textogl::ORIGIN_VERT_TOP | textogl::ORIGIN_HORIZ_RIGHT);
 
         win.display();
     }

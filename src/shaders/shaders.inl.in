@@ -24,10 +24,10 @@
 #include <GL/glew.h>
 #endif
 
-const GLchar * const vert_shader_src = R"(
+const GLchar * vert_shader_src = R"(
 @VERT_SHADER@
 )";
 
-const GLchar * const frag_shader_src = R"(
+const GLchar * frag_shader_src = R"(
 @FRAG_SHADER@
 )";

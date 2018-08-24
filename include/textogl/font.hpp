@@ -62,28 +62,37 @@ namespace textogl
     };
 #endif
 
-    /// 2D Vector
-
-    /// @note If GLM is available, this is instead an alias for glm::tvec2<T>
-#ifdef USE_GLM
-    template<typename T>
-    using Vec2 = glm::tvec2<T>;
-#else
-    template<typename T>
-    struct Vec2
+    namespace detail
     {
-        T x; ///< X component
-        T y; ///< Y component
+        /// 2D Vector
+        template<typename T>
+        struct Vec2
+        {
+            T x; ///< X component
+            T y; ///< Y component
 
-        /// Access component by index
+            /// Access component by index
 
-        /// To pass vector to OpenGL, do: <tt>&vec2[0]</tt>
-        /// @{
-        float & operator[](std::size_t i) { return (&x)[i]; }
-        const float & operator[](std::size_t i) const { return (&x)[i]; }
-        /// @}
-    };
+            /// To pass vector to OpenGL, do: <tt>&vec2[0]</tt>
+            /// @{
+            float & operator[](std::size_t i) { return (&x)[i]; }
+            const float & operator[](std::size_t i) const { return (&x)[i]; }
+            /// @}
+        };
+
+        // for template alias specialization
+        template<typename T> struct Vec2_t {  using type = Vec2<T>; };
+#ifdef USE_GLM
+        // specialize to glm types
+        template<> struct Vec2_t<float>        { using type = glm::vec2; };
+        template<> struct Vec2_t<double>       { using type = glm::dvec2; };
+        template<> struct Vec2_t<int>          { using type = glm::ivec2; };
+        template<> struct Vec2_t<unsigned int> { using type = glm::uvec2; };
 #endif
+    }
+    /// 2D Vector
+    /// @note If GLM is available, this is an alias for glm::vec2 / dvec2 / ...
+    template<typename T> using Vec2 = typename detail::Vec2_t<T>::type;
 
     /// Text origin specification
     enum Text_origin
