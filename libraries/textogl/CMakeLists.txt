@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(textogl CXX)
+project(textogl)
 
 set(TITLE "Textogl")
 set(AUTHOR "Matthew Chandler <tardarsauce@gmail.com>")
@@ -17,8 +17,13 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if (CMAKE_VERSION VERSION_LESS "3.1")
+    add_compile_options(-std=c++11)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
 add_compile_options(-Wall -Wextra)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")

@@ -55,16 +55,18 @@ file(GENERATE OUTPUT ${PROJECT_BINARY_DIR}/shaders.cmake CONTENT "
         ${PROJECT_BINARY_DIR}/shaders.inl)
    ")
 
-add_custom_target(shaders
+add_custom_command(
     COMMAND ${CMAKE_COMMAND} -P ${PROJECT_BINARY_DIR}/shaders.cmake
     DEPENDS
         ${CMAKE_CURRENT_LIST_DIR}/shaders/shaders.inl.in
         ${VERT_SHADER_SRC}
         ${FRAG_SHADER_SRC}
-    BYPRODUCTS
+    OUTPUT
         ${PROJECT_BINARY_DIR}/shaders.inl
     COMMENT "Including shader source files"
     )
+
+add_custom_target(shaders DEPENDS ${PROJECT_BINARY_DIR}/shaders.inl)
 
 add_dependencies(${PROJECT_NAME} shaders)
 
