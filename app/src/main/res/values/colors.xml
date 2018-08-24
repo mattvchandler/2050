@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#087f23</color>
 
-    <color name="bg_color">#FFFFFFFF</color>
+    <color name="bg_color" tools:keep="@color/bg_color">#FFFFFFFF</color>
 
     <array name="ball_colors">
         <item>#FF0000</item>

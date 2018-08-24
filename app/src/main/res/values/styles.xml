@@ -22,7 +22,6 @@ SOFTWARE.
 
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:windowLightStatusBar">@bool/is_theme_light</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>

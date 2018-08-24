@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.mattvchandler.a2050.databinding.ActivitySettingsBinding;
@@ -38,7 +37,7 @@ import java.util.Objects;
 
 public class Settings extends Themed_activity
 {
-    public static boolean has_accelerometer = true;
+    private static boolean has_accelerometer = true;
 
     public static class Settings_frag extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener

@@ -389,11 +389,11 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEn
 #undef X
 }
 
-JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_calcTextColor(JNIEnv *env, jclass, jint color)
+JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_calcTextColor(JNIEnv *, jclass, jint color)
 {
     return color_vec_to_int(calc_text_color(color_int_to_vec(color)));
 }
-JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_ballColorIndex(JNIEnv *env, jclass, jint size, jint num_colors)
+JNIEXPORT jint JNICALL Java_org_mattvchandler_a2050_MainActivity_ballColorIndex(JNIEnv *, jclass, jint size, jint num_colors)
 {
     return ball_color_index(size, num_colors);
 }

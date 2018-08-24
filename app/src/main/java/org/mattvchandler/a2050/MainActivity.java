@@ -21,11 +21,7 @@
 package org.mattvchandler.a2050;
 
 import android.animation.ArgbEvaluator;
-import android.app.ActionBar;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
@@ -33,29 +29,16 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ScaleDrawable;
-import android.os.Build;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,17 +49,12 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.mattvchandler.a2050.databinding.ActivityMainBinding;
 
 import java.io.IOException;
-import java.util.Objects;
-
-import static android.support.v4.math.MathUtils.clamp;
 
 public class MainActivity extends Themed_activity implements SurfaceHolder.Callback
 {
@@ -101,8 +79,8 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
     private native static int ballColorIndex(int size, int num_colors);
 
     private ActivityMainBinding binding;
-    private DispData data = new DispData();
-    private Handler update_data = new Handler();
+    private final DispData data = new DispData();
+    private final Handler update_data = new Handler();
     private AlertDialog dialog = null;
 
     private boolean gravity_mode = false;
@@ -329,7 +307,7 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
             dialog = new AlertDialog.Builder(MainActivity.this).setTitle(R.string.game_over)
                 .setMessage(getResources().getString(R.string.final_score, score)
                         + (new_high_score ? "\n" + getResources().getString(R.string.new_high_score) : ""))
-                .setPositiveButton(R.string.new_game, (dialog, which) -> {newGame(); dialog = null; })
+                .setPositiveButton(R.string.new_game, (dialog, which) -> newGame())
                 .setCancelable(false)
                 .setOnDismissListener(dialog -> this.dialog = null)
                 .create();
@@ -358,7 +336,7 @@ public class MainActivity extends Themed_activity implements SurfaceHolder.Callb
         runOnUiThread(() ->
         {
             LayoutInflater inflater = getLayoutInflater();
-            View layout = inflater.inflate(R.layout.achievement_popup, (ViewGroup)findViewById(R.id.achievement_popup));
+            View layout = inflater.inflate(R.layout.achievement_popup, findViewById(R.id.achievement_popup));
 
             ((TextView)layout.findViewById(R.id.ball_num)).setText(String.valueOf(1 << size));
 

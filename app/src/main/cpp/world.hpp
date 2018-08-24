@@ -38,7 +38,6 @@
 
 /* TODO:
  * Kotlin?
- * linting
  */
 
 class World
@@ -67,7 +66,6 @@ private:
 
     glm::vec2 screen_size;
     glm::mat3 projection;
-    glm::mat3 screen_projection; // TODO: unused?
 
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
