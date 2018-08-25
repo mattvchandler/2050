@@ -46,14 +46,14 @@ import java.io.IOException
 
 class MainActivity: Themed_activity(), SurfaceHolder.Callback
 {
-    private var binding: ActivityMainBinding? = null
+    private lateinit var binding: ActivityMainBinding
     private val data = DispData()
     private val update_data = Handler()
     private var dialog: AlertDialog? = null
 
     private var gravity_mode = false
 
-    private var gestureDetector: GestureDetectorCompat? = null
+    private lateinit var gestureDetector: GestureDetectorCompat
 
     companion object
     {
@@ -64,8 +64,8 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         private const val SETTINGS_RESULT = 1
 
-        private external fun calcTextColor(color: Int): Int
-        private external fun ballColorIndex(size: Int, num_colors: Int): Int
+        @JvmStatic private external fun calcTextColor(color: Int): Int
+        @JvmStatic private external fun ballColorIndex(size: Int, num_colors: Int): Int
     }
 
     private external fun create(assetManager: AssetManager, path: String, resources: Resources, gravity_mode: Boolean)
@@ -80,6 +80,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     private external fun pauseGame()
     private external fun unpause()
     private external fun getUIData(data: DispData)
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -97,12 +98,12 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         }
 
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main) ?: throw NullPointerException("Could not get binding")
 
-        setSupportActionBar(binding!!.toolbar)
+        setSupportActionBar(binding.toolbar)
 
-        binding!!.surfaceView.holder.addCallback(this)
-        binding!!.data = data
+        binding.surfaceView.holder.addCallback(this)
+        binding.data = data
 
         gestureDetector = GestureDetectorCompat(this, GestureListener())
 
@@ -153,7 +154,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
                 val color = ArgbEvaluator().evaluate(stop_percent, color_stops[start_color_i], color_stops[start_color_i + 1]) as Int
 
-                (binding!!.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                (binding.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN)
 
                 update_data.postDelayed(this, delay.toLong())
             }
@@ -181,7 +182,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         if(dialog != null)
             dialog!!.dismiss()
 
-        binding!!.surfaceView.holder.removeCallback(this)
+        binding.surfaceView.holder.removeCallback(this)
 
         super.onDestroy()
     }
@@ -218,7 +219,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     override fun onTouchEvent(event: MotionEvent): Boolean
     {
         if(!gravity_mode)
-            gestureDetector!!.onTouchEvent(event)
+            gestureDetector.onTouchEvent(event)
         return super.onTouchEvent(event)
     }
 

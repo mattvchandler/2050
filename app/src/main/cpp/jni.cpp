@@ -204,7 +204,7 @@ public:
     Java_thread_env()
     {
         if(!jvm_refs.vm)
-            return;
+            __android_log_assert("VM not initialized", "JNI::Java_thread_env", NULL);
 
         if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
             attached = true;
