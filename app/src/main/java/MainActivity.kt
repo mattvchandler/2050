@@ -316,11 +316,15 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         pauseGame()
 
-        AlertDialog.Builder(this@MainActivity).setTitle(R.string.paused)
-                .setPositiveButton(R.string.cont) { _, _ -> unpause() }
-                .setOnCancelListener { _ -> unpause() }
-                .setOnDismissListener { _ -> pause_dialog_shown = false }
-                .create().show()
+        if(dialog == null)
+        {
+            dialog = AlertDialog.Builder(this@MainActivity).setTitle(R.string.paused)
+                    .setPositiveButton(R.string.cont) { _, _ -> unpause() }
+                    .setOnCancelListener { _ -> unpause() }
+                    .setOnDismissListener { _ -> pause_dialog_shown = false; dialog = null }
+                    .create()
+            dialog!!.show()
+        }
 
         pause_dialog_shown = true
     }
