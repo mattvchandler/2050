@@ -46,10 +46,14 @@ import java.io.IOException
 
 class MainActivity: Themed_activity(), SurfaceHolder.Callback
 {
+    private val PAUSE_DIALOG_SHOWN_KEY = "pause_dialog_shown"
+    private val SETTINGS_RESULT = 1
+
     private lateinit var binding: ActivityMainBinding
     private val data = DispData()
     private val update_data = Handler()
     private var dialog: AlertDialog? = null
+    private var pause_dialog_shown = false
 
     private var gravity_mode = false
 
@@ -61,8 +65,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         {
             System.loadLibrary("2050")
         }
-
-        private const val SETTINGS_RESULT = 1
 
         @JvmStatic private external fun calcTextColor(color: Int): Int
         @JvmStatic private external fun ballColorIndex(size: Int, num_colors: Int): Int
@@ -125,7 +127,15 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         }
 
+        pause_dialog_shown = savedInstanceState?.getBoolean(PAUSE_DIALOG_SHOWN_KEY) == true
+
         create(resources.assets, path, resources, gravity_mode)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?)
+    {
+        outState?.putBoolean(PAUSE_DIALOG_SHOWN_KEY, pause_dialog_shown)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume()
@@ -159,6 +169,9 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 update_data.postDelayed(this, delay.toLong())
             }
         }, delay.toLong())
+
+        if(pause_dialog_shown)
+            pause_dialog()
     }
 
     override fun onPause()
@@ -275,21 +288,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         }
     }
 
-    fun game_pause()
-    {
-        runOnUiThread {
-            if(dialog != null)
-                return@runOnUiThread
-
-            dialog = AlertDialog.Builder(this@MainActivity).setTitle(R.string.paused)
-                    .setPositiveButton(R.string.cont) { _, _ -> unpause() }
-                    .setOnCancelListener { _ -> unpause() }
-                    .setOnDismissListener { _ -> this.dialog = null }
-                    .create()
-            dialog!!.show()
-        }
-    }
-
     fun achievement(size: Int)
     {
         runOnUiThread {
@@ -314,6 +312,19 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         }
     }
 
+    private fun pause_dialog()
+    {
+        pauseGame()
+
+        AlertDialog.Builder(this@MainActivity).setTitle(R.string.paused)
+                .setPositiveButton(R.string.cont) { _, _ -> unpause() }
+                .setOnCancelListener { _ -> unpause() }
+                .setOnDismissListener { _ -> pause_dialog_shown = false }
+                .create().show()
+
+        pause_dialog_shown = true
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         super.onCreateOptionsMenu(menu)
@@ -326,7 +337,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         when(item.itemId)
         {
-            R.id.pause -> { pauseGame(); return true }
+            R.id.pause -> { pause_dialog(); return true }
             R.id.new_game -> { newGame(); return true }
 
             R.id.fullscreen ->

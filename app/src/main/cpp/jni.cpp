@@ -62,10 +62,6 @@ struct JVM_refs
         if(!game_over_method)
             __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
 
-        game_pause_method = env->GetMethodID(main_activity_class, "game_pause", "()V");
-        if(!game_pause_method)
-            __android_log_assert("Couldn't get 'game_pause' method", "JNI", NULL);
-
         achievement_method = env->GetMethodID(main_activity_class, "achievement", "(I)V");
         if(!achievement_method)
             __android_log_assert("Couldn't get 'achievement' method", "JNI", NULL);
@@ -148,7 +144,6 @@ struct JVM_refs
         main_activity        = nullptr;
         game_win_method      = nullptr;
         game_over_method     = nullptr;
-        game_pause_method    = nullptr;
         achievement_method   = nullptr;
         resources            = nullptr;
         R_array              = nullptr;
@@ -168,7 +163,6 @@ struct JVM_refs
     jobject   main_activity        = nullptr;
     jmethodID game_win_method      = nullptr;
     jmethodID game_over_method     = nullptr;
-    jmethodID game_pause_method    = nullptr;
     jmethodID achievement_method   = nullptr;
 
     jobject   resources            = nullptr;
@@ -187,13 +181,6 @@ struct JVM_refs
 };
 
 JVM_refs jvm_refs;
-
-struct Persists
-{
-    bool first_run = true;
-    bool paused = false;
-};
-Persists persists;
 
 class Java_thread_env
 {
@@ -235,12 +222,6 @@ void game_over(int score, bool new_high_score)
     Java_thread_env env;
 
     env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_over_method, score, new_high_score);
-}
-void game_pause()
-{
-    Java_thread_env env;
-
-    env->CallVoidMethod(jvm_refs.main_activity, jvm_refs.game_pause_method);
 }
 void achievement(int size)
 {
@@ -288,6 +269,8 @@ int get_res_color(const std::string & id)
     return env->CallStaticIntMethod(jvm_refs.context_compat, jvm_refs.get_color_method, jvm_refs.main_activity, color_id);
 }
 
+bool first_run = true;
+
 extern "C"
 {
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local, jboolean gravity_mode)
@@ -299,9 +282,9 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, persists.first_run, gravity_mode);
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, first_run, gravity_mode);
 
-    persists.first_run = false;
+    first_run = false;
 
     env->ReleaseStringUTFChars(path, data_path);
 }
@@ -310,11 +293,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *
 {
     if(!engine)
         __android_log_assert("resume called before engine initialized", "JNI", NULL);
-
-    if(persists.paused)
-    {
-        engine->pause_game(true);
-    }
 
     engine->resume();
 }
@@ -374,15 +352,13 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEn
 {
     if(!engine)
         __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
-    engine->pause_game(true);
-    persists.paused = true;
+    engine->pause_game();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_unpause(JNIEnv *, jobject)
 {
     if(!engine)
         __android_log_assert("unpause called before engine initialized", "JNI", NULL);
     engine->unpause();
-    persists.paused = false;
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEnv * env, jobject, jobject dispdata)
 {

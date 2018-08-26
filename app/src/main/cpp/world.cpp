@@ -96,15 +96,11 @@ void World::init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void World::pause(bool show_dialog)
+void World::pause()
 {
     LOG_DEBUG_WRITE("World::pause", "paused");
     if(!paused && state != State::WIN && state != State::LOSE)
-    {
         paused = true;
-        if(show_dialog)
-            game_pause();
-    }
 }
 bool World::is_paused() const { return paused; }
 void World::unpause()

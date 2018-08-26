@@ -39,6 +39,7 @@
 /* TODO:
  * About screen
  * screenshots for README
+ * confirm dialog for restart button
  */
 
 class World
@@ -100,7 +101,7 @@ public:
 
     void init();
     void destroy();
-    void pause(bool show_dialog = false);
+    void pause();
     bool is_paused() const;
     void unpause();
     void resize(GLsizei width, GLsizei height);
