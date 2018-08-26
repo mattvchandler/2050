@@ -124,7 +124,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 supportActionBar?.hide()
 
         }
-        
+
         create(resources.assets, path, resources, gravity_mode)
     }
 
@@ -179,8 +179,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         destroy()
 
-        if(dialog != null)
-            dialog!!.dismiss()
+        dialog?.dismiss()
 
         binding.surfaceView.holder.removeCallback(this)
 
