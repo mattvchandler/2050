@@ -36,6 +36,7 @@ SOFTWARE.
     <string name="final_score">Your score was: %d</string>
     <string name="new_high_score">New high score!</string>
     <string name="new_game">New game</string>
+    <string name="confirm_new_game">Are you sure you want to start a new game?</string>
     <string name="continue_playing">Continue playing</string>
 
     <string name="pause">Pause</string>

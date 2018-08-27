@@ -329,6 +329,19 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         pause_dialog_shown = true
     }
 
+    private fun new_game_dialog()
+    {
+        if(dialog == null)
+        {
+            dialog = AlertDialog.Builder(this).setTitle(getString(R.string.confirm_new_game))
+                    .setPositiveButton(android.R.string.yes) { _, _ -> newGame() }
+                    .setNegativeButton(android.R.string.no) { _, _ ->  }
+                    .setOnDismissListener { _ -> dialog = null }
+                    .create()
+            dialog!!.show()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         super.onCreateOptionsMenu(menu)
@@ -342,7 +355,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         when(item.itemId)
         {
             R.id.pause -> { pause_dialog(); return true }
-            R.id.new_game -> { newGame(); return true }
+            R.id.new_game -> { new_game_dialog(); return true }
 
             R.id.fullscreen ->
             {

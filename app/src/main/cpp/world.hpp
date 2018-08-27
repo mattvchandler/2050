@@ -39,7 +39,7 @@
 /* TODO:
  * About screen
  * screenshots for README
- * confirm dialog for restart button
+ * ask for location permissions when using auto night mode
  */
 
 class World
