@@ -354,12 +354,6 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEn
         __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
     engine->pause_game();
 }
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_unpause(JNIEnv *, jobject)
-{
-    if(!engine)
-        __android_log_assert("unpause called before engine initialized", "JNI", NULL);
-    engine->unpause();
-}
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEnv * env, jobject, jobject dispdata)
 {
     if(!engine)

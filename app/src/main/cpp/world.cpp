@@ -99,18 +99,16 @@ void World::init()
 void World::pause()
 {
     LOG_DEBUG_WRITE("World::pause", "paused");
-    if(!paused && state != State::WIN && state != State::LOSE)
-        paused = true;
+    paused = true;
 }
 bool World::is_paused() const { return paused; }
 void World::unpause()
 {
     LOG_DEBUG_WRITE("World::unpause", "unpaused");
     paused = false;
+
     if(state == State::WIN)
-    {
         state = State::EXTENDED;
-    }
 }
 
 void World::destroy()
@@ -391,16 +389,13 @@ void World::deserialize(const nlohmann::json & data, bool first_run)
     if(data.find("grav_vec") != std::end(data))
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 
-    if(state == State::WIN)
+    if(first_run)
     {
-        game_win(score, score == high_score);
-    }
-    else if(state == State::LOSE)
-    {
-        if(first_run)
+        if(state == State::WIN)
+            game_win(score, score == high_score);
+
+        else if(state == State::LOSE)
             new_game();
-        else
-            game_over(score, score == high_score);
     }
 }
 

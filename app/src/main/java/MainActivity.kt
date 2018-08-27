@@ -21,6 +21,7 @@
 package org.mattvchandler.a2050
 
 import android.animation.ArgbEvaluator
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.AssetManager
@@ -34,6 +35,7 @@ import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.support.v4.app.DialogFragment
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.widget.ImageViewCompat
 import android.support.v7.app.AlertDialog
@@ -46,14 +48,12 @@ import java.io.IOException
 
 class MainActivity: Themed_activity(), SurfaceHolder.Callback
 {
-    private val PAUSE_DIALOG_SHOWN_KEY = "pause_dialog_shown"
     private val SETTINGS_RESULT = 1
 
     private lateinit var binding: ActivityMainBinding
     private val data = DispData()
     private val update_data = Handler()
     private var dialog: AlertDialog? = null
-    private var pause_dialog_shown = false
 
     private var gravity_mode = false
 
@@ -80,7 +80,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     private external fun fling(x: Float, y: Float)
     private external fun newGame()
     private external fun pauseGame()
-    private external fun unpause()
     private external fun getUIData(data: DispData)
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -127,15 +126,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         }
 
-        pause_dialog_shown = savedInstanceState?.getBoolean(PAUSE_DIALOG_SHOWN_KEY) == true
-
         create(resources.assets, path, resources, gravity_mode)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?)
-    {
-        outState?.putBoolean(PAUSE_DIALOG_SHOWN_KEY, pause_dialog_shown)
-        super.onSaveInstanceState(outState)
     }
 
     override fun onResume()
@@ -169,9 +160,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 update_data.postDelayed(this, delay.toLong())
             }
         }, delay.toLong())
-
-        if(pause_dialog_shown)
-            pause_dialog()
     }
 
     override fun onPause()
@@ -258,33 +246,59 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     fun game_win(score: Int, new_high_score: Boolean)
     {
         runOnUiThread {
-            if(dialog != null)
-                return@runOnUiThread
+            class Game_win_frag: DialogFragment()
+            {
+                override fun onStart()
+                {
+                    super.onStart()
+                    (activity as MainActivity).pauseGame()
+                }
+                override fun onCreateDialog(savedInstanceState: Bundle?) =
+                    AlertDialog.Builder(activity as MainActivity)
+                            .setTitle(R.string.win)
+                            .setMessage(resources.getString(R.string.final_score, arguments!!.getInt("score")) + if(arguments!!.getBoolean("new_high_score")) {"\n" + resources.getString(R.string.new_high_score)} else "")
+                            .setNegativeButton(R.string.new_game) { _, _ -> (activity as MainActivity).newGame() }
+                            .setPositiveButton(R.string.continue_playing, null)
+                            .create()
+            }
 
-            dialog = AlertDialog.Builder(this@MainActivity).setTitle(R.string.win)
-                    .setMessage(resources.getString(R.string.final_score, score) + if(new_high_score) "\n" + resources.getString(R.string.new_high_score) else "")
-                    .setNegativeButton(R.string.new_game) { _, _ -> newGame() }
-                    .setPositiveButton(R.string.continue_playing) { _, _ -> unpause() }
-                    .setCancelable(false)
-                    .setOnDismissListener { _ -> this.dialog = null }
-                    .create()
-            dialog!!.show()
+            val bundle = Bundle()
+            bundle.putInt("score", score)
+            bundle.putBoolean("new_high_score", new_high_score)
+
+            val frag = Game_win_frag()
+            frag.arguments = bundle
+            frag.isCancelable = false
+
+            frag.show(supportFragmentManager, "game_win_dialog")
         }
     }
 
     fun game_over(score: Int, new_high_score: Boolean)
     {
         runOnUiThread {
-            if(dialog != null)
-                return@runOnUiThread
+            class Game_over_frag: DialogFragment()
+            {
+                override fun onStart()
+                {
+                    super.onStart()
+                    (activity as MainActivity).pauseGame()
+                }
+                override fun onCreateDialog(savedInstanceState: Bundle?) =
+                    AlertDialog.Builder(activity as MainActivity).setTitle(R.string.game_over)
+                            .setMessage(resources.getString(R.string.final_score, arguments!!.getInt("score")) + if(arguments!!.getBoolean("new_high_score")) "\n" + resources.getString(R.string.new_high_score) else "")
+                            .setPositiveButton(R.string.new_game) { _, _ -> (activity as MainActivity).newGame() }
+                            .create()
+            }
+            val bundle = Bundle()
+            bundle.putInt("score", score)
+            bundle.putBoolean("new_high_score", new_high_score)
 
-            dialog = AlertDialog.Builder(this@MainActivity).setTitle(R.string.game_over)
-                    .setMessage(resources.getString(R.string.final_score, score) + if(new_high_score) "\n" + resources.getString(R.string.new_high_score) else "")
-                    .setPositiveButton(R.string.new_game) { _, _ -> newGame() }
-                    .setCancelable(false)
-                    .setOnDismissListener { _ -> this.dialog = null }
-                    .create()
-            dialog!!.show()
+            val frag = Game_over_frag()
+            frag.arguments = bundle
+            frag.isCancelable = false
+
+            frag.show(supportFragmentManager, "game_win_dialog")
         }
     }
 
@@ -314,32 +328,40 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
     private fun pause_dialog()
     {
-        pauseGame()
-
-        if(dialog == null)
+        class Pause_frag: DialogFragment()
         {
-            dialog = AlertDialog.Builder(this@MainActivity).setTitle(R.string.paused)
-                    .setPositiveButton(R.string.cont) { _, _ -> unpause() }
-                    .setOnCancelListener { _ -> unpause() }
-                    .setOnDismissListener { _ -> pause_dialog_shown = false; dialog = null }
-                    .create()
-            dialog!!.show()
+            override fun onStart()
+            {
+                super.onStart()
+                (activity as MainActivity).pauseGame()
+            }
+            override fun onCreateDialog(savedInstanceState: Bundle?) =
+                    AlertDialog.Builder(activity as MainActivity).setTitle(R.string.paused)
+                            .setPositiveButton(R.string.cont, null)
+                            .create()
         }
 
-        pause_dialog_shown = true
+        Pause_frag().show(supportFragmentManager, "new_game_dialog")
     }
 
     private fun new_game_dialog()
     {
-        if(dialog == null)
+        class New_game_frag: DialogFragment()
         {
-            dialog = AlertDialog.Builder(this).setTitle(getString(R.string.confirm_new_game))
-                    .setPositiveButton(android.R.string.yes) { _, _ -> newGame() }
-                    .setNegativeButton(android.R.string.no) { _, _ ->  }
-                    .setOnDismissListener { _ -> dialog = null }
+            override fun onStart()
+            {
+                super.onStart()
+                (activity as MainActivity).pauseGame()
+            }
+            override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+                AlertDialog.Builder(activity as MainActivity)
+                    .setTitle(getString(R.string.confirm_new_game))
+                    .setPositiveButton(android.R.string.yes) { _, _ -> (activity as MainActivity).newGame() }
+                    .setNegativeButton(android.R.string.no, null)
                     .create()
-            dialog!!.show()
         }
+
+        New_game_frag().show(supportFragmentManager, "new_game_dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean
@@ -394,7 +416,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
             recreate()
     }
 
-    inner class DispData
+    class DispData
     {
         val score = ObservableInt()
         val high_score = ObservableInt()
