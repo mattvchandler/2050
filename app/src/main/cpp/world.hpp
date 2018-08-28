@@ -37,8 +37,8 @@
 #include "ball.hpp"
 
 /* TODO:
- * About screen
  * screenshots for README
+ * square layouts
  */
 
 class World
