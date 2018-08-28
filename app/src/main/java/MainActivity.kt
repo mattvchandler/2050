@@ -132,9 +132,13 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     override fun onResume()
     {
         super.onResume()
+
+        if(!hasWindowFocus())
+            pauseGame()
+
         resume()
 
-        val delay = 100 // ms
+        val delay: Long = 100 // ms
         update_data.postDelayed(object: Runnable
         {
             override fun run()
@@ -157,12 +161,9 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
                 (binding.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN)
 
-                update_data.postDelayed(this, delay.toLong())
+                update_data.postDelayed(this, delay)
             }
-        }, delay.toLong())
-
-        if(!hasWindowFocus())
-            pauseGame()
+        }, delay)
     }
 
     override fun onPause()
