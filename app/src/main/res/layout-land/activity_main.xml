@@ -36,7 +36,7 @@ SOFTWARE.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        >
+    >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -46,12 +46,12 @@ SOFTWARE.
             android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+        />
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+        >
 
 
             <TextView
@@ -69,7 +69,7 @@ SOFTWARE.
                 app:layout_constraintBottom_toTopOf="@id/score"
                 app:layout_constraintLeft_toRightOf="@id/surface_view"
                 app:layout_constraintRight_toRightOf="parent"
-                />
+            />
 
             <TextView
                 android:id="@+id/score"
@@ -83,7 +83,7 @@ SOFTWARE.
                 app:layout_constraintTop_toBottomOf="@id/high_score"
                 app:layout_constraintLeft_toRightOf="@id/surface_view"
                 app:layout_constraintRight_toRightOf="parent"
-                />
+            />
 
             <ImageView
                 android:id="@+id/gravity_bg"
@@ -91,14 +91,12 @@ SOFTWARE.
                 android:contentDescription="@string/gravity_arrow_desc"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                tools:ignore="UnusedAttribute"
-                android:elevation="8dp"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintTop_toTopOf="@id/gravity"
                 app:layout_constraintBottom_toBottomOf="@id/gravity"
                 app:layout_constraintStart_toStartOf="@id/gravity"
                 app:layout_constraintEnd_toEndOf="@id/gravity"
-                />
+            />
             <ImageView
                 android:id="@+id/gravity"
                 app:srcCompat="@drawable/plumb_bob"
@@ -109,7 +107,7 @@ SOFTWARE.
                 app:layout_constraintWidth_default="percent"
                 app:layout_constraintWidth_percent="0.15"
                 tools:ignore="UnusedAttribute"
-                android:elevation="24dp"
+                android:elevation="4dp"
                 android:layout_margin="@dimen/margin_size"
                 app:layout_constraintVertical_chainStyle="spread_inside"
                 app:layout_constraintDimensionRatio="1:1"
@@ -117,7 +115,7 @@ SOFTWARE.
                 app:layout_constraintBottom_toTopOf="@id/pressure_txt"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/surface_view"
-                />
+            />
 
             <TextView
                 android:id="@+id/pressure_txt"
@@ -125,14 +123,12 @@ SOFTWARE.
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:ignore="UnusedAttribute"
-                android:elevation="24dp"
                 android:layout_margin="@dimen/margin_size"
                 app:layout_constraintTop_toBottomOf="@id/gravity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/pressure"
                 app:layout_constraintEnd_toEndOf="@id/pressure"
-                />
+            />
 
             <ProgressBar
                 android:id="@+id/pressure"
@@ -143,14 +139,12 @@ SOFTWARE.
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_size"
-                tools:ignore="UnusedAttribute"
-                android:elevation="16dp"
                 android:rotation="270"
                 app:layout_constraintTop_toBottomOf="@id/gravity"
                 app:layout_constraintBottom_toTopOf="@id/pressure_txt"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/surface_view"
-                />
+            />
 
             <android.view.SurfaceView
                 android:id="@+id/surface_view"
@@ -164,7 +158,7 @@ SOFTWARE.
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                />
+            />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.LinearLayoutCompat>
 </layout>
