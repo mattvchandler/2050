@@ -38,7 +38,6 @@
 
 /* TODO:
  * screenshots for README
- * square layouts
  */
 
 class World
