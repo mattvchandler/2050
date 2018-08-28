@@ -54,7 +54,7 @@ private:
     const float e = 0.5f; // coefficient of collision restitution
     const float wall_damp = 0.9f; // % velocity lost when colliding with a wall
 
-    enum class State {ONGOING, WIN, LOSE, EXTENDED} state = State::ONGOING;
+    enum class State {ONGOING, LOSE, EXTENDED} state = State::ONGOING;
     bool paused = false;
 
     int high_score = 0;

@@ -106,9 +106,6 @@ void World::unpause()
 {
     LOG_DEBUG_WRITE("World::unpause", "unpaused");
     paused = false;
-
-    if(state == State::WIN)
-        state = State::EXTENDED;
 }
 
 void World::destroy()
@@ -253,7 +250,7 @@ bool World::render()
 
 void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec)
 {
-    if(paused || state == State::LOSE || state == State::WIN)
+    if(paused || state == State::LOSE)
         return;
 
     if(gravity_mode)
@@ -278,7 +275,8 @@ void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sen
     {
         if(state != State::EXTENDED && ball->get_size() >= 11) // 2^11 = 2048
         {
-            state = State::WIN;
+            state = State::EXTENDED;
+            pause();
             game_win(score, score == high_score);
         }
 
@@ -372,8 +370,6 @@ void World::deserialize(const nlohmann::json & data, bool first_run)
         auto state_str = data["state"];
         if(state_str == "ONGOING")
             state = State::ONGOING;
-        else if(state_str == "WIN")
-            state = State::WIN;
         else if(state_str == "LOSE")
             state = State::LOSE;
         else if(state_str == "EXTENDED")
@@ -389,14 +385,8 @@ void World::deserialize(const nlohmann::json & data, bool first_run)
     if(data.find("grav_vec") != std::end(data))
         grav_vec = {data["grav_vec"][0], data["grav_vec"][1]};
 
-    if(first_run)
-    {
-        if(state == State::WIN)
-            game_win(score, score == high_score);
-
-        else if(state == State::LOSE)
+    if(first_run && state == State::LOSE)
             new_game();
-    }
 }
 
 nlohmann::json World::serialize() const
@@ -415,9 +405,6 @@ nlohmann::json World::serialize() const
     {
     case State::ONGOING:
         data["state"] = "ONGOING";
-        break;
-    case State::WIN:
-        data["state"] = "WIN";
         break;
     case State::LOSE:
         data["state"] = "LOSE";
