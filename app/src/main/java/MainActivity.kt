@@ -374,10 +374,10 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
-        when(item.itemId)
+        return when(item.itemId)
         {
-            R.id.pause -> { pause_dialog(); return true }
-            R.id.new_game -> { new_game_dialog(); return true }
+            R.id.pause -> { pause_dialog(); true }
+            R.id.new_game -> { new_game_dialog(); true }
 
             R.id.fullscreen ->
             {
@@ -388,13 +388,13 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 val actionBar = supportActionBar
                 actionBar?.hide()
 
-                return true
+                true
             }
 
             R.id.settings ->
             {
                 startActivityForResult(Intent(this, Settings::class.java), SETTINGS_RESULT)
-                return true
+                true
             }
 
             R.id.help ->
@@ -404,10 +404,13 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                     Toast.makeText(this, resources.getString(R.string.help_accel), Toast.LENGTH_LONG).show()
                 else
                     Toast.makeText(this, resources.getString(R.string.help_touch), Toast.LENGTH_LONG).show()
-                return true
+                true
             }
+
+            R.id.about -> { About_dialog().show(supportFragmentManager, "about_dialog"); false }
+
+            else -> false
         }
-        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)

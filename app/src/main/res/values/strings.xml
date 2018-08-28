@@ -22,6 +22,11 @@ SOFTWARE.
 
 <resources>
     <string name="app_name">2050</string>
+    <string name="app_version">v.%1$s</string>
+    <string name="app_copyright">© 2018 Matthew Chandler</string>
+    <string name="app_license">This program comes with absolutely no warranty.\nSee the <a href="https://opensource.org/licenses/mit-license.php">MIT License (MIT)</a> for details.</string>
+    <string name="app_website"><a href="https://www.github.com/mattvchandler/2050">2050 on Github</a></string>
+    <string name="app_logo_desc">2050 logo</string>
 
     <string name="pressure">Pressure</string>
 
@@ -41,13 +46,14 @@ SOFTWARE.
 
     <string name="pause">Pause</string>
     <string name="fullscreen">Fullscreen</string>
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
 
     <string name="gravity_arrow_desc">Gravity arrow</string>
     <string name="ball">Ball</string>
 
     <string name="achievement_unlocked">Achievement Unlocked</string>
-    <string name="help">Help</string>
-    <string name="settings">Settings</string>
 
     <string name="control_mode">Accelerometer control mode</string>
     <string name="control_mode_summary">Switch between touch control and accelerometer control</string>

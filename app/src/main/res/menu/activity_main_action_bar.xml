@@ -51,4 +51,9 @@ SOFTWARE.
         android:title="@string/help"
         app:showAsAction="never"
     />
+    <item
+        android:id="@+id/about"
+        android:title="@string/about"
+        app:showAsAction="never"
+    />
 </menu>
