@@ -356,8 +356,8 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
                 AlertDialog.Builder(activity as MainActivity)
                     .setTitle(getString(R.string.confirm_new_game))
-                    .setPositiveButton(android.R.string.yes) { _, _ -> (activity as MainActivity).newGame() }
-                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(R.string.yes) { _, _ -> (activity as MainActivity).newGame() }
+                    .setNegativeButton(R.string.no, null)
                     .create()
         }
 

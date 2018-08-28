@@ -22,13 +22,20 @@ package org.mattvchandler.a2050
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
+import android.Manifest
+import android.app.AlertDialog
+import android.app.Dialog
+import android.support.v4.app.ActivityCompat
+import android.support.v4.app.DialogFragment
 import org.mattvchandler.a2050.databinding.ActivitySettingsBinding
 import java.util.*
 
@@ -67,6 +74,31 @@ class Settings: Themed_activity()
         {
             if(key == "theme")
             {
+                // request location permission for local sunset / sunrise times
+                if(sharedPreferences.getString("theme", "") == resources.getString(R.string.theme_values_auto))
+                {
+                    if (ContextCompat.checkSelfPermission(activity as Context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                    {
+                        if(ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.ACCESS_FINE_LOCATION))
+                        {
+                            class Location_frag: DialogFragment()
+                            {
+                                override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+                                        AlertDialog.Builder(activity)
+                                            .setTitle(R.string.loc_perm_title)
+                                            .setMessage(R.string.loc_perm_msg)
+                                            .setPositiveButton(android.R.string.ok) { _, _ -> ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)}
+                                            .setNegativeButton(android.R.string.cancel, null)
+                                            .create()
+                            }
+                            Location_frag().show(activity!!.supportFragmentManager, "location_permission_dialog")
+                        }
+                        else
+                        {
+                            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)
+                        }
+                    }
+                }
                 // recreate this activity to apply the new theme
                 activity?.recreate()
             }
@@ -102,8 +134,18 @@ class Settings: Themed_activity()
         return false
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
+    {
+        when(requestCode)
+        {
+            LOCATION_PERMISSION_RESPONSE -> if(!grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) recreate()
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
     companion object
     {
         private var has_accelerometer = true
+        private const val LOCATION_PERMISSION_RESPONSE = 1
     }
 }

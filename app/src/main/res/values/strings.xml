@@ -40,7 +40,6 @@ SOFTWARE.
     <string name="continue_playing">Continue playing</string>
 
     <string name="pause">Pause</string>
-
     <string name="fullscreen">Fullscreen</string>
 
     <string name="gravity_arrow_desc">Gravity arrow</string>
@@ -56,11 +55,13 @@ SOFTWARE.
 
     <string name="theme_title">Day / Night Theme</string>
     <string-array name="theme_settings">
-        <item>Follow System (requires restart)</item>
+        <item>Follow System</item>
         <item>Day</item>
         <item>Night</item>
-        <item>Auto (time based)</item>
+        <item>Auto (location / time based)</item>
     </string-array>
+    <string name="loc_perm_title">"Allow access to location?"</string>
+    <string name="loc_perm_msg">"You will be asked to allow location access.\n\nIf granted, your location will be used to switch the theme at local sunrise / sunset. Otherwise, hard-coded times will be used instead.\n\nLocation data is not stored or used in any other way."</string>
 
     <string-array name="achieve_texts">
         <item>"Congrats, you shouldn't be seeing this!"</item>
@@ -83,5 +84,8 @@ SOFTWARE.
     <string name="help_general">Combine balls of like size and number to reach the 2048 ball, while avoiding packing the balls too tightly together.</string>
     <string name="help_touch">Slide your finger to change the direction the balls move towards. A new ball will be generated each time you do.</string>
     <string name="help_accel">Rotate your device so that the balls fall downward. New balls are generated as you turn.</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

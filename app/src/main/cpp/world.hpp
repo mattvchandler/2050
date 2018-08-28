@@ -39,7 +39,6 @@
 /* TODO:
  * About screen
  * screenshots for README
- * ask for location permissions when using auto night mode
  */
 
 class World
