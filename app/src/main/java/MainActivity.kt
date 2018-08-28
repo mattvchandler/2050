@@ -160,6 +160,9 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 update_data.postDelayed(this, delay.toLong())
             }
         }, delay.toLong())
+
+        if(!hasWindowFocus())
+            pauseGame()
     }
 
     override fun onPause()
@@ -248,11 +251,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         runOnUiThread {
             class Game_win_frag: DialogFragment()
             {
-                override fun onStart()
-                {
-                    super.onStart()
-                    (activity as MainActivity).pauseGame()
-                }
                 override fun onCreateDialog(savedInstanceState: Bundle?) =
                     AlertDialog.Builder(activity as MainActivity)
                             .setTitle(R.string.win)
@@ -279,11 +277,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         runOnUiThread {
             class Game_over_frag: DialogFragment()
             {
-                override fun onStart()
-                {
-                    super.onStart()
-                    (activity as MainActivity).pauseGame()
-                }
                 override fun onCreateDialog(savedInstanceState: Bundle?) =
                     AlertDialog.Builder(activity as MainActivity).setTitle(R.string.game_over)
                             .setMessage(resources.getString(R.string.final_score, arguments!!.getInt("score")) + if(arguments!!.getBoolean("new_high_score")) "\n" + resources.getString(R.string.new_high_score) else "")
@@ -330,11 +323,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         class Pause_frag: DialogFragment()
         {
-            override fun onStart()
-            {
-                super.onStart()
-                (activity as MainActivity).pauseGame()
-            }
             override fun onCreateDialog(savedInstanceState: Bundle?) =
                     AlertDialog.Builder(activity as MainActivity).setTitle(R.string.paused)
                             .setPositiveButton(R.string.cont, null)
@@ -348,11 +336,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         class New_game_frag: DialogFragment()
         {
-            override fun onStart()
-            {
-                super.onStart()
-                (activity as MainActivity).pauseGame()
-            }
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
                 AlertDialog.Builder(activity as MainActivity)
                     .setTitle(getString(R.string.confirm_new_game))
@@ -381,9 +364,10 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
             R.id.fullscreen ->
             {
-                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE)
+                window.decorView.systemUiVisibility = (
+                       View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                       View.SYSTEM_UI_FLAG_FULLSCREEN      or
+                       View.SYSTEM_UI_FLAG_IMMERSIVE)
 
                 val actionBar = supportActionBar
                 actionBar?.hide()
