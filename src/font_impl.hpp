@@ -234,6 +234,7 @@ namespace textogl
         GLuint _vao; ///< OpenGL Vertex array object index
 #endif
         GLuint _vbo; ///< OpenGL Vertex buffer object index
+        GLint _max_tu_count; ///< Max texture units supported by graphic driver
     };
 }
 /// @endcond INTERNAL

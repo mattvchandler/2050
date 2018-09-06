@@ -235,10 +235,14 @@ namespace textogl
         glEnableVertexAttribArray(1);
         glBindVertexArray(0);
 #endif
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &_max_tu_count);
+        _max_tu_count--;
 
         // get shader uniform locations
         glUseProgram(_common_data->prog);
-        glUniform1i(_common_data->uniform_locations["font_page"], 14);
+        glUniform1i(_common_data->uniform_locations["font_page"], _max_tu_count);
         glUseProgram(0);
     }
 
@@ -430,7 +434,7 @@ namespace textogl
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glActiveTexture(GL_TEXTURE14);
+        glActiveTexture(GL_TEXTURE0 + _max_tu_count);
 
         // draw text, per page
         for(const auto & cd: coord_data)
@@ -440,6 +444,7 @@ namespace textogl
             glDrawArrays(GL_TRIANGLES, cd.start, cd.num_elements);
         }
 
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 #ifndef USE_OPENGL_ES
         glBindVertexArray(0);
 #endif
