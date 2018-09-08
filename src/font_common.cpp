@@ -104,13 +104,21 @@ namespace textogl
         }
 
         // get uniform locations
-        for(auto & uniform : {"start_offset", "win_size", "font_page", "color"})
+        GLint num_uniforms = 0;
+        GLint max_buff_size = 0;
+        glGetProgramiv(prog, GL_ACTIVE_UNIFORMS, &num_uniforms);
+        glGetProgramiv(prog, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_buff_size);
+
+        std::vector<GLchar> uniform(max_buff_size, '\0');
+
+        for(GLuint i = 0; i < static_cast<GLuint>(num_uniforms); ++i)
         {
-            GLint loc = glGetUniformLocation(prog, uniform);
+            GLint size; GLenum type;
+            glGetActiveUniform(prog, i, static_cast<GLsizei>(uniform.size()), NULL, &size, &type, uniform.data());
+
+            GLint loc = glGetUniformLocation(prog, uniform.data());
             if(loc != -1)
-            {
-                uniform_locations[uniform] = loc;
-            }
+                uniform_locations[uniform.data()] = loc;
         }
     }
 

@@ -66,10 +66,26 @@ namespace textogl
 
         /// Render the previously set text
         void render_text(const Color & color,          ///< Text Color
-                            const Vec2<float> & win_size, ///< Window dimensions. A Vec2 with X = width and Y = height
-                            const Vec2<float> & pos,      ///< Render position, in screen pixels
-                            const int align_flags = 0     ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
-                        );
+                         const Vec2<float> & win_size, ///< Window dimensions. A Vec2 with X = width and Y = height
+                         const Vec2<float> & pos,      ///< Render position, in screen pixels
+                         const int align_flags = 0     ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                         );
+
+        /// Render the previously set text, with rotation
+        void render_text_rotate(const Color & color,          ///< Text Color
+                                const Vec2<float> & win_size, ///< Window dimensions. A Vec2 with X = width and Y = height
+                                const Vec2<float> & pos,      ///< Render position, in screen pixels
+                                const float rotation,         ///< Clockwise text rotation (in radians) around center as defined in align_flags. 0 is vertical
+                                const int align_flags = 0     ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                                );
+
+        /// Render the previously set text, using a model view projection matrix
+        void render_text_mat(const Color & color, ///< Text Color
+                             /// Model view projection matrix.
+                             /// The text will be rendered as quads, one for each glyph, with vertex coordinates centered on the baselines and sized in pixels.
+                             /// This matrix will be used to transform that geometry
+                             const Mat4<float> & model_view_projection
+                             );
 
     private:
         struct Impl; ///< Private internal implementation

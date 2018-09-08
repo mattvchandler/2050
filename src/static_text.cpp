@@ -78,7 +78,17 @@ namespace textogl
         void render_text(const Color & color,          ///< Text Color
                          const Vec2<float> & win_size, ///< Window dimensions. A Vec2 with X = width and Y = height
                          const Vec2<float> & pos,      ///< Render position, in screen pixels
-                         const int align_flags = 0     ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                         const float rotation,         ///< Clockwise text rotation (in radians) around origin as defined in align_flags. 0 is vertical
+                         const int align_flags         ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                        );
+
+        /// Render the previously set text, using a model view projection matrix
+        void render_text(const Color & color, ///< Text Color
+                         /// Model view projection matrix.
+
+                         /// The text will be rendered as quads, one for each glyph, with vertex coordinates centered on the baselines and sized in pixels.
+                         /// This matrix will be used to transform that geometry
+                         const Mat4<float> & model_view_projection
                         );
 
         void rebuild(); ///< Rebuild text data
@@ -189,14 +199,32 @@ namespace textogl
     void Static_text::render_text(const Color & color, const Vec2<float> & win_size,
             const Vec2<float> & pos, const int align_flags)
     {
-        pimpl->render_text(color, win_size, pos, align_flags);
+        pimpl->render_text(color, win_size, pos, 0.0f, align_flags);
+    }
+    void Static_text::render_text_rotate(const Color & color, const Vec2<float> & win_size,
+            const Vec2<float> & pos, const float rotation, const int align_flags)
+    {
+        pimpl->render_text(color, win_size, pos, rotation, align_flags);
     }
     void Static_text::Impl::render_text(const Color & color, const Vec2<float> & win_size,
-            const Vec2<float> & pos, const int align_flags)
+            const Vec2<float> & pos, const float rotation, const int align_flags)
     {
-        _font->render_text_common(color, win_size, pos, align_flags, _text_box, _coord_data,
+        _font->render_text_common(color, win_size, pos, align_flags, rotation, _text_box, _coord_data,
 #ifndef USE_OPENGL_ES
-             _vao,
+            _vao,
+#endif
+            _vbo);
+    }
+
+    void Static_text::render_text_mat(const Color & color, const Mat4<float> & model_view_projection)
+    {
+        pimpl->render_text(color, model_view_projection);
+    }
+    void Static_text::Impl::render_text(const Color & color, const Mat4<float> & model_view_projection)
+    {
+        _font->render_text_common(color, model_view_projection, _coord_data,
+#ifndef USE_OPENGL_ES
+            _vao,
 #endif
             _vbo);
     }
