@@ -28,74 +28,13 @@
 #include <string>
 #include <vector>
 
-#ifdef USE_GLM
-#include <glm/glm.hpp>
-#endif
-
-/// OpenGL Font rendering types
+#include "types.hpp"
 
 /// @ingroup textogl
 namespace textogl
 {
-    /// %Color vector
-
-    /// Simple RGBA color vector
-
-    /// @note If GLM is available, this is instead an alias for glm::vec4
-#ifdef USE_GLM
-    using Color = glm::vec4;
-#else
-    struct Color
-    {
-        float r; ///< Red component value
-        float g; ///< Green component value
-        float b; ///< Blue component value
-        float a; ///< Alpha component value
-
-        /// Access component by index
-
-        /// To pass color to OpenGL, do: <tt>&color[0]</tt>
-        /// @{
-        float & operator[](std::size_t i) { return (&r)[i]; }
-        const float & operator[](std::size_t i) const { return (&r)[i]; }
-        /// @}
-    };
-#endif
-
-    namespace detail
-    {
-        /// 2D Vector
-        template<typename T>
-        struct Vec2
-        {
-            T x; ///< X component
-            T y; ///< Y component
-
-            /// Access component by index
-
-            /// To pass vector to OpenGL, do: <tt>&vec2[0]</tt>
-            /// @{
-            float & operator[](std::size_t i) { return (&x)[i]; }
-            const float & operator[](std::size_t i) const { return (&x)[i]; }
-            /// @}
-        };
-
-        // for template alias specialization
-        template<typename T> struct Vec2_t {  using type = Vec2<T>; };
-#ifdef USE_GLM
-        // specialize to glm types
-        template<> struct Vec2_t<float>        { using type = glm::vec2; };
-        template<> struct Vec2_t<double>       { using type = glm::dvec2; };
-        template<> struct Vec2_t<int>          { using type = glm::ivec2; };
-        template<> struct Vec2_t<unsigned int> { using type = glm::uvec2; };
-#endif
-    }
-    /// 2D Vector
-    /// @note If GLM is available, this is an alias for glm::vec2 / dvec2 / ...
-    template<typename T> using Vec2 = typename detail::Vec2_t<T>::type;
-
     /// Text origin specification
-    enum Text_origin
+    enum Text_origin: int
     {
         ORIGIN_HORIZ_BASELINE = 0x00, ///< Horizontal text origin at baseline
         ORIGIN_HORIZ_LEFT     = 0x01, ///< Horizontal text origin at left edge
@@ -147,11 +86,39 @@ namespace textogl
         /// If the text will not change frequently, use a Static_text object
         /// instead
         void render_text(const std::string & utf8_input, ///< Text to render, in UTF-8 encoding. For best performance, normalize the string before rendering
-                            const Color & color,            ///< Text Color
-                            const Vec2<float> & win_size,   ///< Window dimensions. A Vec2 with X = width and Y = height
-                            const Vec2<float> & pos,        ///< Render position, in screen pixels
-                            const int align_flags = 0       ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
-                            );
+                         const Color & color,            ///< Text Color
+                         const Vec2<float> & win_size,   ///< Window dimensions. A Vec2 with X = width and Y = height
+                         const Vec2<float> & pos,        ///< Render position, in screen pixels
+                         const int align_flags = 0       ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                         );
+
+        /// Render given text, with rotatation
+
+        /// Renders the text supplied in utf8_input parameter
+        /// @note This will rebuild the OpenGL primitives each call.
+        /// If the text will not change frequently, use a Static_text object
+        /// instead
+        void render_text_rotate(const std::string & utf8_input, ///< Text to render, in UTF-8 encoding. For best performance, normalize the string before rendering
+                                const Color & color,            ///< Text Color
+                                const Vec2<float> & win_size,   ///< Window dimensions. A Vec2 with X = width and Y = height
+                                const Vec2<float> & pos,        ///< Render position, in screen pixels
+                                const float rotation,           ///< Clockwise text rotation (in radians) around origin as defined in align_flags. 0 is vertical
+                                const int align_flags = 0       ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                                );
+
+        /// Render given text, using a model view projection matrix
+
+        /// Renders the text supplied in utf8_input parameter, using a model view projection matrix
+        /// @note This will rebuild the OpenGL primitives each call.
+        /// If the text will not change frequently, use a Static_text object
+        /// instead
+        void render_text_mat(const std::string & utf8_input,       ///< Text to render, in UTF-8 encoding. For best performance, normalize the string before rendering
+                             const Color & color,                  ///< Text Color
+                             /// Model view projection matrix.
+                             /// The text will be rendered as quads, one for each glyph, with vertex coordinates centered on the baselines and sized in pixels.
+                             /// This matrix will be used to transform that geometry
+                             const Mat4<float> & model_view_projection
+                             );
 
     private:
         struct Impl; ///< Private internal implementation

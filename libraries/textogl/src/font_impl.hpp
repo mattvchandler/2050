@@ -91,17 +91,34 @@ namespace textogl
         /// If the text will not change frequently, use a Static_text object
         /// instead
         void render_text(const std::string & utf8_input, ///< Text to render, in UTF-8 encoding. For best performance, normalize the string before rendering
-                            const Color & color,            ///< Text Color
-                            const Vec2<float> & win_size,   ///< Window dimensions. A Vec2 with X = width and Y = height
-                            const Vec2<float> & pos,        ///< Render position, in screen pixels
-                            const int align_flags = 0       ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
-                            );
+                         const Color & color,            ///< Text Color
+                         const Vec2<float> & win_size,   ///< Window dimensions. A Vec2 with X = width and Y = height
+                         const Vec2<float> & pos,        ///< Render position, in screen pixels
+                         const float rotation,            ///< Clockwise text rotation (in radians) around origin as defined in align_flags. 0 is vertical
+                         const int align_flags           ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                         );
+
+        /// Render given text
+
+        /// Renders the text supplied in utf8_input parameter, using a model view projection matrix
+        /// @note This will rebuild the OpenGL primitives each call.
+        /// If the text will not change frequently, use a Static_text object
+        /// instead
+        void render_text(const std::string & utf8_input,       ///< Text to render, in UTF-8 encoding. For best performance, normalize the string before rendering
+                         const Color & color,                  ///< Text Color
+                         /// Model view projection matrix.
+
+                         /// The text will be rendered as quads, one for each glyph, with vertex coordinates centered on the baselines and sized in pixels.
+                         /// This matrix will be used to transform that geometry
+                         const Mat4<float> & model_view_projection
+                         );
 
         /// Container for Freetype library object and shader program
 
         /// Every Font_sys object can use the same instance of Font_Common,
         /// so only one should ever be initialized at any given time.
         /// Access to the single instance provied through Font_sys::_common_data
+        // TODO This is probably not thread-safe. Can we have it shared per-thread?
         class Font_common
         {
         public:
@@ -189,13 +206,26 @@ namespace textogl
                                 const Vec2<float> & win_size,               ///< Window dimensions. A Vec2 with X = width and Y = height
                                 const Vec2<float> & pos,                    ///< Render position, in screen pixels
                                 const int align_flags,                      ///< Text Alignment. Should be #Text_origin flags bitwise-OR'd together
+                                const float rotation,                       ///< Clockwise text rotation (in radians) around origin as defined in align_flags. 0 is vertical
                                 const Bbox<float> & text_box,               ///< Text's bounding box
                                 const std::vector<Coord_data> & coord_data, ///< Pre-calculated coordinate data as returned by \ref build_text
 #ifndef USE_OPENGL_ES
                                 GLuint vao,                                 ///< OpenGL vertex array object
 #endif
                                 GLuint vbo                                  ///< OpenGL vertex buffer object
-                        );
+                                );
+
+        /// Common font rendering routine
+
+        /// Rendering calls common to Font_sys and Static_text
+        void render_text_common(const Color & color,                        ///< Text Color
+                                const Mat4<float> & model_view_projection,  ///< Model view projection matrix to transform text by
+                                const std::vector<Coord_data> & coord_data, ///< Pre-calculated coordinate data as returned by \ref build_text
+#ifndef USE_OPENGL_ES
+                                GLuint vao,                                 ///< OpenGL vertex array object
+#endif
+                                GLuint vbo                                  ///< OpenGL vertex buffer object
+                               );
 
         /// Build buffer of quads for and coordinate data for text display
 
@@ -206,6 +236,10 @@ namespace textogl
         /// * Bounding box of resulting text
         std::tuple<std::vector<Vec2<float>>, std::vector<Coord_data>, Bbox<float>>
         build_text(const std::string & utf8_input);
+
+        /// Load text into OpenGL vertex buffer object
+        void load_text_vbo(const std::vector<Vec2<float>> & coords ///< Vertex coordinates returned as part of \ref build_text
+                          ) const;
 
         static std::unique_ptr<Font_common> _common_data; ///< Font data common to all instances of Font_sys
         static unsigned int _common_ref_cnt; ///< Reference count for \ref _common_data

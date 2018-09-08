@@ -30,6 +30,8 @@
 #include <stdexcept>
 #include <system_error>
 
+#include <cmath>
+
 /// Convert a UTF-8 string to a UTF-32 string
 
 /// Minimal verification is done to ensure that the input is valid UTF-8. If any
@@ -343,10 +345,17 @@ namespace textogl
     void Font_sys::render_text(const std::string & utf8_input, const Color & color,
             const Vec2<float> & win_size, const Vec2<float> & pos, const int align_flags)
     {
-        pimpl->render_text(utf8_input, color, win_size, pos, align_flags);
+        pimpl->render_text(utf8_input, color, win_size, pos, 0.0f, align_flags);
+    }
+    void Font_sys::render_text_rotate(const std::string & utf8_input, const Color & color,
+            const Vec2<float> & win_size, const Vec2<float> & pos, const float rotation,
+            const int align_flags)
+    {
+        pimpl->render_text(utf8_input, color, win_size, pos, rotation, align_flags);
     }
     void Font_sys::Impl::render_text(const std::string & utf8_input, const Color & color,
-            const Vec2<float> & win_size, const Vec2<float> & pos, const int align_flags)
+            const Vec2<float> & win_size, const Vec2<float> & pos, const float rotation,
+            const int align_flags)
     {
         // build text buffer objs
         std::vector<Vec2<float>> coords;
@@ -354,17 +363,9 @@ namespace textogl
         Font_sys::Impl::Bbox<float> text_box;
         std::tie(coords, coord_data, text_box) = build_text(utf8_input);
 
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-#ifndef USE_OPENGL_ES
-        glBindVertexArray(_vao);
-#endif
+        load_text_vbo(coords);
 
-        // load text into buffer object
-        // call glBufferData with NULL first - this is apparently faster for dynamic data loading
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2<float>) * coords.size(), NULL, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2<float>) * coords.size(), coords.data());
-
-        render_text_common(color, win_size, pos, align_flags, text_box, coord_data,
+        render_text_common(color, win_size, pos, align_flags, rotation, text_box, coord_data,
 #ifndef USE_OPENGL_ES
                     _vao,
 #endif
@@ -372,15 +373,14 @@ namespace textogl
     }
 
     void Font_sys::Impl::render_text_common(const Color & color, const Vec2<float> & win_size,
-            const Vec2<float> & pos, const int align_flags, const Bbox<float> & text_box,
-            const std::vector<Coord_data> & coord_data,
+            const Vec2<float> & pos, const int align_flags, const float rotation,
+            const Bbox<float> & text_box, const std::vector<Coord_data> & coord_data,
 #ifndef USE_OPENGL_ES
              GLuint vao,
 #endif
-             GLuint vbo
-            )
+             GLuint vbo)
     {
-        Vec2<float> start_offset = pos;
+        Vec2<float> start_offset{0.0f, 0.0f};
 
         // offset origin to align to text bounding box
         int horiz_align = align_flags & 0x3;
@@ -389,13 +389,13 @@ namespace textogl
             case ORIGIN_HORIZ_BASELINE:
                 break;
             case ORIGIN_HORIZ_LEFT:
-                start_offset.x -= text_box.ul.x;
+                start_offset.x = text_box.ul.x;
                 break;
             case ORIGIN_HORIZ_RIGHT:
-                start_offset.x -= text_box.lr.x;
+                start_offset.x = text_box.lr.x;
                 break;
             case ORIGIN_HORIZ_CENTER:
-                start_offset.x -= text_box.ul.x + text_box.width() / 2.0f;
+                start_offset.x = text_box.ul.x + text_box.width() / 2.0f;
                 break;
         }
 
@@ -405,16 +405,60 @@ namespace textogl
             case ORIGIN_VERT_BASELINE:
                 break;
             case ORIGIN_VERT_TOP:
-                start_offset.y -= text_box.ul.y;
+                start_offset.y = text_box.ul.y;
                 break;
             case ORIGIN_VERT_BOTTOM:
-                start_offset.y -= text_box.lr.y;
+                start_offset.y = text_box.lr.y;
                 break;
             case ORIGIN_VERT_CENTER:
-                start_offset.y -= text_box.lr.y + text_box.height() / 2.0f;
+                start_offset.y = text_box.lr.y + text_box.height() / 2.0f;
                 break;
         }
 
+        // this is the result of multiplying matrices as follows:
+        // projection(0, win_size.x, win_size.y, 0) * translate(pos) * rotate(rotation, {0,0,1}) * translate(-start_offset)
+        Mat4<float> model_view_projection
+        {
+            2.0f * std::cos(rotation) / win_size.x, -2.0f * std::sin(rotation) / win_size.y, 0.0f, 0.0f,
+           -2.0f * std::sin(rotation) / win_size.x, -2.0f * std::cos(rotation) / win_size.y, 0.0f, 0.0f,
+            0.0f,                                    0.0f,                                   1.0f, 0.0f,
+
+           -1.0f + 2.0f * (pos.x - std::cos(rotation) * start_offset.x + std::sin(rotation) * start_offset.y) / win_size.x,
+                        1.0f - 2.0f * (pos.y - std::sin(rotation) * start_offset.x - std::cos(rotation) * start_offset.y) / win_size.y,
+                        0.0f, 1.0f
+        };
+
+        render_text_common(color, model_view_projection, coord_data,
+#ifndef USE_OPENGL_ES
+                    vao,
+#endif
+                    vbo);
+    }
+
+    void Font_sys::render_text_mat(const std::string & utf8_input, const Color & color, const Mat4<float> & model_view_projection)
+    {
+        pimpl->render_text(utf8_input, color, model_view_projection);
+    }
+    void Font_sys::Impl::render_text(const std::string & utf8_input, const Color & color, const Mat4<float> & model_view_projection)
+    {
+        std::vector<Vec2<float>> coords;
+        std::vector<Font_sys::Impl::Coord_data> coord_data;
+        std::tie(coords, coord_data, std::ignore) = build_text(utf8_input);
+
+        render_text_common(color, model_view_projection, coord_data,
+#ifndef USE_OPENGL_ES
+                    _vao,
+#endif
+                    _vbo);
+    }
+
+    void Font_sys::Impl::render_text_common(const Color & color, const Mat4<float> & model_view_projection,
+            const std::vector<Coord_data> & coord_data,
+#ifndef USE_OPENGL_ES
+             GLuint vao,
+#endif
+             GLuint vbo)
+    {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
 #ifndef USE_OPENGL_ES
         glBindVertexArray(vao);
@@ -427,8 +471,7 @@ namespace textogl
 
         // set up shader uniforms
         glUseProgram(_common_data->prog);
-        glUniform2fv(_common_data->uniform_locations["start_offset"], 1, &start_offset[0]);
-        glUniform2fv(_common_data->uniform_locations["win_size"], 1, &win_size[0]);
+        glUniformMatrix4fv(_common_data->uniform_locations["model_view_projection"], 1, GL_FALSE, &model_view_projection[0][0]);
         glUniform4fv(_common_data->uniform_locations["color"], 1, &color[0]);
 
         glDisable(GL_DEPTH_TEST);
@@ -649,5 +692,19 @@ namespace textogl
         }
 
         return std::make_tuple(coords, coord_data, font_box);
+    }
+
+    void Font_sys::Impl::load_text_vbo(const std::vector<Vec2<float>> & coords) const
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+#ifndef USE_OPENGL_ES
+        glBindVertexArray(_vao);
+#endif
+
+        // load text into buffer object
+        // call glBufferData with NULL first - this is apparently faster for dynamic data loading
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2<float>) * coords.size(), NULL, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2<float>) * coords.size(), coords.data());
+
     }
 }

@@ -8,7 +8,7 @@ set(SUMMARY "OpenGL Text renderer")
 set(WEBSITE "http://github.com/mattvchandler/${PROJECT_NAME}")
 
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 0)
+set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
 set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
