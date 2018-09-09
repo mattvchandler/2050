@@ -41,3 +41,13 @@ pressure meter) the game is over.
 ## Why the name?
 
 2050: it's 2048, but *rounded*.
+
+## Credits
+
+3rd party libraries (under 'libraries' dir):
+
+FreeType copyright © 2018 The FreeType Project ([www.freetype.org](www.freetype.org)) under the FreeType License
+
+GLM copyright © 2018 G-Truc Creation ([http://glm.g-truc.net/](http://glm.g-truc.net/)) under the MIT License
+
+Textogl copyright © 2018 Matthew Chandler ([www.github.com/mattvchandler/textogl](www.github.com/mattvchandler/textogl)) under the MIT License
