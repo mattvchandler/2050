@@ -28,6 +28,8 @@
 #include "jni.hpp"
 #include "log.hpp"
 
+const float pi = static_cast<float>(M_PI);
+
 glm::mat3 ortho3x3(float left, float right, float bottom, float top)
 {
     return
@@ -43,13 +45,13 @@ glm::vec2 World::text_coord_transform(const glm::vec2 & coord)
     float scale = std::min(screen_size.x, screen_size.y) / win_size;
     glm::vec2 offset
     {
-        (screen_size.x > screen_size.y) ? (screen_size.x - screen_size.y) / 2.0f : 0.0f,
-        (screen_size.x < screen_size.y) ? (screen_size.y - screen_size.x) / 2.0f : 0.0f
+        (screen_size.x >= screen_size.y) ? (screen_size.x - screen_size.y) / 2.0f : 0.0f,
+        (screen_size.x <  screen_size.y) ? (screen_size.y - screen_size.x) / 2.0f : 0.0f
     };
     return scale * coord + offset;
 }
 
-World::World(AAssetManager * asset_manager)
+World::World(AAssetManager * asset_manager, bool gravity_mode) : gravity_mode(gravity_mode)
 {
     LOG_DEBUG_WRITE("World::World", "World object created");
 
@@ -161,6 +163,7 @@ void World::resize(GLsizei width, GLsizei height)
 
 void World::render_balls()
 {
+    // triangle to render balls onto
     const std::vector<glm::vec2> verts =
     {
         {-0.5f * std::sqrt(3.0f), -0.5f},
@@ -235,12 +238,35 @@ bool World::render()
 
     render_balls();
 
+    float grav_angle = 0.0f;
+
+    if(gravity_mode)
+    {
+        // rotate text to be upright as the device is rotated
+        grav_angle = std::atan2(-grav_vec.x, grav_vec.y);
+
+        // snap to nearest pi / 2
+        if(grav_angle < -0.75f * pi)
+            grav_angle = -pi;
+        else if(grav_angle < -0.25f * pi)
+            grav_angle = -0.5f * pi;
+        else if(grav_angle < 0.25f * pi)
+            grav_angle = 0.0f;
+        else if(grav_angle < 0.75f * pi)
+            grav_angle = 0.5f * pi;
+        else
+            grav_angle = pi;
+    }
+
     for(auto & ball: balls)
     {
         while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
             ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
 
-        ball_texts[ball.get_size()].render_text(ball.get_text_color(), screen_size, text_coord_transform(ball.get_pos()), textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
+        ball_texts[ball.get_size()].render_text_rotate(ball.get_text_color(), screen_size,
+                                                       text_coord_transform(ball.get_pos()),
+                                                       grav_angle,
+                                                       textogl::ORIGIN_HORIZ_CENTER | textogl::ORIGIN_VERT_CENTER);
     }
 
     GL_CHECK_ERROR("World::render");
@@ -248,7 +274,7 @@ bool World::render()
     return !paused;
 }
 
-void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec)
+void World::physics_step(float dt, const glm::vec3 & grav_sensor_vec)
 {
     if(paused || state == State::LOSE)
         return;
@@ -260,10 +286,10 @@ void World::physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sen
 
         float grav_angle = std::atan2(grav_vec.x, -grav_vec.y);
         auto diff = std::abs(grav_angle - grav_ref_angle);
-        if(diff > M_PI)
-            diff = 2.0f * static_cast<float>(M_PI) - diff;
+        if(diff > pi)
+            diff = 2.0f * pi - diff;
 
-        if(diff > M_PI / 4.0f)
+        if(diff > pi / 4.0f)
         {
             grav_ref_angle = grav_angle;
             balls.emplace_back(win_size, ball_colors);

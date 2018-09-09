@@ -61,6 +61,7 @@ private:
     int score = 0;
     int next_achievement_size = 3;
 
+    bool gravity_mode = false;
     glm::vec2 grav_vec{0.0f};
     float grav_ref_angle = 0.0f;
 
@@ -89,7 +90,7 @@ private:
     void render_balls();
 
 public:
-    World(AAssetManager * asset_manager);
+    World(AAssetManager * asset_manager, bool gravity_mode);
     ~World();
     World(const World &) = delete;
     World(World &&) = default;
@@ -104,7 +105,7 @@ public:
     void unpause();
     void resize(GLsizei width, GLsizei height);
     bool render();
-    void physics_step(float dt, bool gravity_mode, const glm::vec3 & grav_sensor_vec);
+    void physics_step(float dt, const glm::vec3 & grav_sensor_vec);
 
     void fling(float x, float y);
 

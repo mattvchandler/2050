@@ -345,7 +345,7 @@ void Engine::physics_loop()
             }
         }
 
-        world.physics_step(dt, gravity_mode, grav_sensor_vec);
+        world.physics_step(dt, grav_sensor_vec);
 
         mutex.unlock();
         std::this_thread::sleep_until(frame_start_time + target_frametime);
@@ -367,7 +367,7 @@ void Engine::physics_loop()
 Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode):
         data_path(data_path),
         gravity_mode(gravity_mode),
-        world(asset_manager)
+        world(asset_manager, gravity_mode)
 {
     std::ifstream savefile(data_path + "/save.json");
     if(savefile)
