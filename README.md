@@ -11,7 +11,7 @@ combine like-numbered pieces into progressively larger ones, working toward
 Unlike the original, the pieces are free to move in any direction, bounce off of
 the walls and each other, are subject to gravity, and grow progressively larger.
 
-TODO: screenshot
+<img src="screenshots/scrn_landscape1.png" alt="gameplay screenshot" height=320/>
 
 ## Gameplay
 
@@ -23,12 +23,12 @@ has them). A new ball is generated each time you swipe (or press an arrow key)
 
 Alternatively, you can use your device's accelerometer (if it has one) to change
 gravity by rotating your device. In-game gravity will point toward real gravity
-(note: may not work correctly in space, other planets, free-fall, etc…)
+(note: may not work correctly in space, other planets, free-fall, etc...)
 New balls are generated as the device is turned more than a few degrees.
 
 Manipulate the direction of gravity to touch and merge balls of the same size /
 color / number together. For example, two '2' balls will make a '4' ball, two
-'4's make an '8' …
+'4's make an '8' ...
 
 You win once you achieve a '2048' ball, but you have the option to continue
 playing afterwards. Can you get to '4096'? It is possible. '8192'? I don't know
