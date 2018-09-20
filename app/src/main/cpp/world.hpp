@@ -36,10 +36,6 @@
 
 #include "ball.hpp"
 
-/* TODO:
- * screenshots for README
- */
-
 class World
 {
 private:
