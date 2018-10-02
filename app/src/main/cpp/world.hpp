@@ -101,7 +101,7 @@ public:
     void unpause();
     void resize(GLsizei width, GLsizei height);
     bool render();
-    void physics_step(float dt, const glm::vec3 & grav_sensor_vec);
+    void physics_step(float dt, const glm::vec2 & grav_sensor_vec);
 
     void fling(float x, float y);
 

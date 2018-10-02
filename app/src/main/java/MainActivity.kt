@@ -22,6 +22,7 @@ package org.mattvchandler.a2050
 
 import android.animation.ArgbEvaluator
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.AssetManager
@@ -70,7 +71,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
         @JvmStatic private external fun ballColorIndex(size: Int, num_colors: Int): Int
     }
 
-    private external fun create(assetManager: AssetManager, path: String, resources: Resources, gravity_mode: Boolean)
+    private external fun create(assetManager: AssetManager, path: String, resources: Resources, gravity_mode: Boolean, rotation: Int)
     private external fun resume()
     private external fun pause()
     private external fun stop()
@@ -98,7 +99,6 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main) ?: throw NullPointerException("Could not get binding")
 
         setSupportActionBar(binding.toolbar)
@@ -123,10 +123,11 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 supportActionBar?.show()
             else
                 supportActionBar?.hide()
-
         }
 
-        create(resources.assets, path, resources, gravity_mode)
+        val rotation = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation;
+
+        create(resources.assets, path, resources, gravity_mode, rotation)
     }
 
     override fun onResume()

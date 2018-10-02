@@ -339,9 +339,24 @@ void Engine::physics_loop()
             {
                 ASensorEvent sensorEvent;
                 ASensorEventQueue_getEvents(sensor_queue, &sensorEvent, 1);
-                grav_sensor_vec.x = sensorEvent.vector.x;
-                grav_sensor_vec.y = sensorEvent.vector.y;
-                grav_sensor_vec.z = sensorEvent.vector.z;
+                grav_sensor_vec.x =  sensorEvent.vector.x;
+                grav_sensor_vec.y = -sensorEvent.vector.y;
+
+                // reorient gravity to current screen rotation
+                switch(rotation)
+                {
+                case Rotation::ROTATION_0:
+                    break;
+                case Rotation::ROTATION_90:
+                    grav_sensor_vec = {grav_sensor_vec.y, -grav_sensor_vec.x};
+                    break;
+                case Rotation::ROTATION_180:
+                    grav_sensor_vec = {-grav_sensor_vec.x, -grav_sensor_vec.y};
+                    break;
+                case Rotation::ROTATION_270:
+                    grav_sensor_vec = {-grav_sensor_vec.y, grav_sensor_vec.x};
+                    break;
+                }
             }
         }
 
@@ -364,9 +379,10 @@ void Engine::physics_loop()
     LOG_DEBUG_WRITE("Engine::physics_loop", "end physics loop");
 }
 
-Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode):
+Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode, Rotation rotation):
         data_path(data_path),
         gravity_mode(gravity_mode),
+        rotation(rotation),
         world(asset_manager, gravity_mode)
 {
     std::ifstream savefile(data_path + "/save.json");

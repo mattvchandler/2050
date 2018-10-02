@@ -274,15 +274,14 @@ bool World::render()
     return !paused;
 }
 
-void World::physics_step(float dt, const glm::vec3 & grav_sensor_vec)
+void World::physics_step(float dt, const glm::vec2 & grav_sensor_vec)
 {
     if(paused || state == State::LOSE)
         return;
 
     if(gravity_mode)
     {
-        auto grav_vec_3 = -g * glm::normalize(grav_sensor_vec);
-        grav_vec = {grav_vec_3.y, grav_vec_3.x};
+        grav_vec = g * glm::normalize(grav_sensor_vec);
 
         float grav_angle = std::atan2(grav_vec.x, -grav_vec.y);
         auto diff = std::abs(grav_angle - grav_ref_angle);

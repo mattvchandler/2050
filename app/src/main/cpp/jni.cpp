@@ -273,7 +273,7 @@ bool first_run = true;
 
 extern "C"
 {
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local, jboolean gravity_mode)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local, jboolean gravity_mode, jint rotation)
 {
     if(engine)
         __android_log_assert("create called after engine initialized", "JNI", NULL);
@@ -282,7 +282,7 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 
     const char * data_path = env->GetStringUTFChars(path, NULL);
 
-    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, first_run, gravity_mode);
+    engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, first_run, gravity_mode, static_cast<Rotation>(rotation));
 
     first_run = false;
 

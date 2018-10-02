@@ -34,6 +34,9 @@
 
 #include "world.hpp"
 
+// Shadows android.View.Surface.ROTATION_*
+enum class Rotation: int{ROTATION_0, ROTATION_90, ROTATION_180, ROTATION_270};
+
 class Engine
 {
 private:
@@ -50,11 +53,12 @@ private:
     EGLConfig config;
 
     const bool gravity_mode = false;
+    const Rotation rotation = Rotation::ROTATION_0;
     ASensorManager * sensor_mgr;
     const ASensor * accelerometer_sensor;
     ASensorEventQueue * sensor_queue;
     const int sensor_ident = 1;
-    glm::vec3 grav_sensor_vec = glm::vec3(-1.0f, 0.0f, 0.0f);
+    glm::vec2 grav_sensor_vec {0.0f, -1.0f};
 
     std::thread render_thread;
     std::thread physics_thread;
@@ -74,7 +78,7 @@ private:
     void physics_loop();
 
 public:
-    Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode);
+    Engine(AAssetManager * asset_manager, const std::string & data_path, bool first_run, bool gravity_mode, Rotation rotation);
 
     void resume() noexcept;
     void pause() noexcept;
