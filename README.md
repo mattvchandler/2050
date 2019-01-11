@@ -46,8 +46,8 @@ pressure meter) the game is over.
 
 3rd party libraries (under 'libraries' dir):
 
-FreeType copyright © 2018 The FreeType Project ([www.freetype.org](www.freetype.org)) under the FreeType License
+FreeType copyright © 2019 The FreeType Project ([www.freetype.org](www.freetype.org)) under the FreeType License
 
-GLM copyright © 2018 G-Truc Creation ([http://glm.g-truc.net/](http://glm.g-truc.net/)) under the MIT License
+GLM copyright © 2019 G-Truc Creation ([http://glm.g-truc.net/](http://glm.g-truc.net/)) under the MIT License
 
-Textogl copyright © 2018 Matthew Chandler ([www.github.com/mattvchandler/textogl](www.github.com/mattvchandler/textogl)) under the MIT License
+Textogl copyright © 2019 Matthew Chandler ([www.github.com/mattvchandler/textogl](www.github.com/mattvchandler/textogl)) under the MIT License
