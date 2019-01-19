@@ -88,7 +88,7 @@ void World::init()
                                               std::vector<std::string>{"vert_pos", "ball_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
     ball_vbo->bind();
-    glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), nullptr, GL_DYNAMIC_DRAW);
 
     // font sizes don't matter yet b/c resize should be called immediately after init
     font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
@@ -146,7 +146,7 @@ void World::resize(GLsizei width, GLsizei height)
     auto new_text_size = static_cast<int>(scale_factor * initial_text_size);
     LOG_DEBUG_PRINT("World::resize", "font resized from %d to %d", text_size, new_text_size);
     text_size = new_text_size;
-    font->resize(text_size);
+    font->resize(static_cast<unsigned int>(text_size));
     for(auto & t: ball_texts)
         t.set_font_sys(*font);
 
@@ -219,10 +219,10 @@ void World::render_balls()
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(ball_data)::value_type)));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(ball_data)::value_type)));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(4 * sizeof(decltype(ball_data)::value_type)));
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, num_ball_attrs * sizeof(decltype(ball_data)::value_type), reinterpret_cast<GLvoid *>(5 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(num_ball_attrs * sizeof(decltype(ball_data)::value_type)), reinterpret_cast<GLvoid *>(0 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(num_ball_attrs * sizeof(decltype(ball_data)::value_type)), reinterpret_cast<GLvoid *>(2 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(num_ball_attrs * sizeof(decltype(ball_data)::value_type)), reinterpret_cast<GLvoid *>(4 * sizeof(decltype(ball_data)::value_type)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(num_ball_attrs * sizeof(decltype(ball_data)::value_type)), reinterpret_cast<GLvoid *>(5 * sizeof(decltype(ball_data)::value_type)));
 
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(std::size(balls) * std::size(verts)));
 
@@ -261,7 +261,7 @@ bool World::render()
     for(auto & ball: balls)
     {
         while(ball.get_size() >= static_cast<std::size_t>(std::size(ball_texts)))
-            ball_texts.emplace_back(*font, std::to_string(1 << std::size(ball_texts)));
+            ball_texts.emplace_back(*font, std::to_string(1u << std::size(ball_texts)));
 
         ball_texts[ball.get_size()].render_text_rotate(ball.get_text_color(), screen_size,
                                                        text_coord_transform(ball.get_pos()),
@@ -317,7 +317,7 @@ void World::physics_step(float dt, const glm::vec2 & grav_sensor_vec)
                 if(collision.merged)
                 {
                     other = std::prev(balls.erase(other));
-                    score += 1 << (ball->get_size());
+                    score += 1u << static_cast<unsigned int>(ball->get_size());
                     high_score = std::max(high_score, score);
                     if(ball->get_size() >= next_achievement_size)
                     {

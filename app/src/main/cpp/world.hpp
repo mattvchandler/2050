@@ -39,16 +39,16 @@
 class World
 {
 private:
-    const float win_size = 512.0f;
-    const std::size_t num_starting_balls = 2;
+    constexpr static float win_size = 512.0f;
+    constexpr static std::size_t num_starting_balls = 2;
     std::list<Ball> balls;
     std::deque<float> last_compressions = std::deque<float>(100, 0.0f);
     float med_compression;
 
     // physics constants
-    const float g = -200.0f; // free-fall gravitational acceleration
-    const float e = 0.5f; // coefficient of collision restitution
-    const float wall_damp = 0.9f; // % velocity lost when colliding with a wall
+    constexpr static float g = -200.0f; // free-fall gravitational acceleration
+    constexpr static float e = 0.5f; // coefficient of collision restitution
+    constexpr static float wall_damp = 0.9f; // % velocity lost when colliding with a wall
 
     enum class State {ONGOING, LOSE, EXTENDED} state = State::ONGOING;
     bool paused = false;
@@ -67,13 +67,14 @@ private:
     std::unique_ptr<Shader_prog> ball_prog;
     std::unique_ptr<GL_buffer> ball_vbo;
 
-    const std::size_t num_ball_attrs = 8;
+    constexpr static std::size_t num_ball_attrs = 8;
     std::vector<float> ball_data = std::vector<float>(64 * num_ball_attrs * 3); // scratch buffer for ball data
 
     AAsset * font_asset = nullptr;
     AAsset * vert_shader_asset = nullptr;
     AAsset * frag_shader_asset = nullptr;
-    const int initial_text_size = 14;
+
+    constexpr static int initial_text_size = 14;
     int text_size = initial_text_size;
     std::unique_ptr<textogl::Font_sys> font;
     std::vector<textogl::Static_text> ball_texts;

@@ -47,8 +47,8 @@ public:
 
     Shader_prog(const Shader_prog &) = delete;
     Shader_prog & operator=(const Shader_prog &) = delete;
-    Shader_prog(Shader_prog && other);
-    Shader_prog & operator=(Shader_prog && other);
+    Shader_prog(Shader_prog && other) noexcept;
+    Shader_prog & operator=(Shader_prog && other) noexcept;
 
     void use() const;
     GLint get_uniform(const std::string & uniform) const;
@@ -62,8 +62,8 @@ public:
         ~Shader_obj();
         Shader_obj(const Shader_obj &) = delete;
         Shader_obj & operator=(const Shader_obj &) = delete;
-        Shader_obj(Shader_obj && other);
-        Shader_obj & operator=(Shader_obj && other);
+        Shader_obj(Shader_obj && other) noexcept;
+        Shader_obj & operator=(Shader_obj && other) noexcept;
         GLuint get_id() const;
     };
 };
@@ -74,12 +74,12 @@ private:
     GLuint id;
     GLenum type;
 public:
-    GL_buffer(GLenum type);
+    explicit GL_buffer(GLenum type);
     ~GL_buffer();
     GL_buffer(const GL_buffer &) = delete;
     GL_buffer & operator=(const GL_buffer &) = delete;
-    GL_buffer(GL_buffer && other);
-    GL_buffer & operator=(GL_buffer && other);
+    GL_buffer(GL_buffer && other) noexcept;
+    GL_buffer & operator=(GL_buffer && other) noexcept;
 
     GLuint get_id() const;
     void bind() const;

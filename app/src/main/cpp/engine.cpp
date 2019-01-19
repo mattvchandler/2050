@@ -87,7 +87,7 @@ bool Engine::init_egl()
         return false;
     }
 
-    if(!eglInitialize(display, NULL, NULL))
+    if(!eglInitialize(display, nullptr, nullptr))
     {
         LOG_ERROR_PRINT("Engine::init_egl", "eglGetInitialize error: %s", eglGetErrorString(eglGetError()));
         return false;
@@ -110,7 +110,7 @@ bool Engine::init_surface()
 
     ANativeWindow_setBuffersGeometry(win, 0, 0, native_visual_id);
 
-    surface = eglCreateWindowSurface(display, config, win, NULL);
+    surface = eglCreateWindowSurface(display, config, win, nullptr);
     if(surface == EGL_NO_SURFACE)
     {
         LOG_ERROR_PRINT("Engine::init_surface", "eglCreateWindowSurface error: %s", eglGetErrorString(eglGetError()));
@@ -309,14 +309,14 @@ void Engine::physics_loop()
 
     if(gravity_mode)
     {
-        sensor_queue = ASensorManager_createEventQueue(sensor_mgr, ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS), sensor_ident, NULL, NULL);
+        sensor_queue = ASensorManager_createEventQueue(sensor_mgr, ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS), sensor_ident, nullptr, nullptr);
         if(!sensor_queue)
-            __android_log_assert("Could not prepare queue for gravity sensor", "Engine::physics_loop", NULL);
+            __android_log_assert("Could not prepare queue for gravity sensor", "Engine::physics_loop", nullptr);
 
         accelerometer_sensor = ASensorManager_getDefaultSensor(sensor_mgr, ASENSOR_TYPE_ACCELEROMETER);
 
         if(!accelerometer_sensor)
-            __android_log_assert("Could not get Accelerometer Sensor", "Engine::physics_loop", NULL);
+            __android_log_assert("Could not get Accelerometer Sensor", "Engine::physics_loop", nullptr);
 
         ASensorEventQueue_enableSensor(sensor_queue, accelerometer_sensor);
     }
@@ -334,7 +334,7 @@ void Engine::physics_loop()
 
         if(gravity_mode)
         {
-            int ident = ALooper_pollOnce(0, NULL, NULL, NULL);
+            int ident = ALooper_pollOnce(0, nullptr, nullptr, nullptr);
             if(ident == sensor_ident)
             {
                 ASensorEvent sensorEvent;
@@ -369,11 +369,10 @@ void Engine::physics_loop()
     if(gravity_mode)
     {
         if(ASensorEventQueue_disableSensor(sensor_queue, accelerometer_sensor) != 0)
-            __android_log_assert("Could not disable gravity sensor", "Engine::physics_loop", NULL);
+            __android_log_assert("Could not disable gravity sensor", "Engine::physics_loop", nullptr);
 
         if(ASensorManager_destroyEventQueue(sensor_mgr, sensor_queue) != 0)
-            __android_log_assert("Could not destroy gravity sensor queue", "Engine::physics_loop",
-                                 NULL);
+            __android_log_assert("Could not destroy gravity sensor queue", "Engine::physics_loop", nullptr);
     }
 
     LOG_DEBUG_WRITE("Engine::physics_loop", "end physics loop");
@@ -399,7 +398,7 @@ Engine::Engine(AAssetManager * asset_manager, const std::string & data_path, boo
     sensor_mgr = ASensorManager_getInstance();
 #endif
     if(!sensor_mgr)
-        __android_log_assert("Could not get ASensorManager", "Engine::Engine", NULL);
+        __android_log_assert("Could not get ASensorManager", "Engine::Engine", nullptr);
 }
 
 void Engine::resume() noexcept
@@ -416,9 +415,17 @@ void Engine::pause() noexcept
 }
 void Engine::stop() noexcept
 {
-    std::ofstream savefile(data_path + "/save.json");
-    savefile<<world.serialize();
-    LOG_DEBUG_WRITE("Engine::stop", "saved data");
+    try
+    {
+        std::ofstream savefile(data_path + "/save.json");
+        savefile<<world.serialize();
+
+        LOG_DEBUG_WRITE("Engine::stop", "saved data");
+    }
+    catch(nlohmann::json::type_error & e)
+    {
+        LOG_ERROR_PRINT("Engine::stop", "could not serialize data: %s", e.what());
+    }
 }
 void Engine::set_focus(bool focus) noexcept
 {

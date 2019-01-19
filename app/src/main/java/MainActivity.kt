@@ -125,7 +125,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 supportActionBar?.hide()
         }
 
-        val rotation = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation;
+        val rotation = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
         create(resources.assets, path, resources, gravity_mode, rotation)
     }

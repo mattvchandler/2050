@@ -81,7 +81,7 @@ Shader_prog::Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> 
         GLint log_length;
         glGetProgramiv(id, GL_INFO_LOG_LENGTH, &log_length);
         std::string log(log_length, '\0');
-        glGetProgramInfoLog(id, log_length, NULL, std::data(log));
+        glGetProgramInfoLog(id, log_length, nullptr, std::data(log));
 
         glDeleteProgram(id);
         id = 0;
@@ -96,16 +96,16 @@ Shader_prog::Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> 
     glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &num_uniforms);
     glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_buff_size);
 
-    std::string uniform(max_buff_size, '\0');
+    std::vector<char> uniform(static_cast<std::size_t>(max_buff_size), '\0');
 
     for(GLuint i = 0; i < static_cast<GLuint>(num_uniforms); ++i)
     {
         GLint size; GLenum type;
-        glGetActiveUniform(id, i, static_cast<GLint>(uniform.size()), NULL, &size, &type, uniform.data());
+        glGetActiveUniform(id, i, static_cast<GLint>(uniform.size()), nullptr, &size, &type, std::data(uniform));
 
-        GLint loc = glGetUniformLocation(id, uniform.c_str());
+        GLint loc = glGetUniformLocation(id, std::data(uniform));
         if(loc != -1)
-            uniforms[uniform.c_str()] = loc;
+            uniforms.emplace(std::string(std::data(uniform)), loc);
     }
 }
 Shader_prog::~Shader_prog()
@@ -113,11 +113,12 @@ Shader_prog::~Shader_prog()
     if(id)
         glDeleteProgram(id);
 }
-Shader_prog::Shader_prog(Shader_prog && other): id(other.id) { other.id = 0; };
-Shader_prog & Shader_prog::operator=(Shader_prog && other)
+Shader_prog::Shader_prog(Shader_prog && other) noexcept : uniforms(std::move(other.uniforms)), id(other.id) { other.id = 0; }
+Shader_prog & Shader_prog::operator=(Shader_prog && other) noexcept
 {
     if(this != &other)
     {
+        uniforms = std::move(other.uniforms);
         id = other.id;
         other.id = 0;
     }
@@ -155,7 +156,7 @@ Shader_prog::Shader_obj::Shader_obj(const std::string_view & src, GLenum type)
         GLint log_length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_length);
         std::string log(log_length, '\0');
-        glGetShaderInfoLog(id, log_length, NULL, std::data(log));
+        glGetShaderInfoLog(id, log_length, nullptr, std::data(log));
 
         glDeleteShader(id);
         id = 0;
@@ -169,8 +170,8 @@ Shader_prog::Shader_obj::~Shader_obj()
     if(id)
         glDeleteShader(id);
 }
-Shader_prog::Shader_obj::Shader_obj(Shader_obj && other): id(other.id) { other.id = 0; };
-Shader_prog::Shader_obj & Shader_prog::Shader_obj::operator=(Shader_obj && other)
+Shader_prog::Shader_obj::Shader_obj(Shader_obj && other) noexcept : id(other.id) { other.id = 0; };
+Shader_prog::Shader_obj & Shader_prog::Shader_obj::operator=(Shader_obj && other) noexcept
 {
     if(this != &other)
     {
@@ -188,8 +189,8 @@ GL_buffer::~GL_buffer()
     if(id)
         glDeleteBuffers(1, &id);
 }
-GL_buffer::GL_buffer(GL_buffer && other): id(other.id) { other.id = 0; };
-GL_buffer & GL_buffer::operator=(GL_buffer && other)
+GL_buffer::GL_buffer(GL_buffer && other) noexcept : id(other.id) { other.id = 0; };
+GL_buffer & GL_buffer::operator=(GL_buffer && other) noexcept
 {
     if(this != &other)
     {

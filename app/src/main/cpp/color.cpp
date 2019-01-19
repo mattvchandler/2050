@@ -25,10 +25,10 @@ glm::vec4 color_int_to_vec(const int color) noexcept
 {
     return
             {
-                    static_cast<float>((color >> 16) & 0xFF) / 255.0f, // R
-                    static_cast<float>((color >>  8) & 0xFF) / 255.0f, // G
-                    static_cast<float>((color)       & 0xFF) / 255.0f, // B
-                    static_cast<float>((color >> 24) & 0xFF) / 255.0f  // A
+                static_cast<float>((static_cast<unsigned int>(color) >> 16u) & 0xFFu) / 255.0f, // R
+                static_cast<float>((static_cast<unsigned int>(color) >>  8u) & 0xFFu) / 255.0f, // G
+                static_cast<float>((static_cast<unsigned int>(color))        & 0xFFu) / 255.0f, // B
+                static_cast<float>((static_cast<unsigned int>(color) >> 24u) & 0xFFu) / 255.0f  // A
             };
 }
 
@@ -36,10 +36,10 @@ glm::vec4 color_int_to_vec(const int color) noexcept
 int color_vec_to_int(const glm::vec4 & color) noexcept
 {
     return
-            (static_cast<unsigned int>(color.a * 255.0f) & 0xFF) << 24 | // A
-                    (static_cast<unsigned int>(color.r * 255.0f) & 0xFF) << 16 | // R
-                    (static_cast<unsigned int>(color.g * 255.0f) & 0xFF) <<  8 | // G
-                    (static_cast<unsigned int>(color.b * 255.0f) & 0xFF);        // B
+            (static_cast<unsigned int>(color.a * 255.0f) & 0xFFu) << 24u | // A
+            (static_cast<unsigned int>(color.r * 255.0f) & 0xFFu) << 16u | // R
+            (static_cast<unsigned int>(color.g * 255.0f) & 0xFFu) <<  8u | // G
+            (static_cast<unsigned int>(color.b * 255.0f) & 0xFFu);         // B
 }
 
 // get black or white color, depending on which has more contrast w/ passed color

@@ -43,91 +43,91 @@ struct JVM_refs
     void init(JNIEnv * env, jobject activity, jobject resources_local) noexcept
     {
         if(env->GetJavaVM(&vm) != 0)
-            __android_log_assert("Couldn't get java VM", "JNI", NULL);
+            __android_log_assert("Couldn't get java VM", "JNI", nullptr);
 
         // get game win / game over methods
         main_activity = env->NewGlobalRef(activity);
         if(!main_activity)
-            __android_log_assert("Couldn't get activity global ref", "JNI", NULL);
+            __android_log_assert("Couldn't get activity global ref", "JNI", nullptr);
 
         jclass main_activity_class = env->GetObjectClass(main_activity);
         if(!main_activity_class)
-            __android_log_assert("Couldn't get 'MainActivity' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'MainActivity' class", "JNI", nullptr);
 
         game_win_method = env->GetMethodID(main_activity_class, "game_win", "(IZ)V");
         if(!game_win_method)
-            __android_log_assert("Couldn't get 'game_win' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'game_win' method", "JNI", nullptr);
 
         game_over_method = env->GetMethodID(main_activity_class, "game_over", "(IZ)V");
         if(!game_over_method)
-            __android_log_assert("Couldn't get 'game_over' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'game_over' method", "JNI", nullptr);
 
         achievement_method = env->GetMethodID(main_activity_class, "achievement", "(I)V");
         if(!achievement_method)
-            __android_log_assert("Couldn't get 'achievement' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'achievement' method", "JNI", nullptr);
 
         // get Resource classes and methods
         resources = env->NewGlobalRef(resources_local);
         if(!resources)
-            __android_log_assert("Couldn't get resources global ref", "JNI", NULL);
+            __android_log_assert("Couldn't get resources global ref", "JNI", nullptr);
 
         get_int_array_method = env->GetMethodID(env->GetObjectClass(resources), "getIntArray", "(I)[I");
         if(!get_int_array_method)
-            __android_log_assert("Couldn't get 'get_int_array' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'get_int_array' method", "JNI", nullptr);
 
         jclass R_array_local = env->FindClass("org/mattvchandler/a2050/R$array");
         if(!R_array_local)
-            __android_log_assert("Couldn't get 'R.array' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'R.array' class", "JNI", nullptr);
 
-        R_array = static_cast<jclass>(env->NewGlobalRef(R_array_local));
+        R_array = reinterpret_cast<jclass>(env->NewGlobalRef(R_array_local));
         if(!R_array)
-            __android_log_assert("Couldn't get 'R.array' global ref", "JNI", NULL);
+            __android_log_assert("Couldn't get 'R.array' global ref", "JNI", nullptr);
 
         jclass R_color_local = env->FindClass("org/mattvchandler/a2050/R$color");
         if(!R_color_local)
-            __android_log_assert("Couldn't get 'R.color' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'R.color' class", "JNI", nullptr);
 
-        R_color = static_cast<jclass>(env->NewGlobalRef(R_color_local));
+        R_color = reinterpret_cast<jclass>(env->NewGlobalRef(R_color_local));
         if(!R_color)
-            __android_log_assert("Couldn't get 'R.color' global ref", "JNI", NULL);
+            __android_log_assert("Couldn't get 'R.color' global ref", "JNI", nullptr);
 
         jclass context_compat_local = env->FindClass("android/support/v4/content/ContextCompat");
         if(!context_compat_local)
-            __android_log_assert("Couldn't get 'android.support.v4.content.ContextCompat' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'android.support.v4.content.ContextCompat' class", "JNI", nullptr);
 
-        context_compat = static_cast<jclass>(env->NewGlobalRef(context_compat_local));
+        context_compat = reinterpret_cast<jclass>(env->NewGlobalRef(context_compat_local));
         if(!context_compat)
-            __android_log_assert("Couldn't get 'contextCompat' global ref", "JNI", NULL);
+            __android_log_assert("Couldn't get 'contextCompat' global ref", "JNI", nullptr);
 
         get_color_method = env->GetStaticMethodID(context_compat_local, "getColor", "(Landroid/content/Context;I)I");
         if(!get_color_method)
-            __android_log_assert("Couldn't get 'ContextCompat.getColor' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ContextCompat.getColor' method", "JNI", nullptr);
 
         // get DispData class fields, and set methods for each
         jclass observable_int = env->FindClass("android/databinding/ObservableInt");
         if(!observable_int)
-            __android_log_assert("Couldn't get 'ObservableInt' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ObservableInt' class", "JNI", nullptr);
 
         set_int = env->GetMethodID(observable_int, "set", "(I)V");
         if(!set_int)
-            __android_log_assert("Couldn't get 'ObservableInt.set' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ObservableInt.set' method", "JNI", nullptr);
 
         jclass observable_float = env->FindClass("android/databinding/ObservableFloat");
         if(!observable_float)
-            __android_log_assert("Couldn't get 'ObservableFloat' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ObservableFloat' class", "JNI", nullptr);
 
         set_float = env->GetMethodID(observable_float, "set", "(F)V");
         if(!set_float)
-            __android_log_assert("Couldn't get 'ObservableFloat.set' method", "JNI", NULL);
+            __android_log_assert("Couldn't get 'ObservableFloat.set' method", "JNI", nullptr);
 
         jclass DispData = env->FindClass("org/mattvchandler/a2050/MainActivity$DispData");
         if(!DispData)
-            __android_log_assert("Couldn't get 'DispData' class", "JNI", NULL);
+            __android_log_assert("Couldn't get 'DispData' class", "JNI", nullptr);
 
 #define X(type, method, name) \
             name = env->GetFieldID(DispData, #name, "Landroid/databinding/" #type ";");\
             if(!name)\
-                __android_log_assert("Couldn't get '" #name "' field", "JNI", NULL);
+                __android_log_assert("Couldn't get '" #name "' field", "JNI", nullptr);
         DISP_DATA_FIELDS
 #undef X
     }
@@ -192,12 +192,12 @@ public:
     Java_thread_env()
     {
         if(!jvm_refs.vm)
-            __android_log_assert("VM not initialized", "JNI::Java_thread_env", NULL);
+            __android_log_assert("VM not initialized", "JNI::Java_thread_env", nullptr);
 
         if(jvm_refs.vm->GetEnv((void **)&env, JNI_VERSION_1_6) == JNI_OK)
             attached = true;
-        else if(jvm_refs.vm->AttachCurrentThread(&env, NULL) != JNI_OK)
-            __android_log_assert("could not attach thread!", "JNI::Java_thread_env", NULL);
+        else if(jvm_refs.vm->AttachCurrentThread(&env, nullptr) != JNI_OK)
+            __android_log_assert("could not attach thread!", "JNI::Java_thread_env", nullptr);
     }
     ~Java_thread_env()
     {
@@ -243,8 +243,8 @@ std::vector<int> get_res_int_array(const std::string & id)
 
     int array_id = env->GetStaticIntField(jvm_refs.R_array, id_field);
 
-    jintArray j_arr = static_cast<jintArray>(env->CallObjectMethod(jvm_refs.resources, jvm_refs.get_int_array_method, array_id));
-    int * c_arr = env->GetIntArrayElements(j_arr, NULL);
+    auto j_arr = reinterpret_cast<jintArray>(env->CallObjectMethod(jvm_refs.resources, jvm_refs.get_int_array_method, array_id));
+    int * c_arr = env->GetIntArrayElements(j_arr, nullptr);
     jsize c_arr_size = env->GetArrayLength(j_arr);
 
     std::vector<int> ret(c_arr, c_arr + c_arr_size);
@@ -276,11 +276,11 @@ extern "C"
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv * env, jobject activity, jobject assetManager, jstring path, jobject resources_local, jboolean gravity_mode, jint rotation)
 {
     if(engine)
-        __android_log_assert("create called after engine initialized", "JNI", NULL);
+        __android_log_assert("create called after engine initialized", "JNI", nullptr);
 
     jvm_refs.init(env, activity, resources_local);
 
-    const char * data_path = env->GetStringUTFChars(path, NULL);
+    const char * data_path = env->GetStringUTFChars(path, nullptr);
 
     engine = std::make_unique<Engine>(AAssetManager_fromJava(env, assetManager), data_path, first_run, gravity_mode, static_cast<Rotation>(rotation));
 
@@ -292,14 +292,14 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_create(JNIEnv *
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_resume(JNIEnv *, jobject)
 {
     if(!engine)
-        __android_log_assert("resume called before engine initialized", "JNI", NULL);
+        __android_log_assert("resume called before engine initialized", "JNI", nullptr);
 
     engine->resume();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *, jobject)
 {
     if(!engine)
-        __android_log_assert("pause called before engine initialized", "JNI", NULL);
+        __android_log_assert("pause called before engine initialized", "JNI", nullptr);
 
     engine->pause();
 }
@@ -307,29 +307,29 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pause(JNIEnv *,
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_stop(JNIEnv *, jobject)
 {
     if(!engine)
-        __android_log_assert("stop called before engine initialized", "JNI", NULL);
+        __android_log_assert("stop called before engine initialized", "JNI", nullptr);
     engine->stop();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_destroy(JNIEnv * env, jobject)
 {
     if(!engine)
-        __android_log_assert("destroy called before engine initialized", "JNI", NULL);
+        __android_log_assert("destroy called before engine initialized", "JNI", nullptr);
     engine.reset();
 
     jvm_refs.destroy(env);
 }
 
-JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv * env, jobject, jboolean has_focus)
+JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_focus(JNIEnv *, jobject, jboolean has_focus)
 {
     if(!engine)
-        __android_log_assert("focus called before engine initialized", "JNI", NULL);
+        __android_log_assert("focus called before engine initialized", "JNI", nullptr);
     engine->set_focus(has_focus);
 }
 
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(JNIEnv * env, jobject, jobject surface)
 {
     if(!engine)
-        __android_log_assert("surfaceChanged called before engine initialized", "JNI", NULL);
+        __android_log_assert("surfaceChanged called before engine initialized", "JNI", nullptr);
     if(surface)
         engine->surface_changed(ANativeWindow_fromSurface(env, surface));
     else
@@ -339,25 +339,25 @@ JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_surfaceChanged(
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_fling(JNIEnv *, jobject, jfloat x, jfloat y)
 {
     if(!engine)
-        __android_log_assert("fling called before engine initialized", "JNI", NULL);
+        __android_log_assert("fling called before engine initialized", "JNI", nullptr);
     engine->fling(x, y);
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_newGame(JNIEnv *, jobject)
 {
     if(!engine)
-        __android_log_assert("newGame called before engine initialized", "JNI", NULL);
+        __android_log_assert("newGame called before engine initialized", "JNI", nullptr);
     engine->new_game();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_pauseGame(JNIEnv *, jobject)
 {
     if(!engine)
-        __android_log_assert("pauseGame called before engine initialized", "JNI", NULL);
+        __android_log_assert("pauseGame called before engine initialized", "JNI", nullptr);
     engine->pause_game();
 }
 JNIEXPORT void JNICALL Java_org_mattvchandler_a2050_MainActivity_getUIData(JNIEnv * env, jobject, jobject dispdata)
 {
     if(!engine)
-        __android_log_assert("getUIData called before engine initialized", "JNI", NULL);
+        __android_log_assert("getUIData called before engine initialized", "JNI", nullptr);
 
     auto data = engine->get_ui_data();
 #define X(type, method, name) \

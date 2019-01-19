@@ -26,7 +26,7 @@
 #include <glm/glm.hpp>
 
 // convert 0xAARRGGBB to {R,G,B,A}
-glm::vec4 color_int_to_vec(const int color) noexcept;
+glm::vec4 color_int_to_vec(int color) noexcept;
 
 // convert {R, G, B, A} to 0xAARRGGBB
 int color_vec_to_int(const glm::vec4 & color) noexcept;
