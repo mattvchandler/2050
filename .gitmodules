@@ -1,0 +1,12 @@
+[submodule "libraries/freetype"]
+	path = libraries/freetype
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
+[submodule "libraries/glm"]
+	path = libraries/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "libraries/json"]
+	path = libraries/json
+	url = https://github.com/nlohmann/json.git
+[submodule "libraries/textogl"]
+	path = libraries/textogl
+	url = https://github.com/mattvchandler/textogl.git
