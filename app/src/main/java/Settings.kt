@@ -23,19 +23,20 @@ package org.mattvchandler.a2050
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat
-import android.support.v7.preference.PreferenceFragmentCompat
+import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceFragmentCompat
 import android.view.MenuItem
 import android.Manifest
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.app.Dialog
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.DialogFragment
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.DialogFragment
+import androidx.preference.Preference
 import org.mattvchandler.a2050.databinding.ActivitySettingsBinding
 import java.util.*
 
@@ -50,9 +51,9 @@ class Settings: Themed_activity()
 
             if(!has_accelerometer)
             {
-                val grav_pref = preferenceScreen.findPreference("gravity")
-                grav_pref.isEnabled = false
-                grav_pref.setSummary(R.string.no_accel)
+                val grav_pref = preferenceScreen.findPreference<Preference>("gravity")
+                grav_pref?.isEnabled = false
+                grav_pref?.setSummary(R.string.no_accel)
             }
         }
 
@@ -84,7 +85,7 @@ class Settings: Themed_activity()
                             class Location_frag: DialogFragment()
                             {
                                 override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-                                        AlertDialog.Builder(activity)
+                                        AlertDialog.Builder(context!!)
                                             .setTitle(R.string.loc_perm_title)
                                             .setMessage(R.string.loc_perm_msg)
                                             .setPositiveButton(android.R.string.ok) { _, _ -> ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)}

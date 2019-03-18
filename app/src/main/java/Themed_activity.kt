@@ -22,8 +22,8 @@ package org.mattvchandler.a2050
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 
 abstract class Themed_activity: AppCompatActivity()
 {
@@ -39,6 +39,7 @@ abstract class Themed_activity: AppCompatActivity()
             resources.getString(R.string.theme_values_day)    -> night_mode = AppCompatDelegate.MODE_NIGHT_NO
             resources.getString(R.string.theme_values_night)  -> night_mode = AppCompatDelegate.MODE_NIGHT_YES
             resources.getString(R.string.theme_values_auto)   -> night_mode = AppCompatDelegate.MODE_NIGHT_AUTO
+            resources.getString(R.string.theme_values_auto_batt)   -> night_mode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
         }
         AppCompatDelegate.setDefaultNightMode(night_mode)
 

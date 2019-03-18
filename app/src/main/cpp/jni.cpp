@@ -91,9 +91,9 @@ struct JVM_refs
         if(!R_color)
             __android_log_assert("Couldn't get 'R.color' global ref", "JNI", nullptr);
 
-        jclass context_compat_local = env->FindClass("android/support/v4/content/ContextCompat");
+        jclass context_compat_local = env->FindClass("androidx/core/content/ContextCompat");
         if(!context_compat_local)
-            __android_log_assert("Couldn't get 'android.support.v4.content.ContextCompat' class", "JNI", nullptr);
+            __android_log_assert("Couldn't get 'androidx.core.content.ContextCompat' class", "JNI", nullptr);
 
         context_compat = reinterpret_cast<jclass>(env->NewGlobalRef(context_compat_local));
         if(!context_compat)
@@ -104,7 +104,7 @@ struct JVM_refs
             __android_log_assert("Couldn't get 'ContextCompat.getColor' method", "JNI", nullptr);
 
         // get DispData class fields, and set methods for each
-        jclass observable_int = env->FindClass("android/databinding/ObservableInt");
+        jclass observable_int = env->FindClass("androidx/databinding/ObservableInt");
         if(!observable_int)
             __android_log_assert("Couldn't get 'ObservableInt' class", "JNI", nullptr);
 
@@ -112,7 +112,7 @@ struct JVM_refs
         if(!set_int)
             __android_log_assert("Couldn't get 'ObservableInt.set' method", "JNI", nullptr);
 
-        jclass observable_float = env->FindClass("android/databinding/ObservableFloat");
+        jclass observable_float = env->FindClass("androidx/databinding/ObservableFloat");
         if(!observable_float)
             __android_log_assert("Couldn't get 'ObservableFloat' class", "JNI", nullptr);
 
@@ -125,7 +125,7 @@ struct JVM_refs
             __android_log_assert("Couldn't get 'DispData' class", "JNI", nullptr);
 
 #define X(type, method, name) \
-            name = env->GetFieldID(DispData, #name, "Landroid/databinding/" #type ";");\
+            name = env->GetFieldID(DispData, #name, "Landroidx/databinding/" #type ";");\
             if(!name)\
                 __android_log_assert("Couldn't get '" #name "' field", "JNI", nullptr);
         DISP_DATA_FIELDS
