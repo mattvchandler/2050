@@ -21,12 +21,12 @@
 package org.mattvchandler.a2050
 
 import android.app.Dialog
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.appcompat.app.AlertDialog
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import org.mattvchandler.a2050.databinding.AboutDialogBinding
 
 class About_dialog: DialogFragment()

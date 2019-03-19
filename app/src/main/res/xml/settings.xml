@@ -31,7 +31,6 @@ SOFTWARE.
     <ListPreference
         android:key="theme"
         android:title="@string/theme_title"
-        android:summary="%s"
         android:entries="@array/theme_settings"
         android:entryValues="@array/theme_values"
         android:defaultValue="@string/theme_values_default"

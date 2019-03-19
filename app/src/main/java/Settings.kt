@@ -20,23 +20,24 @@
 
 package org.mattvchandler.a2050
 
+import android.Manifest
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.databinding.DataBindingUtil
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.preference.PreferenceManager
-import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceFragmentCompat
 import android.view.MenuItem
-import android.Manifest
 import androidx.appcompat.app.AlertDialog
-import android.app.Dialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.preference.ListPreference
 import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import org.mattvchandler.a2050.databinding.ActivitySettingsBinding
 import java.util.*
 
@@ -55,6 +56,8 @@ class Settings: Themed_activity()
                 grav_pref?.isEnabled = false
                 grav_pref?.setSummary(R.string.no_accel)
             }
+
+            findPreference<ListPreference>("theme")?.summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
         }
 
         // register / unregister listener
