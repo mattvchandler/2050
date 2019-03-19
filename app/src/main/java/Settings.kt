@@ -30,6 +30,7 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -114,7 +115,7 @@ class Settings: Themed_activity()
         super.onCreate(savedInstanceState)
 
         val binding = DataBindingUtil.setContentView<ActivitySettingsBinding>(this, R.layout.activity_settings)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // put settings content into frame layout

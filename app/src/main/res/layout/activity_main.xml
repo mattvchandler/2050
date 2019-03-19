@@ -25,34 +25,32 @@ SOFTWARE.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.mattvchandler.a2050.MainActivity"
     >
 
     <data>
         <import type="org.mattvchandler.a2050.MainActivity.DispData"/>
         <variable name="data" type="DispData"/>
     </data>
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-    >
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            tools:ignore="UnusedAttribute"
-            android:elevation="4dp"
+        >
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        />
+            >
+            <include
+                layout="@layout/toolbar"
+                android:id="@+id/toolbar"
+                />
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
-
             <TextView
                 android:id="@+id/high_score"
                 android:text="@{@string/high_score(data.high_score)}"
@@ -159,5 +157,5 @@ SOFTWARE.
                 app:layout_constraintRight_toRightOf="parent"
             />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
