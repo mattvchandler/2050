@@ -31,14 +31,14 @@
     public <fields>;
 }
 
--keepclasseswithmembers class android.databinding.ObservableInt {
+-keepclasseswithmembers class androidx.databinding.ObservableInt {
     void set(int);
 }
--keepclasseswithmembers class android.databinding.ObservableFloat {
+-keepclasseswithmembers class androidx.databinding.ObservableFloat {
     void set(float);
 }
 
--keepclasseswithmembers class android.support.v4.content.ContextCompat {
+-keepclasseswithmembers class androidx.core.content.ContextCompat {
     int getColor(android.content.Context, int);
 }
 -keepclasseswithmembers class org.mattvchandler.a2050.R$array {
