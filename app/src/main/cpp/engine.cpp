@@ -426,6 +426,10 @@ void Engine::stop() noexcept
     {
         LOG_ERROR_PRINT("Engine::stop", "could not serialize data: %s", e.what());
     }
+    catch(...)
+    {
+        LOG_ERROR_WRITE("Engine::stop", "unknown exception when opening savefile");
+    }
 }
 void Engine::set_focus(bool focus) noexcept
 {

@@ -386,7 +386,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
             R.id.help ->
             {
-                val toast_delay = 4000L; // ms
+                val toast_delay = 4000L // ms
                 Toast.makeText(this, resources.getString(R.string.help_general), Toast.LENGTH_LONG).show()
                 // TODO: using a delayed handler as a workaround for bug in android: https://issuetracker.google.com/issues/79159357
                 // remove when bug is resolved
@@ -395,7 +395,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                         Toast.makeText(this, resources.getString(R.string.help_accel), Toast.LENGTH_LONG).show()
                     else
                         Toast.makeText(this, resources.getString(R.string.help_touch), Toast.LENGTH_LONG).show()
-                }, toast_delay);
+                }, toast_delay)
                 true
             }
 
