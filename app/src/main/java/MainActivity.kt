@@ -409,6 +409,8 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     {
         if(requestCode == SETTINGS_RESULT)
             recreate()
+        else
+            super.onActivityResult(requestCode, resultCode, data)
     }
 
     class DispData
