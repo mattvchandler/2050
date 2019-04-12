@@ -1,0 +1,5 @@
+Much like the original, you start with small numbered pieces and combine
+like-numbered pieces into progressively larger ones, working toward 2048.
+
+Unlike the original, the pieces are free to move in any direction, bounce off of
+the walls and each other, are subject to gravity, and grow progressively larger.

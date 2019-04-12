@@ -11,7 +11,7 @@ combine like-numbered pieces into progressively larger ones, working toward
 Unlike the original, the pieces are free to move in any direction, bounce off of
 the walls and each other, are subject to gravity, and grow progressively larger.
 
-<img src="screenshots/scrn_phone_land_1.png" alt="gameplay screenshot" height=320/>
+![gameplay screenshot](/metadata/en-US/images/phoneScreenshots/scrn_phone_land_1.png?raw=true)
 
 ## Gameplay
 
