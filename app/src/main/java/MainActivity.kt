@@ -408,9 +408,9 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         if(requestCode == SETTINGS_RESULT)
-            recreate()
-        else
-            super.onActivityResult(requestCode, resultCode, data)
+            Handler().postDelayed({recreate()}, 0)
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     class DispData
