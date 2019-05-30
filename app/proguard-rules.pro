@@ -27,9 +27,7 @@
     void achievement(int);
 }
 
--keepclasseswithmembers class org.mattvchandler.a2050.MainActivity$DispData {
-    public <fields>;
-}
+-keep,includedescriptorclasses class org.mattvchandler.a2050.MainActivity$DispData { *; }
 
 -keepclasseswithmembers class androidx.databinding.ObservableInt {
     void set(int);
