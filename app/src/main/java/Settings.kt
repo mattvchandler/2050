@@ -143,7 +143,7 @@ class Settings: Themed_activity()
     {
         when(requestCode)
         {
-            LOCATION_PERMISSION_RESPONSE -> if(!grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) recreate()
+            LOCATION_PERMISSION_RESPONSE -> if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) recreate()
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
