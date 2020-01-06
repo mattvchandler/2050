@@ -1,0 +1,79 @@
+<!--
+Copyright 2019 Matthew Chandler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">2050</string>
+    <string name="app_version">v.%1$s</string>
+    <string name="app_copyright">© 2019 Matthew Chandler</string>
+    <string name="app_license">Dieses Programm hat absolut keine gewärleistung.\n
+  Sehen sie die <a href="https://opensource.org/licenses/mit-license.php" >MIT License (MIT)</a> für Details an.</string>
+    <string name="app_website"><a href="https://www.github.com/mattvchandler/2050" >2050 auf Github</a></string>
+    <string name="app_logo_desc">2050 logo</string>
+
+    <string name="pressure">Druck</string>
+
+    <string name="score">Punkte: %d</string>
+    <string name="high_score">Rekord: %d</string>
+
+    <string name="paused">Pausiert</string>
+    <string name="cont">Fortsetzen</string>
+
+    <string name="win">Du hast gewonnen!</string>
+    <string name="game_over">Spiel Vorbei!</string>
+    <string name="final_score">Deine Punkte: %d</string>
+    <string name="new_high_score">Neuer Record</string>
+    <string name="new_game">Neues Spiel</string>
+    <string name="confirm_new_game">Bist du dir sicher, dass du ein neues spiel starten willst?</string>
+    <string name="continue_playing">Weiterspielen</string>
+
+    <string name="pause">Pause</string>
+    <string name="fullscreen">Vollbild</string>
+    <string name="settings">Einstellungen</string>
+    <string name="help">Hilfe</string>
+    <string name="about">Über</string>
+
+    <string name="gravity_arrow_desc">Gravitationspfeil</string>
+    <string name="ball">Ball</string>
+
+    <string name="achievement_unlocked">Errungenschaft freigeschaltet</string>
+
+    <string name="control_mode">Beschleunigungssensor-Kontrollmodus</string>
+    <string name="control_mode_summary">Zwischen Berührungskontrollmodus und Beschleunigungssensor-Kontrollmodus wechseln</string>
+
+    <string name="theme_title">Tages- / Nachtmodus</string>
+    <string-array name="theme_settings" tools:ignore="InconsistentArrays">
+    </string-array>
+    <string name="loc_perm_msg">\"Du wirst nach Standortzugriff gefragt werden. \n
+ \n
+ Wenn du den Zugriff erlaubst, wird dein Standort genutzt, um den Tag / Nachtmodus zu wechseln. Ansonsten wird die Uhr deines Gerätes verwendet.\n
+ \n
+ Dein Standort wird nicht gespeichert oder andersartig genutzt.</string>
+
+
+    <string name="help_general">Kombiniere die Bälle mit der Gleichen Nummer und Farbe wie, um den 2048 ball zu erreichen, während du verhinderst, dass die Bälle sich zu weit voneinander entfernen.</string>
+    <string name="help_touch">Wische mit deinem Finger, um die Bewegungsrichtung der Bälle zu ändern. Bei jeder Richtungsänderung wird ein neuer ball generiert.</string>
+    <string name="help_accel">Drehe dein Gerät so, dass die Bälle runterfallen. Neue Bälle werden generiert, sobald du das gerät drehst.</string>
+
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+
+</resources>
