@@ -24,10 +24,10 @@ SOFTWARE.
     <string name="app_name">2050</string>
     <string name="app_version">v.%1$s</string>
     <string name="app_copyright">© 2019 Matthew Chandler</string>
-    <string name="app_license">Dieses Programm hat absolut keine gewärleistung.\n
-  Sehen sie die <a href="https://opensource.org/licenses/mit-license.php" >MIT License (MIT)</a> für Details an.</string>
+    <string name="app_license">Dieses Programm hat absolut keine Gewärleistung.\n
+  siehe <a href="https://opensource.org/licenses/mit-license.php" >MIT License (MIT)</a> für Details an.</string>
     <string name="app_website"><a href="https://www.github.com/mattvchandler/2050" >2050 auf Github</a></string>
-    <string name="app_logo_desc">2050 logo</string>
+    <string name="app_logo_desc">2050 Logo</string>
 
     <string name="pressure">Druck</string>
 
@@ -64,14 +64,14 @@ SOFTWARE.
     </string-array>
     <string name="loc_perm_msg">\"Du wirst nach Standortzugriff gefragt werden. \n
  \n
- Wenn du den Zugriff erlaubst, wird dein Standort genutzt, um den Tag / Nachtmodus zu wechseln. Ansonsten wird die Uhr deines Gerätes verwendet.\n
+ Wenn du den Zugriff erlaubst, wird dein Standort genutzt, um zwischen dem Tag- / Nachtmodus zu wechseln. Ansonsten wird die Uhr deines Gerätes verwendet.\n
  \n
  Dein Standort wird nicht gespeichert oder andersartig genutzt.</string>
 
 
-    <string name="help_general">Kombiniere die Bälle mit der Gleichen Nummer und Farbe wie, um den 2048 ball zu erreichen, während du verhinderst, dass die Bälle sich zu weit voneinander entfernen.</string>
+    <string name="help_general">Kombiniere die Bälle mit der gleichen Nummer und Farbe wie, um den Ball mit der Nummer 2048 zu erreichen, während du verhinderst, dass die Bälle sich zu weit voneinander entfernen.</string>
     <string name="help_touch">Wische mit deinem Finger, um die Bewegungsrichtung der Bälle zu ändern. Bei jeder Richtungsänderung wird ein neuer ball generiert.</string>
-    <string name="help_accel">Drehe dein Gerät so, dass die Bälle runterfallen. Neue Bälle werden generiert, sobald du das gerät drehst.</string>
+    <string name="help_accel">Drehe dein Gerät so, dass die Bälle runterfallen. Neue Bälle werden generiert, sobald du das Gerät drehst.</string>
 
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
