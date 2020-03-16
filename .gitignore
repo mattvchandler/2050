@@ -11,3 +11,4 @@
 .externalNativeBuild
 app/release
 .idea/assetWizardSettings.xml
+app/.cxx
