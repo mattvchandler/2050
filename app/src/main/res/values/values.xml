@@ -22,10 +22,10 @@ SOFTWARE.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="theme_values_system">system</string>
-    <string name="theme_values_day">day</string>
-    <string name="theme_values_night">night</string>
-    <string name="theme_values_auto">auto</string>
+    <string name="theme_values_system" translatable="false">system</string>
+    <string name="theme_values_day" translatable="false">day</string>
+    <string name="theme_values_night" translatable="false">night</string>
+    <string name="theme_values_auto" translatable="false">auto</string>
     <string name="theme_values_auto_batt" translatable="false">auto_batt</string>
 
     <string name="theme_values_default">@string/theme_values_system</string>
