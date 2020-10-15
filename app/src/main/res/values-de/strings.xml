@@ -24,8 +24,7 @@ SOFTWARE.
     <string name="app_name">2050</string>
     <string name="app_version">v.%1$s</string>
     <string name="app_copyright">© 2019 Matthew Chandler</string>
-    <string name="app_license">Dieses Programm hat absolut keine Gewärleistung.\n
-  siehe <a href="https://opensource.org/licenses/mit-license.php" >MIT License (MIT)</a> für Details an.</string>
+    <string name="app_license">Dieses Programm hat absolut keine Gewärleistung.\nSiehe dir die <a href="https://opensource.org/licenses/mit-license.php" >MIT License (MIT)</a> für Details an.</string>
     <string name="app_website"><a href="https://www.github.com/mattvchandler/2050" >2050 auf Github</a></string>
     <string name="app_logo_desc">2050 Logo</string>
 
@@ -61,15 +60,33 @@ SOFTWARE.
 
     <string name="theme_title">Tages- / Nachtmodus</string>
     <string-array name="theme_settings" tools:ignore="InconsistentArrays">
+		<item>Systemstandard</item>
+        <item>Tag</item>
+        <item>Nacht</item>
+        <item>Automatisch (Standort-/Zeitbasiert)</item>
     </string-array>
-    <string name="loc_perm_msg">\"Du wirst nach Standortzugriff gefragt werden. \n
- \n
- Wenn du den Zugriff erlaubst, wird dein Standort genutzt, um zwischen dem Tag- / Nachtmodus zu wechseln. Ansonsten wird die Uhr deines Gerätes verwendet.\n
- \n
- Dein Standort wird nicht gespeichert oder andersartig genutzt.</string>
+		<string name="loc_perm_title">"Standortzugriff erlauben?"</string>
+    <string name="loc_perm_msg">\"Du wirst nach Standortzugriff gefragt werden. \n\nWenn du den Zugriff erlaubst, wird dein Standort genutzt, um zwischen dem Tag- / Nachtmodus zu wechseln. Ansonsten wird die Uhr deines Gerätes verwendet.\n\nDein Standort wird nicht gespeichert oder andersartig genutzt.</string>
 
 
-    <string name="help_general">Kombiniere die Bälle mit der gleichen Nummer und Farbe wie, um den Ball mit der Nummer 2048 zu erreichen, während du verhinderst, dass die Bälle sich zu weit voneinander entfernen.</string>
+    <string-array name="achieve_texts">
+        <item>"Glückwunsch! Du hast es irgendwie geschafft, das Spiel kaputt zu machen. *-*"</item>
+        <item>"Glückwunsch! Du hast es irgendwie geschafft, das Spiel kaputt zu machen. *-*"</item>
+        <item>"Glückwunsch! Du hast es irgendwie geschafft, das Spiel kaputt zu machen. *-*"</item>
+        <item>"Erste schritte!"</item>
+		<item>"Lass die Reise beginnen!"</item>
+        <item>"Jeder fängt mal klein an."</item>
+        <item>"Das wird noch was!"</item>
+        <item>"Endlich Dreistellig!"</item>
+        <item>"Sind wir endlich Fertig?"</item>
+        <item>"Was für ein Naturtalent!"</item>
+        <item>"Fast geschafft!"</item>
+        <item>"Du hast Gewonnen!"</item>
+        <item>"Unglaublich!"</item>
+        <item>"Weltklasse!"</item>
+        <item>"Schummelts du etwa ???"</item>
+    </string-array>
+	<string name="help_general">Kombiniere die Bälle mit der gleichen Nummer und Farbe wie, um den Ball mit der Nummer 2048 zu erreichen, während du verhinderst, dass die Bälle sich zu weit voneinander entfernen.</string>
     <string name="help_touch">Wische mit deinem Finger, um die Bewegungsrichtung der Bälle zu ändern. Bei jeder Richtungsänderung wird ein neuer ball generiert.</string>
     <string name="help_accel">Drehe dein Gerät so, dass die Bälle runterfallen. Neue Bälle werden generiert, sobald du das Gerät drehst.</string>
 
