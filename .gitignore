@@ -12,3 +12,5 @@
 app/release
 .idea/assetWizardSettings.xml
 app/.cxx
+.idea/compiler.xml
+.idea/jarRepositories.xml

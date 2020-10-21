@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     dataBinding.enabled = true
     defaultConfig {
         applicationId "org.mattvchandler.a2050"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionName "1.0.7"
         // version code is <MIN_SDK>0<2-digit MAJOR><2-digit MINOR><2-digit PATCH>
         versionCode 190010007
@@ -36,14 +36,15 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+    ndkVersion '21.3.6528147'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.preference:preference:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
