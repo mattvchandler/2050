@@ -37,6 +37,7 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
@@ -101,7 +102,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main) ?: throw NullPointerException("Could not get binding")
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar as Toolbar)
 
         binding.surfaceView.holder.addCallback(this)
         binding.data = data
