@@ -1,0 +1,97 @@
+<!--
+Copyright 2019 Matthew Chandler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">2050</string>
+    <string name="app_version">v.%1$s</string>
+    <string name="app_copyright">© 2019 Matthew Chandler</string>
+    <string name="app_license">Éste programa viene sin ninguna garantía.\nVéase la <a href="https://opensource.org/licenses/mit-license.php">Liscencia MIT (MIT)</a> para detalles.</string>
+    <string name="app_website"><a href="https://www.github.com/mattvchandler/2050">2050 en Github</a></string>
+    <string name="app_logo_desc">2050 logo</string>
+
+    <string name="pressure">Presión</string>
+
+    <string name="score">Puntaje: %d</string>
+    <string name="high_score">Puntaje alto: %d</string>
+
+    <string name="paused">Pausado</string>
+    <string name="cont">Continuar</string>
+
+    <string name="win">¡Ganaste!</string>
+    <string name="game_over">¡Se acabó!</string>
+    <string name="final_score">Conseguiste: %d</string>
+    <string name="new_high_score">¡Nuevo puntaje alto!</string>
+    <string name="new_game">Partido nuevo</string>
+    <string name="confirm_new_game">¿Quieres empezar de nuevo?</string>
+    <string name="continue_playing">Seguir jugando</string>
+
+    <string name="pause">Pausa</string>
+    <string name="fullscreen">Pantalla completa</string>
+    <string name="settings">Configuración</string>
+    <string name="help">Ayuda</string>
+    <string name="about">Información</string>
+
+    <string name="gravity_arrow_desc">Flecha de gravedad</string>
+    <string name="ball">Bola</string>
+
+    <string name="achievement_unlocked">Logro desbloqueado</string>
+
+    <string name="control_mode">Control de acelerómetro</string>
+    <string name="control_mode_summary">Cambiar entre control tactil y de acelerómetro</string>
+    <string name="no_accel">No se detecta acelerómetro</string>
+
+    <string name="theme_title">Tema Claro / Oscuro</string>
+    <string-array name="theme_settings" tools:ignore="InconsistentArrays">
+        <item>Seguir sistema</item>
+        <item>Claro</item>
+        <item>Oscuro</item>
+        <item>Auto (basado en ubicación / hora)</item>
+    </string-array>
+    <string name="loc_perm_title">"¿Permitir acceso a la ubicación?"</string>
+    <string name="loc_perm_msg">"Se pedirá acceso a la ubicación.\n\nSi aceptes, la ubicación se usará para cambiar el tema al amanecer o atardecer. De otro modo, se usará horas puestas previamente.\n\nLos datos de ubicación no se guardan ni se usan de ningún otro modo."</string>
+
+    <string-array name="achieve_texts">
+        <item>"Felicidades, ¡no se debe ver ésto!"</item>
+        <item>"Felicidades, ¡no se debe ver ésto!"</item>
+        <item>"Felicidades, ¡no se debe ver ésto!"</item>
+        <item>"Sólo empezando"</item>
+        <item>"Poco a poco"</item>
+        <item>"No tan pequeños, ahora"</item>
+        <item>"Ya estás logrando algo"</item>
+        <item>"¡Más que cien!"</item>
+        <item>"¿Llegamos ya?"</item>
+        <item>"De liga grande"</item>
+        <item>"A la mitad"</item>
+        <item>"Victoria"</item>
+        <item>"Muy impresionante"</item>
+        <item>"Te estás pavoneando ya"</item>
+        <item>"¿Haces trampa?"</item>
+    </string-array>
+
+    <string name="help_general">Combínense las bolas del mismo tamaño y número para hacer la bola 2048, mientras que se asegura que las bolas no se empaquéen demasiado apretadamente.</string>
+    <string name="help_touch">Deslícese el dedo para cambiar la dirección de la gravedad. Una bola nueva se aparecerá cada vez que se hace.</string>
+    <string name="help_accel">Gírese el dispositivo para que las bolas caigan hacia abajo. Bolas nuevas se aparecerán al girar.</string>
+
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+
+</resources>
