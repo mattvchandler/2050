@@ -110,7 +110,7 @@ SOFTWARE.
                 app:layout_constraintVertical_chainStyle="spread_inside"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/pressure_txt"
+                app:layout_constraintBottom_toTopOf="@id/pressure"
                 app:layout_constraintLeft_toLeftOf="parent"
             />
 
@@ -120,7 +120,6 @@ SOFTWARE.
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/gravity"
                 app:layout_constraintBottom_toTopOf="@id/pressure"
                 app:layout_constraintStart_toStartOf="@id/pressure"
                 app:layout_constraintEnd_toEndOf="@id/pressure"
@@ -136,7 +135,7 @@ SOFTWARE.
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_size"
                 app:layout_constraintTop_toBottomOf="@id/gravity"
-                app:layout_constraintBottom_toTopOf="@id/pressure_txt"
+                app:layout_constraintBottom_toTopOf="@id/surface_view"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
             />
@@ -151,7 +150,6 @@ SOFTWARE.
                 android:layout_marginTop="@dimen/margin_size"
                 app:layout_constraintVertical_bias="1.0"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintTop_toBottomOf="@id/pressure"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
