@@ -76,7 +76,7 @@ void Engine::destroy_egl()
     display = EGL_NO_DISPLAY;
     surface = EGL_NO_SURFACE;
     context = EGL_NO_CONTEXT;
-};
+}
 
 bool Engine::init_egl()
 {

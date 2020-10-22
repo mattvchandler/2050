@@ -170,7 +170,7 @@ Shader_prog::Shader_obj::~Shader_obj()
     if(id)
         glDeleteShader(id);
 }
-Shader_prog::Shader_obj::Shader_obj(Shader_obj && other) noexcept : id(other.id) { other.id = 0; };
+Shader_prog::Shader_obj::Shader_obj(Shader_obj && other) noexcept : id(other.id) { other.id = 0; }
 Shader_prog::Shader_obj & Shader_prog::Shader_obj::operator=(Shader_obj && other) noexcept
 {
     if(this != &other)
@@ -189,7 +189,7 @@ GL_buffer::~GL_buffer()
     if(id)
         glDeleteBuffers(1, &id);
 }
-GL_buffer::GL_buffer(GL_buffer && other) noexcept : id(other.id) { other.id = 0; };
+GL_buffer::GL_buffer(GL_buffer && other) noexcept : id(other.id) { other.id = 0; }
 GL_buffer & GL_buffer::operator=(GL_buffer && other) noexcept
 {
     if(this != &other)

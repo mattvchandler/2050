@@ -28,7 +28,7 @@ SOFTWARE.
     <string name="theme_values_auto" translatable="false">auto</string>
     <string name="theme_values_auto_batt" translatable="false">auto_batt</string>
 
-    <string name="theme_values_default">@string/theme_values_system</string>
+    <string name="theme_values_default" translatable="false">@string/theme_values_system</string>
 
     <string-array name="theme_values" tools:ignore="InconsistentArrays">
         <item>@string/theme_values_system</item>

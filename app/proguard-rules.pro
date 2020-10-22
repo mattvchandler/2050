@@ -23,7 +23,6 @@
 -keep,includedescriptorclasses class org.mattvchandler.a2050.MainActivity {
     void game_win(int, boolean);
     void game_over(int, boolean);
-    void game_pause();
     void achievement(int);
 }
 

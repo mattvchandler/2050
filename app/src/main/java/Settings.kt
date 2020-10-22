@@ -84,23 +84,23 @@ class Settings: Themed_activity()
                 {
                     if (ContextCompat.checkSelfPermission(activity as Context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                     {
-                        if(ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.ACCESS_FINE_LOCATION))
+                        if(ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION))
                         {
                             class Location_frag: DialogFragment()
                             {
                                 override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-                                        AlertDialog.Builder(context!!)
+                                        AlertDialog.Builder(requireContext())
                                             .setTitle(R.string.loc_perm_title)
                                             .setMessage(R.string.loc_perm_msg)
-                                            .setPositiveButton(android.R.string.ok) { _, _ -> ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)}
+                                            .setPositiveButton(android.R.string.ok) { _, _ -> ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)}
                                             .setNegativeButton(android.R.string.cancel, null)
                                             .create()
                             }
-                            Location_frag().show(activity!!.supportFragmentManager, "location_permission_dialog")
+                            Location_frag().show(requireActivity().supportFragmentManager, "location_permission_dialog")
                         }
                         else
                         {
-                            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)
+                            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_RESPONSE)
                         }
                     }
                 }

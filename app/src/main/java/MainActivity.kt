@@ -28,16 +28,22 @@ import android.content.pm.ActivityInfo
 import android.content.res.AssetManager
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
+import android.hardware.display.DisplayManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.hardware.display.DisplayManagerCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
@@ -54,7 +60,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
     private lateinit var binding: ActivityMainBinding
     private val data = DispData()
-    private val update_data = Handler()
+    private val update_data = Handler(Looper.getMainLooper())
     private var dialog: AlertDialog? = null
 
     private var gravity_mode = false
@@ -119,6 +125,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
             Log.e("MainActivity", "Could not get data directory", e)
         }
 
+        // TODO: replace with API 30 fullscreen methods once there is a compat version for all needed features
         window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
             if(visibility and (View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0)
                 supportActionBar?.show()
@@ -126,9 +133,9 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 supportActionBar?.hide()
         }
 
-        val rotation = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+        val rotation = DisplayManagerCompat.getInstance(this).getDisplay(Display.DEFAULT_DISPLAY)?.rotation
 
-        create(resources.assets, path, resources, gravity_mode, rotation)
+        create(resources.assets, path, resources, gravity_mode, rotation!!)
     }
 
     override fun onResume()
@@ -161,7 +168,11 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
                 val color = ArgbEvaluator().evaluate(stop_percent, color_stops[start_color_i], color_stops[start_color_i + 1]) as Int
 
-                (binding.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                if(Build.VERSION.SDK_INT < 29)
+                    (binding.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                else
+                    (binding.pressure.progressDrawable as LayerDrawable).findDrawableByLayerId(android.R.id.progress).mutate().colorFilter = BlendModeColorFilter(color, BlendMode.SRC_IN)
+
 
                 update_data.postDelayed(this, delay)
             }
@@ -257,7 +268,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 override fun onCreateDialog(savedInstanceState: Bundle?) =
                     AlertDialog.Builder(activity as MainActivity)
                             .setTitle(R.string.win)
-                            .setMessage(resources.getString(R.string.final_score, arguments!!.getInt("score")) + if(arguments!!.getBoolean("new_high_score")) {"\n" + resources.getString(R.string.new_high_score)} else "")
+                            .setMessage(resources.getString(R.string.final_score, requireArguments().getInt("score")) + if(requireArguments().getBoolean("new_high_score")) {"\n" + resources.getString(R.string.new_high_score)} else "")
                             .setNegativeButton(R.string.new_game) { _, _ -> (activity as MainActivity).newGame() }
                             .setPositiveButton(R.string.continue_playing, null)
                             .create()
@@ -282,7 +293,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
             {
                 override fun onCreateDialog(savedInstanceState: Bundle?) =
                     AlertDialog.Builder(activity as MainActivity).setTitle(R.string.game_over)
-                            .setMessage(resources.getString(R.string.final_score, arguments!!.getInt("score")) + if(arguments!!.getBoolean("new_high_score")) "\n" + resources.getString(R.string.new_high_score) else "")
+                            .setMessage(resources.getString(R.string.final_score, requireArguments().getInt("score")) + if(requireArguments().getBoolean("new_high_score")) "\n" + resources.getString(R.string.new_high_score) else "")
                             .setPositiveButton(R.string.new_game) { _, _ -> (activity as MainActivity).newGame() }
                             .create()
             }
@@ -300,6 +311,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
     fun achievement(size: Int)
     {
+        // TODO: Custom toasts are deprecated now. Leave this in as long as it builds, but we're going to need to replace this with a normal, boring toast someday
         runOnUiThread {
             val layout = layoutInflater.inflate(R.layout.achievement_popup, findViewById(R.id.achievement_popup))
 
@@ -367,6 +379,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
             R.id.fullscreen ->
             {
+                // TODO: replace with API 30 fullscreen methods once there is a compat version for all needed features
                 window.decorView.systemUiVisibility = (
                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                        View.SYSTEM_UI_FLAG_FULLSCREEN      or
@@ -390,7 +403,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
                 Toast.makeText(this, resources.getString(R.string.help_general), Toast.LENGTH_LONG).show()
                 // TODO: using a delayed handler as a workaround for bug in android: https://issuetracker.google.com/issues/79159357
                 // remove when bug is resolved
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({
                     if(gravity_mode)
                         Toast.makeText(this, resources.getString(R.string.help_accel), Toast.LENGTH_LONG).show()
                     else
@@ -408,7 +421,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         if(requestCode == SETTINGS_RESULT)
-            Handler().postDelayed({recreate()}, 0)
+            Handler(Looper.getMainLooper()).postDelayed({recreate()}, 0)
 
         super.onActivityResult(requestCode, resultCode, data)
     }
