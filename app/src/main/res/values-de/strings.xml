@@ -92,5 +92,6 @@ SOFTWARE.
 
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
+    <string name="no_accel">Kein Beschleunigungssensor erkannt</string>
 
 </resources>
