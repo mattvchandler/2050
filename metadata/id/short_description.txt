@@ -1,0 +1,1 @@
+Sebuah permainan yang didasarkan pada 2048, tapi menggunakan lingkaran, bukan kotak.
