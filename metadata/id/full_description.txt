@@ -1,0 +1,3 @@
+Sama seperti yang asli, Anda mulai dengan potongan angka kecil dan gabung potongan yang sama angka sehingga menjadi potongan yang lebih besar ke angka 2048.
+
+Berbeda dengan yang asli, potongannya bebas bergerak ke arah mana pun, mantul di dinding dan satu sama lain, tunduk pada gravitasi, dan tumbuh membesar.
