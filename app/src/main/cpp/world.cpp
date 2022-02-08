@@ -1,4 +1,4 @@
-// Copyright 2019 Matthew Chandler
+// Copyright 2022 Matthew Chandler
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,10 +19,6 @@
 // SOFTWARE.
 
 #include "world.hpp"
-
-#include <algorithm>
-#include <numeric>
-#include <string>
 
 #include "color.hpp"
 #include "jni.hpp"
@@ -88,7 +84,8 @@ void World::init()
                                               std::vector<std::string>{"vert_pos", "ball_pos", "radius", "vert_color"});
     ball_vbo = std::make_unique<GL_buffer>(GL_ARRAY_BUFFER);
     ball_vbo->bind();
-    glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(std::size(ball_data) *
+                                                          sizeof(decltype(ball_data)::value_type)), nullptr, GL_DYNAMIC_DRAW);
 
     // font sizes don't matter yet b/c resize should be called immediately after init
     font = std::make_unique<textogl::Font_sys>((unsigned char *)AAsset_getBuffer(font_asset), AAsset_getLength(font_asset), 0);
@@ -207,11 +204,13 @@ void World::render_balls()
     if(std::size(ball_data) > old_ball_data_size)
     {
         LOG_DEBUG_PRINT("World::render_balls", "ball_data buffer resized from %d to %d", static_cast<int>(old_ball_data_size), static_cast<int>(std::size(ball_data)));
-        glBufferData(GL_ARRAY_BUFFER, std::size(ball_data) * sizeof(decltype(ball_data)::value_type), std::data(ball_data), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(std::size(ball_data) *
+                                                              sizeof(decltype(ball_data)::value_type)), std::data(ball_data), GL_DYNAMIC_DRAW);
     }
     else
     {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, data_size * sizeof(decltype(ball_data)::value_type), std::data(ball_data));
+        glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(data_size *
+                                                                    sizeof(decltype(ball_data)::value_type)), std::data(ball_data));
     }
 
     glEnableVertexAttribArray(0);

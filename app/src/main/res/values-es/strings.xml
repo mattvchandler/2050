@@ -1,5 +1,5 @@
 <!--
-Copyright 2019 Matthew Chandler
+Copyright 2022 Matthew Chandler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">2050</string>
     <string name="app_version">v.%1$s</string>
-    <string name="app_copyright">© 2019 Matthew Chandler</string>
+    <string name="app_copyright">© 2022 Matthew Chandler</string>
     <string name="app_license">Éste programa viene sin ninguna garantía.\nVéase la <a href="https://opensource.org/licenses/mit-license.php">Liscencia MIT (MIT)</a> para detalles.</string>
     <string name="app_website"><a href="https://www.github.com/mattvchandler/2050">2050 en Github</a></string>
     <string name="app_logo_desc">2050 logo</string>

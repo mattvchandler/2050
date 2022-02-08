@@ -14,3 +14,4 @@ app/release
 app/.cxx
 .idea/compiler.xml
 .idea/jarRepositories.xml
+.idea/misc.xml

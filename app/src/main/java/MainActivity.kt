@@ -1,4 +1,4 @@
-// Copyright 2019 Matthew Chandler
+// Copyright 2022 Matthew Chandler
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.hardware.display.DisplayManagerCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.widget.ImageViewCompat
@@ -105,7 +106,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main) ?: throw NullPointerException("Could not get binding")
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar as Toolbar)
 
         binding.surfaceView.holder.addCallback(this)
         binding.data = data

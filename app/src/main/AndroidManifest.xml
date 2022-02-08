@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-Copyright 2019 Matthew Chandler
+Copyright 2022 Matthew Chandler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +43,9 @@ SOFTWARE.
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning,UnpackedNativeCode"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        tools:ignore="GoogleAppIndexingWarning,UnpackedNativeCode,UnusedAttribute"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        >
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|keyboard|screenSize"

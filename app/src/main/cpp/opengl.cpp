@@ -1,4 +1,4 @@
-// Copyright 2019 Matthew Chandler
+// Copyright 2022 Matthew Chandler
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,6 @@
 #include "opengl.hpp"
 
 #include <system_error>
-
-#include <glm/glm.hpp>
 
 #include "log.hpp"
 
@@ -80,7 +78,7 @@ Shader_prog::Shader_prog(const std::vector<std::pair<std::string_view, GLenum>> 
     {
         GLint log_length;
         glGetProgramiv(id, GL_INFO_LOG_LENGTH, &log_length);
-        std::string log(log_length, '\0');
+        std::string log(static_cast<unsigned int>(log_length), '\0');
         glGetProgramInfoLog(id, log_length, nullptr, std::data(log));
 
         glDeleteProgram(id);
@@ -155,7 +153,7 @@ Shader_prog::Shader_obj::Shader_obj(const std::string_view & src, GLenum type)
     {
         GLint log_length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_length);
-        std::string log(log_length, '\0');
+        std::string log(static_cast<unsigned int>(log_length), '\0');
         glGetShaderInfoLog(id, log_length, nullptr, std::data(log));
 
         glDeleteShader(id);
