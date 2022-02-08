@@ -64,3 +64,5 @@ Textogl copyright © 2019 Matthew Chandler ([www.github.com/mattvchandler/textog
 German: [LeSnake04](https://github.com/LeSnake04)
 
 Spanish: [Nolan Chandler](https://github.com/ncchandler42)
+
+Indonesian: [I. Musthafa](https://github.com/the7thNightmare)
