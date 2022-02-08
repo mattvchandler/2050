@@ -49,7 +49,7 @@ class Settings: Themed_activity()
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?)
         {
             setPreferencesFromResource(R.xml.settings, rootKey)
-            PreferenceManager.setDefaultValues(activity, R.xml.settings, false)
+            PreferenceManager.setDefaultValues(requireActivity(), R.xml.settings, false)
 
             if(!has_accelerometer)
             {
@@ -65,13 +65,13 @@ class Settings: Themed_activity()
         override fun onResume()
         {
             super.onResume()
-            preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+            preferenceScreen.sharedPreferences!!.registerOnSharedPreferenceChangeListener(this)
 
         }
         override fun onPause()
         {
             super.onPause()
-            preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+            preferenceScreen.sharedPreferences!!.unregisterOnSharedPreferenceChangeListener(this)
 
         }
 
