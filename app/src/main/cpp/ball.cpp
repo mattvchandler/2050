@@ -20,7 +20,6 @@
 
 #include "ball.hpp"
 
-#include <vector>
 #include <random>
 
 #include "color.hpp"

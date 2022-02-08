@@ -33,6 +33,7 @@ SOFTWARE.
         android:name="android.hardware.sensor.accelerometer"
         android:required="false"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -43,7 +44,7 @@ SOFTWARE.
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,UnpackedNativeCode"
-        >
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|keyboard|screenSize"

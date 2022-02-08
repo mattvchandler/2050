@@ -19,12 +19,8 @@
 // SOFTWARE.
 
 #include "engine.hpp"
-#include "world.hpp"
 
-#include <chrono>
 #include <fstream>
-
-#include <GLES2/gl2.h>
 
 #include "log.hpp"
 

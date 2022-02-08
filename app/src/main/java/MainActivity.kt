@@ -22,7 +22,6 @@ package org.mattvchandler.a2050
 
 import android.animation.ArgbEvaluator
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.AssetManager
@@ -32,7 +31,6 @@ import android.graphics.BlendMode
 import android.graphics.BlendModeColorFilter
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
-import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -42,7 +40,6 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.core.hardware.display.DisplayManagerCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.widget.ImageViewCompat
@@ -108,7 +105,7 @@ class MainActivity: Themed_activity(), SurfaceHolder.Callback
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main) ?: throw NullPointerException("Could not get binding")
 
-        setSupportActionBar(binding.toolbar as Toolbar)
+        setSupportActionBar(binding.toolbar)
 
         binding.surfaceView.holder.addCallback(this)
         binding.data = data
