@@ -6,14 +6,14 @@ android {
     buildFeatures{
         dataBinding = true
     }
-    compileSdk 32
+    compileSdk 33
     defaultConfig {
         applicationId "org.mattvchandler.a2050"
         minSdkVersion 19
-        targetSdkVersion 32
-        versionName "1.0.9"
+        targetSdkVersion 33
+        versionName "1.0.10"
         // version code is <MIN_SDK>0<2-digit MAJOR><2-digit MINOR><2-digit PATCH>
-        versionCode 190010009
+        versionCode 190010010
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         externalNativeBuild {
@@ -37,20 +37,20 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility 17
+        sourceCompatibility 17
     }
-    ndkVersion '23.1.7779620'
-    buildToolsVersion '32.1.0 rc1'
+    ndkVersion '24.0.8215888'
+    namespace 'org.mattvchandler.a2050'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
